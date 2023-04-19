@@ -16,6 +16,11 @@
 
 package org.cryptool.ota;
 
+import static org.cryptool.ota.DetailedTranscriptionPane.ICON_SIZE;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -23,7 +28,15 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -32,18 +45,13 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
 
-import static org.cryptool.ota.DetailedTranscriptionPane.ICON_SIZE;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class SimulatedImagePartialDecryption extends Popup {
     final static int SYMBOLS_PER_LINE = 50;
 
     static int serial = 1;
     Pane mainPane;
     int index;
+
     SimulatedImagePartialDecryption(int index) {
         this.index = index;
         setX(50);
@@ -62,7 +70,8 @@ public class SimulatedImagePartialDecryption extends Popup {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setMaxSize(2000, 1000);
 
-        final Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background globalBackground = new Background(
+                new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
         mainPane.setBackground(globalBackground);
 
         canvas.setWidth(1000);
@@ -73,9 +82,8 @@ public class SimulatedImagePartialDecryption extends Popup {
         mainPane.getChildren().add(lines);
         getContent().addAll(scrollPane);
 
-
-
     }
+
     public static void simulatedImageSnapshot(int index) {
         SimulatedImagePartialDecryption p = new SimulatedImagePartialDecryption(index);
         p.show(Main.myStage);
@@ -95,19 +103,20 @@ public class SimulatedImagePartialDecryption extends Popup {
             allDecryption.addAll(decryptionSequence);
         }
 
-        for (int z = 0; z < (allSymbols.size() + SYMBOLS_PER_LINE - 1)/ SYMBOLS_PER_LINE; z++) {
-            HBox line = symbolDisplayLine(Main.key, allSymbols.subList(z * SYMBOLS_PER_LINE, Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)),
-                    allDecryption.subList(z * SYMBOLS_PER_LINE, Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)));
+        for (int z = 0; z < (allSymbols.size() + SYMBOLS_PER_LINE - 1) / SYMBOLS_PER_LINE; z++) {
+            HBox line = symbolDisplayLine(Main.key,
+                    allSymbols.subList(z * SYMBOLS_PER_LINE, Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)),
+                    allDecryption.subList(z * SYMBOLS_PER_LINE,
+                            Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)));
             lines.getChildren().add(line);
         }
 
-
-//        for (ArrayList<Rectangle> lineOfSymbols : Alignment.linesOfSymbols(index)) {
-//            ArrayList<String> decryptionSequence = DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
-//            HBox line = symbolDisplayLine(Main.key, lineOfSymbols, decryptionSequence);
-//            lines.getChildren().add(line);
-//        }
-
+        // for (ArrayList<Rectangle> lineOfSymbols : Alignment.linesOfSymbols(index)) {
+        // ArrayList<String> decryptionSequence =
+        // DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
+        // HBox line = symbolDisplayLine(Main.key, lineOfSymbols, decryptionSequence);
+        // lines.getChildren().add(line);
+        // }
 
         return lines;
     }
@@ -126,7 +135,8 @@ public class SimulatedImagePartialDecryption extends Popup {
 
     private void snapshot() {
         String suffix = "_" + serial++;
-        FileUtils.snapshot("simulation2", TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", suffix), mainPane);
+        FileUtils.snapshot("simulation2",
+                TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", suffix), mainPane);
 
     }
 
@@ -134,9 +144,10 @@ public class SimulatedImagePartialDecryption extends Popup {
         ImageView icon = new ImageView();
         Text pText = new Text();
 
-        SymbolStackPane(Key key){
+        SymbolStackPane(Key key) {
 
-            final Background globalBackground = new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
+            final Background globalBackground = new Background(
+                    new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
 
             icon.setFitHeight(Utils.adjust(ICON_SIZE));
             icon.setPreserveRatio(true);
@@ -162,12 +173,15 @@ public class SimulatedImagePartialDecryption extends Popup {
             HBox.setMargin(this, new Insets(Utils.adjust(0), Utils.adjust(5), Utils.adjust(0), Utils.adjust(5)));
 
         }
+
         void update(Key key, List<String> decryptionSequence, int i, Rectangle r) {
-            final Font pFont = Font.font("Verdana", FontWeight.BOLD,  Utils.adjust(24));
-            final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD,  Utils.adjust(16));
+            final Font pFont = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(24));
+            final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(16));
             pText.setFill(Color.RED);
 
-            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i) ? decryptionSequence.get(i) : "";
+            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i)
+                    ? decryptionSequence.get(i)
+                    : "";
 
             Color color = (Color) r.getFill();
 
@@ -182,8 +196,6 @@ public class SimulatedImagePartialDecryption extends Popup {
             if (key.isKeyAvailable()) {
                 p = decryption;
             }
-
-
 
             if (p.isEmpty() || !p.matches("[A-Z- ]+")) {
                 pText.setVisible(false);

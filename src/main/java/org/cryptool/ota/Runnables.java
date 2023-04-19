@@ -25,12 +25,14 @@ public class Runnables {
 
     private ArrayList<Runnable> runnables = new ArrayList<Runnable>();
 
-    public void addRunnable(Runnable runnable){
+    public void addRunnable(Runnable runnable) {
         runnables.add(runnable);
     }
+
     public void run() {
         run(runnables.size());
     }
+
     public void run(int threads) {
 
         long start = System.currentTimeMillis();
@@ -51,7 +53,8 @@ public class Runnables {
             }
         }
         long end = System.currentTimeMillis();
-        //CtAPI.printf("Elapsed %10d millis for %6d tasks on %d threads\n", end - start, runnables.size(), threads);
+        // CtAPI.printf("Elapsed %10d millis for %6d tasks on %d threads\n", end -
+        // start, runnables.size(), threads);
 
     }
 }

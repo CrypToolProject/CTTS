@@ -16,12 +16,18 @@
 
 package org.cryptool.ota;
 
-import javafx.scene.paint.Color;
-
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javafx.scene.paint.Color;
 
 /*
     Colors, their transcription values, and ordering/sorting.
@@ -43,18 +49,20 @@ public class Colors implements Serializable {
         }
 
     }
-    public boolean changed(){
+
+    public boolean changed() {
         return changed;
     }
 
-    public static ArrayList<String> all(){
+    public static ArrayList<String> all() {
         return all;
     }
-    public static ArrayList<String> colorSetOld(){
+
+    public static ArrayList<String> colorSetOld() {
         ArrayList<String> colorArrayList = new ArrayList<>();
-        for (int r : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255}) {
-            for (int g : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255}) {
-                for (int b : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, 255}) {
+        for (int r : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
+            for (int g : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
+                for (int b : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, 255 }) {
                     if (r + g + b == 0) {
                         continue;
                     }
@@ -65,11 +73,12 @@ public class Colors implements Serializable {
         }
         return colorArrayList;
     }
-    public static ArrayList<String> colorSet(){
+
+    public static ArrayList<String> colorSet() {
         ArrayList<String> colorArrayList = new ArrayList<>();
-        for (int r : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255}) {
-            for (int g : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255}) {
-                for (int b : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3,(255 + 2 * 255 / 3) / 2, 255}) {
+        for (int r : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
+            for (int g : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
+                for (int b : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
                     if (r + g + b == 0) {
                         continue;
                     }
@@ -78,9 +87,9 @@ public class Colors implements Serializable {
                 }
             }
         }
-        for (int r : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255}) {
-            for (int g : new int[]{0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255}) {
-                for (int b : new int[]{(255 - 2 * 255 / 3) / 2}) {
+        for (int r : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
+            for (int g : new int[] { 0, 255 / 3, 255 / 2, 2 * 255 / 3, (255 + 2 * 255 / 3) / 2, 255 }) {
+                for (int b : new int[] { (255 - 2 * 255 / 3) / 2 }) {
                     Color rgb = Color.rgb(r, g, b);
                     colorArrayList.add(rgb.toString());
                 }
@@ -88,6 +97,7 @@ public class Colors implements Serializable {
         }
         return colorArrayList;
     }
+
     public boolean swap(Color c1, Color c2) {
         if (c1 == null || c2 == null || c1.equals(c2)) {
             return false;
@@ -99,6 +109,7 @@ public class Colors implements Serializable {
         changed = true;
         return true;
     }
+
     public boolean insert(Color from, Color to) {
         if (from == null || to == null || from.equals(to)) {
             return false;
@@ -122,13 +133,15 @@ public class Colors implements Serializable {
         changed = true;
         return true;
     }
+
     public ArrayList<String> sortedColors() {
 
         ArrayList<String> usedColors = new ArrayList<>(colorStringToText.keySet());
         usedColors.sort(Comparator.comparingInt(o -> ordering.getOrDefault(o, 0)));
         return usedColors;
     }
-    public void defaultSorting(){
+
+    public void defaultSorting() {
         ArrayList<String> sorted = new ArrayList<>(colorStringToText.keySet());
         sorted.sort(this::defaultComparator);
         if (ordering == null) {
@@ -140,7 +153,8 @@ public class Colors implements Serializable {
         }
         changed = true;
     }
-    public void sortByFrequency(){
+
+    public void sortByFrequency() {
         ArrayList<String> sorted = new ArrayList<>(colorStringToText.keySet());
         Map<String, Double> f = TranscribedImage.rawFreq();
         sorted.sort((o1, o2) -> {
@@ -156,7 +170,8 @@ public class Colors implements Serializable {
         }
         changed = true;
     }
-    public void sortByDecryption(){
+
+    public void sortByDecryption() {
         if (!Main.key.isKeyAvailable()) {
             defaultSorting();
             return;
@@ -169,28 +184,36 @@ public class Colors implements Serializable {
         }
         changed = true;
     }
+
     public Set<String> keySet() {
         return colorStringToText.keySet();
     }
+
     public String getOrDefault(String colorString, String s) {
         return colorStringToText.getOrDefault(colorString, s);
     }
+
     boolean contains(String colorString) {
         return colorStringToText.containsKey(colorString);
     }
+
     public Collection<String> values() {
         return colorStringToText.values();
     }
+
     public void put(String colorString, String c) {
         colorStringToText.put(colorString, c);
         changed = true;
     }
+
     public boolean available() {
         return colorStringToText != null;
     }
+
     public void markAsChanged() {
         changed = true;
     }
+
     public static Colors restore(String backupFilename) {
         Colors state = null;
 
@@ -230,32 +253,38 @@ public class Colors implements Serializable {
             if (defaultSorting) {
                 state.defaultSorting();
             }
-            System.out.printf("%d valid symbol types (%d assigned, %d with icon)\n", state.colorStringToText.keySet().size(), assigned, withIcon);
+            System.out.printf("%d valid symbol types (%d assigned, %d with icon)\n",
+                    state.colorStringToText.keySet().size(), assigned, withIcon);
         } else {
             System.out.println("Could not restore symbol types");
         }
 
         return state;
     }
+
     public void save(String backupFilename) {
 
-        //write(backupFilename);
-        //write(backupFilename + SECOND_COPY);
+        // write(backupFilename);
+        // write(backupFilename + SECOND_COPY);
         if (changed) {
             saveTextFile(backupFilename + ".txt");
             saveTextFile(backupFilename + SECOND_COPY + ".txt");
             changed = false;
         }
     }
+
     public Color get(int index) {
         return Color.valueOf(all.get(index));
     }
+
     public String get(String colorString) {
         return colorStringToText.get(colorString);
     }
+
     public int indexOf(Color rgb) {
         return all.indexOf(rgb.toString());
     }
+
     public Color valueOf(String colorString) {
         if (!colorStringToText.containsKey(colorString)) {
             return null;
@@ -266,6 +295,7 @@ public class Colors implements Serializable {
             return null;
         }
     }
+
     private int compareByDecryption(String o1, String o2) {
         String t1 = colorStringToText.get(o1);
         String t2 = colorStringToText.get(o2);
@@ -305,7 +335,6 @@ public class Colors implements Serializable {
             return 1;
         }
 
-
         int upper = d1.toUpperCase().compareTo(d2.toUpperCase());
         if (upper != 0) {
             return upper;
@@ -313,6 +342,7 @@ public class Colors implements Serializable {
         return d1.compareTo(d2);
 
     }
+
     private static class CompareFields {
         enum Type {
             NUMBER, LETTERS, SYMBOLS, EMPTY;
@@ -342,6 +372,7 @@ public class Colors implements Serializable {
                 throw new RuntimeException("Cannot happen " + this + " vs " + t2);
             }
         }
+
         int mainNumber = -1;
         String mainString = "";
         Type mainType = Type.EMPTY;
@@ -350,6 +381,7 @@ public class Colors implements Serializable {
         Type serialType = Type.EMPTY;
 
         String keepS;
+
         static CompareFields get(String s) {
 
             CompareFields c = new CompareFields();
@@ -361,13 +393,11 @@ public class Colors implements Serializable {
             Pattern p;
             Matcher m;
 
-
             // 02
             p = Pattern.compile("^([0-9]+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 c.mainString = m.group(1);
                 c.mainNumber = Integer.parseInt(c.mainString);
                 c.mainType = Type.NUMBER;
@@ -378,8 +408,7 @@ public class Colors implements Serializable {
             p = Pattern.compile("^([a-zA-Z]+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 // get the two groups we were looking for
                 c.mainString = m.group(1);
                 c.mainType = Type.LETTERS;
@@ -390,8 +419,7 @@ public class Colors implements Serializable {
             p = Pattern.compile("^([0-9]+)(.+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 // get the two groups we were looking for
                 c.mainString = m.group(1);
                 c.mainNumber = Integer.parseInt(c.mainString);
@@ -405,8 +433,7 @@ public class Colors implements Serializable {
             p = Pattern.compile("^([a-zA-Z]+)([0-9]+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 // get the two groups we were looking for
                 c.mainString = m.group(1);
                 c.mainType = Type.LETTERS;
@@ -420,8 +447,7 @@ public class Colors implements Serializable {
             p = Pattern.compile("^([a-zA-Z]+)(.+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 // get the two groups we were looking for
                 c.mainString = m.group(1);
                 c.mainType = Type.LETTERS;
@@ -430,13 +456,11 @@ public class Colors implements Serializable {
                 return c;
             }
 
-
             // _23
             p = Pattern.compile("^(.*)([0-9]+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 // get the two groups we were looking for
                 c.mainString = m.group(1);
                 c.mainType = Type.SYMBOLS;
@@ -450,8 +474,7 @@ public class Colors implements Serializable {
             p = Pattern.compile("^(.*)([a-zA-Z]+)$");
             m = p.matcher(s);
 
-            if (m.find())
-            {
+            if (m.find()) {
                 // get the two groups we were looking for
                 c.mainString = m.group(1);
                 c.mainType = Type.SYMBOLS;
@@ -466,6 +489,7 @@ public class Colors implements Serializable {
 
         }
     }
+
     private int defaultComparator(String o1, String o2) {
         String text1 = colorStringToText.get(o1);
         String text2 = colorStringToText.get(o2);
@@ -523,10 +547,11 @@ public class Colors implements Serializable {
 
         return colors;
     }
+
     private static Colors fromTextFile(String backupFilename) {
         Colors state = new Colors();
 
-        String s = FileUtils.readTextFile(null, backupFilename +".txt");
+        String s = FileUtils.readTextFile(null, backupFilename + ".txt");
         if (s == null) {
             return null;
         }
@@ -549,13 +574,14 @@ public class Colors implements Serializable {
         }
         return state;
     }
+
     private void saveTextFile(String outFilename) {
         StringBuilder text = new StringBuilder();
         for (Map.Entry<String, String> e : colorStringToText.entrySet()) {
-            text.append(e.getKey()).append(';').append(e.getValue()).append(';').append(ordering.get(e.getKey())).append('\n');
+            text.append(e.getKey()).append(';').append(e.getValue()).append(';').append(ordering.get(e.getKey()))
+                    .append('\n');
         }
         FileUtils.writeTextFile(null, outFilename, text.toString());
     }
-
 
 }

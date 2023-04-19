@@ -16,7 +16,13 @@
 
 package org.cryptool.ota;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Key {
     private final Map<String, String> key = new TreeMap<>();
@@ -24,7 +30,6 @@ public class Key {
     private String keyFilename = null;
     private boolean changed = false;
     private boolean available = false;
-
 
     String getKeyFilename() {
         return keyFilename;
@@ -108,26 +113,25 @@ public class Key {
 
     public void parse(String legend, StringBuilder keyS) {
 
-        String startsString =
-                "#KEY\n" +
-                        "#CATALOG\n" +
-                        "#IMAGE\n" +
-                        "#LANGUAGE\n" +
-                        "#TRANSCRIBER\n" +
-                        "#DATE\n" +
-                        "#TRANSCRIPTION\n" +
-                        "#STATUS\n" +
-                        "#ORIGIN\n" +
-                        "Score:\n" +
-                        "<COMMENT\n" +
-                        "#<\n" +
-                        "<NOTE";
+        String startsString = "#KEY\n" +
+                "#CATALOG\n" +
+                "#IMAGE\n" +
+                "#LANGUAGE\n" +
+                "#TRANSCRIBER\n" +
+                "#DATE\n" +
+                "#TRANSCRIPTION\n" +
+                "#STATUS\n" +
+                "#ORIGIN\n" +
+                "Score:\n" +
+                "<COMMENT\n" +
+                "#<\n" +
+                "<NOTE";
         key.clear();
 
         String[] starts = startsString.split("\n");
 
         for (String line : keyS.toString().split("[\r\n]+")) {
-            //System.out.println(line);
+            // System.out.println(line);
             if (line.isEmpty()) {
                 continue;
             }
@@ -156,9 +160,9 @@ public class Key {
                 System.out.printf("Invalid key entry -  %s:\n%s\n", legend, line);
                 System.exit(1);
             }
-            //System.out.println(homophones.length);
+            // System.out.println(homophones.length);
             for (String h : homophones) {
-                //System.out.printf("%-10s => %s\n", h, plain);
+                // System.out.printf("%-10s => %s\n", h, plain);
                 key.put(h, plain);
             }
         }
@@ -181,7 +185,7 @@ public class Key {
         changed = true;
     }
 
-    boolean changed(){
+    boolean changed() {
         return changed;
     }
 
@@ -194,7 +198,6 @@ public class Key {
         StringBuilder f = toStringBuilder();
 
         FileUtils.writeTextFile(null, keyFilename, f.toString());
-
 
         changed = false;
     }
@@ -251,7 +254,8 @@ public class Key {
         for (String c : sorted) {
             f.append(c).append(" - ").append(nomenclature.get(c)).append("\n");
         }
-        System.out.printf("Saved %s - %d homophones %d plaintext elements\n", keyFilename, key.size(), homophones.size());
+        System.out.printf("Saved %s - %d homophones %d plaintext elements\n", keyFilename, key.size(),
+                homophones.size());
         return f;
     }
 
@@ -278,6 +282,7 @@ public class Key {
         }
         return false;
     }
+
     public boolean lockedOtherP(String c) {
         if (lockedC(c)) {
             return false;
@@ -290,7 +295,7 @@ public class Key {
 
         char first = p.charAt(0);
 
-        boolean reservedP = p.startsWith("_")  || p.startsWith("[");
+        boolean reservedP = p.startsWith("_") || p.startsWith("[");
 
         if (reservedP || (p.length() > 1 && first >= 'A' && first <= 'Z')) {
             return true;
@@ -309,6 +314,7 @@ public class Key {
         return p.equals("[-]");
 
     }
+
     public boolean isRepeat(String c) {
 
         String p = fromTranscription(c);

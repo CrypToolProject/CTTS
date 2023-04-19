@@ -21,8 +21,9 @@ import java.util.TreeMap;
 
 class Token {
 
-
-    enum Type {HOMOPHONE, OTHER, NEW_LINE}
+    enum Type {
+        HOMOPHONE, OTHER, NEW_LINE
+    }
 
     String c;
     String p;
@@ -67,10 +68,10 @@ class Token {
         }
     }
 
-
     @Override
     public String toString() {
-        return "" + type + " " + c + " " + ((p == null || p.isEmpty()) ? "" : p) + " " + ((cIndex != -1) ? ("" + cIndex) : "");
+        return "" + type + " " + c + " " + ((p == null || p.isEmpty()) ? "" : p) + " "
+                + ((cIndex != -1) ? ("" + cIndex) : "");
     }
 
     static TreeMap<String, Integer> tokenPlaintextCounts(ArrayList<Token> tokens) {
@@ -83,6 +84,5 @@ class Token {
 
         return counts;
     }
-
 
 }

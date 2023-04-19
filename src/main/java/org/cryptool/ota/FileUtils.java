@@ -16,20 +16,31 @@
 
 package org.cryptool.ota;
 
+import java.awt.image.RenderedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.imageio.ImageIO;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.Pane;
-
-import javax.imageio.ImageIO;
-import java.awt.image.RenderedImage;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 public class FileUtils {
 
@@ -48,7 +59,7 @@ public class FileUtils {
         }
     }
 
-    public static Image readImage(String dirName, String filename, boolean silent){
+    public static Image readImage(String dirName, String filename, boolean silent) {
 
         File file = fileToRead(dirName, filename, silent);
         if (file == null) {
@@ -86,7 +97,7 @@ public class FileUtils {
             if (fis.read(data) != -1) {
                 fis.close();
 
-                //System.out.println(file.getName());
+                // System.out.println(file.getName());
                 String s8 = new String(data, StandardCharsets.UTF_8);
                 String s1 = new String(data, StandardCharsets.ISO_8859_1);
 
@@ -99,12 +110,12 @@ public class FileUtils {
                     c8[c + 128]++;
                 }
 
-//                for (int i = 0; i < 256; i++) {
-//                    if (c1[i] != c8[i]) {
-//                        System.out.printf("%d %d %d\n", i - 128, c1[i], c8[i]);
-//                    }
-//                }
-                if (c1[128-125] + c1[128-62] > 0) {
+                // for (int i = 0; i < 256; i++) {
+                // if (c1[i] != c8[i]) {
+                // System.out.printf("%d %d %d\n", i - 128, c1[i], c8[i]);
+                // }
+                // }
+                if (c1[128 - 125] + c1[128 - 62] > 0) {
                     return s8;
                 }
                 return s1;
@@ -139,7 +150,7 @@ public class FileUtils {
         }
     }
 
-    public static boolean deleteFile(String dirName, String filename){
+    public static boolean deleteFile(String dirName, String filename) {
 
         File file = fileToRead(dirName, filename, false);
         if (file == null) {
@@ -154,14 +165,12 @@ public class FileUtils {
             return false;
         }
 
-
     }
 
     public static void snapshot(String dirName, String imageFileName, Pane node) {
 
         final int width = (int) node.getWidth() + 20;
         final int height = (int) node.getHeight() + 20;
-
 
         final int maxHeight = 5000;
         final int margin = 500;
@@ -182,7 +191,7 @@ public class FileUtils {
             }
         } else {
             for (int y = 0; y < height; y += maxHeight) {
-                final String filename = imageFileName.replaceAll("\\..*", "") + "_" + y/maxHeight + ".png";
+                final String filename = imageFileName.replaceAll("\\..*", "") + "_" + y / maxHeight + ".png";
                 File file = fileToWrite(dirName, filename, false);
                 if (file == null) {
                     return;
@@ -207,7 +216,6 @@ public class FileUtils {
         return filepath.startsWith("/") || filepath.startsWith("\\") || filepath.matches("[A-Z]:[/\\\\].*");
     }
 
-
     public static File fileToRead(String dirName, String filename, boolean silent) {
         if (filename == null) {
             return null;
@@ -219,7 +227,7 @@ public class FileUtils {
             return new File(workingDirectory, filename);
         }
         File directory = new File(workingDirectory, dirName);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             if (!silent) {
                 System.out.printf("Directory does not exist: %s\n", dirName);
             }
@@ -241,7 +249,7 @@ public class FileUtils {
             return new File(workingDirectory, filename);
         }
         File directory = new File(workingDirectory, dirName);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             if (!directory.mkdir()) {
                 if (!silent) {
                     System.out.printf("Failed to create directory %s\n", dirName);
@@ -251,7 +259,6 @@ public class FileUtils {
         }
         return new File(directory, filename);
     }
-
 
     public static String keyFileInCurrentDirectory() {
         File dir = new File(workingDirectory);
@@ -277,7 +284,8 @@ public class FileUtils {
 
     static String currentDirectoryString() {
 
-        Set<String> collections = new TreeSet<String>(List.of(new String[]{"BNF", "BNE", "TNA", "KHA", "YALE", "ASV", "ARA", "OSH", "NAH", "NLS"}));
+        Set<String> collections = new TreeSet<String>(
+                List.of(new String[] { "BNF", "BNE", "TNA", "KHA", "YALE", "ASV", "ARA", "OSH", "NAH", "NLS" }));
 
         File f = new File(workingDirectory);
         String fs = f.getAbsolutePath();

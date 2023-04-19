@@ -16,13 +16,19 @@
 
 package org.cryptool.ota;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
@@ -30,10 +36,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.File;
-import java.util.*;
-
-enum Mode {IMAGE, CLUSTER}
+enum Mode {
+    IMAGE, CLUSTER
+}
 
 public class Main extends Application {
     public static final String COLORS_FILE = "colors";
@@ -56,6 +61,7 @@ public class Main extends Application {
         Main.args = args;
         launch(args);
     }
+
     public void start(final Stage stage) {
 
         if (args.length == 0) {
@@ -86,7 +92,6 @@ public class Main extends Application {
                             throw new RuntimeException("Unrecognized response: " + res);
                         }
                     }
-
 
                 } else {
                     break;
@@ -120,7 +125,7 @@ public class Main extends Application {
                     System.exit(1);
                 }
                 key = Key.readFromFile(arg);
-            } else if (!ImageUtils.isSupportedFormat(arg)){
+            } else if (!ImageUtils.isSupportedFormat(arg)) {
                 System.out.println("Unsupported image type: " + arg);
                 System.exit(1);
             }
@@ -177,7 +182,7 @@ public class Main extends Application {
         stage.setResizable(true);
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
 
-            if (colors.changed() || key.changed() || TranscribedImage.change()|| EditedRecord.changed) {
+            if (colors.changed() || key.changed() || TranscribedImage.change() || EditedRecord.changed) {
 
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
@@ -204,10 +209,9 @@ public class Main extends Application {
 
         showImage(0, TranscribedImage.first(0), true);
 
-
     }
 
-    static void unselectRectangle(){
+    static void unselectRectangle() {
 
         String previousId = Selection.clear();
         if (previousId != null && mode == Mode.IMAGE && detailed) {
@@ -217,6 +221,7 @@ public class Main extends Application {
 
         selectionArea.unselectRectangle();
     }
+
     static void unselect() {
         if (selectionArea != null) {
             selectionArea.unselectColor();
@@ -236,11 +241,13 @@ public class Main extends Application {
         }
         selectionArea.refresh();
     }
-    static void symbolSelectedFromImagePane(Rectangle node){
+
+    static void symbolSelectedFromImagePane(Rectangle node) {
         selectRectangle(TranscribedImage.currentImageIndex, node, true);
         listView.updateListView(false);
         Headers.updateHeadersAndBottom();
     }
+
     static void symbolChangedColor(Rectangle draggedR, Color draggedColor) {
         if (mode == Mode.CLUSTER) {
             unselectRectangle();
@@ -255,6 +262,7 @@ public class Main extends Application {
         listView.updateListView(true);
         FullKeyWindow.scrollPane.refresh();
     }
+
     static void colorSelected(String colorString) {
         Color color = Color.valueOf(colorString);
         if (color != null) {
@@ -264,7 +272,9 @@ public class Main extends Application {
             unselect();
         }
     }
-    static void colorParametersChanged(Color selectedColor, boolean transcriptionValueChanged, boolean iconChanged, boolean decryptionValueChanged) {
+
+    static void colorParametersChanged(Color selectedColor, boolean transcriptionValueChanged, boolean iconChanged,
+            boolean decryptionValueChanged) {
         fullKeyWindow.refresh();
         if (transcriptionValueChanged) {
             listView.reset();
@@ -278,6 +288,7 @@ public class Main extends Application {
             selectionArea.colorIconChanged();
         }
     }
+
     static void symbolClickedFromSelectionArea(String clickedId, int idx, Rectangle nr) {
 
         saveZoomAndScrollState();
@@ -293,9 +304,11 @@ public class Main extends Application {
             Selection.toggleSelection(clickedId);
         }
     }
+
     static void symbolResizedFromImagePane(Rectangle r) {
         selectRectangle(TranscribedImage.currentImageIndex, r, true);
     }
+
     static void keyPressed(javafx.scene.input.KeyEvent event) {
 
         saveZoomAndScrollState();
@@ -327,11 +340,11 @@ public class Main extends Application {
                     fullKeyWindow.refresh();
                 }
 
-
                 break;
             case F2:
                 if (mode != Mode.CLUSTER) {
-                    showImage((TranscribedImage.currentImageIndex - 1 + TranscribedImage.size()) % TranscribedImage.size(), null, false);
+                    showImage((TranscribedImage.currentImageIndex - 1 + TranscribedImage.size())
+                            % TranscribedImage.size(), null, false);
                 } else {
                     colors.sortByDecryption();
                     listView.reset();
@@ -339,8 +352,10 @@ public class Main extends Application {
                 }
                 break;
             case F3:
-                if (mode != Mode.CLUSTER && selected != null && !detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
-                    Rectangle previous = TranscribedImage.previousPosition(TranscribedImage.currentImageIndex, selected);
+                if (mode != Mode.CLUSTER && selected != null && !detailed
+                        && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
+                    Rectangle previous = TranscribedImage.previousPosition(TranscribedImage.currentImageIndex,
+                            selected);
                     if (previous != null) {
                         selectRectangle(TranscribedImage.currentImageIndex, previous, true);
                     }
@@ -357,7 +372,8 @@ public class Main extends Application {
                 break;
 
             case F4:
-                if (mode != Mode.CLUSTER && selected != null && !detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
+                if (mode != Mode.CLUSTER && selected != null && !detailed
+                        && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
                     Rectangle next = TranscribedImage.nextPosition(TranscribedImage.currentImageIndex, selected);
                     if (next != null) {
                         selectRectangle(TranscribedImage.currentImageIndex, next, true);
@@ -369,7 +385,6 @@ public class Main extends Application {
                 }
 
                 break;
-
 
             case F6:
                 MainImagePane.zoomOut();
@@ -387,10 +402,13 @@ public class Main extends Application {
                     }
                     if (event.isControlDown()) {
                         if (key.isKeyAvailable()) {
-                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, true, false);
-                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true, false);
+                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, true,
+                                    false);
+                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true,
+                                    false);
                             SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, true, true);
-                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true, true);
+                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true,
+                                    true);
                             SimulatedImagePartialDecryption.simulatedImageSnapshot(TranscribedImage.currentImageIndex);
                         }
                         SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, false, false);
@@ -433,7 +451,6 @@ public class Main extends Application {
 
                 alert.initOwner(myStage.getOwner());
                 Optional<ButtonType> res = alert.showAndWait();
-
 
                 break;
             case F11:
@@ -478,7 +495,6 @@ public class Main extends Application {
 
         event.consume();
 
-
     }
 
     private static void switchMode(Mode newMode, boolean newDetailed) {
@@ -494,7 +510,6 @@ public class Main extends Application {
 
         detailed = newDetailed;
         mode = newMode;
-
 
         if (mode == Mode.CLUSTER) {
             MainImagePane.scrollPane.setVisible(false);
@@ -528,6 +543,7 @@ public class Main extends Application {
 
         Headers.updateHeadersAndBottom();
     }
+
     private static void saveZoomAndScrollState() {
         if (mode == Mode.IMAGE) {
             if (detailed) {
@@ -537,6 +553,7 @@ public class Main extends Application {
             }
         }
     }
+
     private static void showImage(int newIndex, Rectangle newSelection, boolean updateColor) {
 
         TranscribedImage.currentImageIndex = newIndex;
@@ -554,8 +571,8 @@ public class Main extends Application {
             unselect();
         }
 
-
     }
+
     private static void selectRectangle(int idx, Rectangle newSelected, boolean selectColor) {
 
         String previousId = Selection.clear();
@@ -583,6 +600,7 @@ public class Main extends Application {
         }
 
     }
+
     private static void selectColor(Color color) {
 
         selectionArea.selectColor(color, false);
@@ -596,7 +614,6 @@ public class Main extends Application {
 
     private static void saveAll(boolean detailedSnapshots) {
 
-
         EditedRecord.save();
 
         TranscribedImage.saveTranscriptionsDecryptionsPositions();
@@ -605,7 +622,6 @@ public class Main extends Application {
         key.saveKey();
         SymbolsSnapshot.keySnapshot();
         KeySnapshot.keySnapshot();
-
 
         if (!detailedSnapshots) {
             return;
@@ -617,7 +633,6 @@ public class Main extends Application {
             switchMode(Mode.IMAGE, false);
         }
 
-
         switchMode(Mode.CLUSTER, false);
         for (int i = 0; i < TranscribedImage.size(); i++) {
             MainImagePane.saveZoomAndScrollState();
@@ -626,13 +641,10 @@ public class Main extends Application {
             DetailedTranscriptionSnapshot.detailedTranscriptionSnapshot(i);
         }
 
-
         if (mode != keepMode) {
             switchMode(keepMode, keepDetailed);
         }
 
-
     }
 
-    
 }

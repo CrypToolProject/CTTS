@@ -16,6 +16,9 @@
 
 package org.cryptool.ota;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -33,16 +36,20 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-
-import java.io.File;
-import java.util.ArrayList;
 
 public class SelectionArea extends HBox {
 
@@ -127,7 +134,6 @@ public class SelectionArea extends HBox {
         iconImageView.setPreserveRatio(true);
         iconImageView.setSmooth(true);
 
-
         leftPane.getChildren().add(transcriptionTextField);
         transcriptionTextField.setLayoutX(Utils.adjust(10));
         transcriptionTextField.setLayoutY(Utils.adjust(10));
@@ -163,9 +169,8 @@ public class SelectionArea extends HBox {
             if (selectedColor != null) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("Png Files", "*.png")
-                        ,new FileChooser.ExtensionFilter("Jpeg Files", "*.jpg")
-                );
+                        new FileChooser.ExtensionFilter("Png Files", "*.png"),
+                        new FileChooser.ExtensionFilter("Jpeg Files", "*.jpg"));
                 fileChooser.setInitialDirectory(new File(Icons.ICONS_DIR_NAME));
                 File selectedFile = fileChooser.showOpenDialog(Main.myStage);
                 if (selectedFile == null) {
@@ -211,7 +216,6 @@ public class SelectionArea extends HBox {
         saveIconButton.setLayoutX(Utils.adjust(415));
         saveIconButton.setLayoutY(Utils.adjust(270));
 
-
         rightTilePane.setPadding(new Insets(5, 5, 5, 5));
         rightTilePane.setVgap(4);
         rightTilePane.setHgap(4);
@@ -223,8 +227,8 @@ public class SelectionArea extends HBox {
         rightScrollPane.setContent(new HBox(rightTilePane));
         rightScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         rightScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-//        rightScrollPane.setMaxHeight(Utils.adjust(400));
-//        rightScrollPane.setMinHeight(Utils.adjust(400));
+        // rightScrollPane.setMaxHeight(Utils.adjust(400));
+        // rightScrollPane.setMinHeight(Utils.adjust(400));
         rightScrollPane.setMaxWidth(Utils.adjust(1467));
         rightScrollPane.setMinWidth(Utils.adjust(1467));
 
@@ -296,20 +300,20 @@ public class SelectionArea extends HBox {
         }
 
         if (newState) {
-           if (!Main.key.lockedC(c) && !Main.key.lockedP(c)) {
-               if (c.isEmpty()) {
-                   Main.colors.put(selectedColor.toString(), "_");
-                   transcriptionChanged = true;
-                   Main.key.put("_", "_");
-               } else {
-                   if (p.length() >= 1 && p.charAt(0) >= 'a' && p.charAt(0) <= 'z') {
-                       p = p.substring(0, 1).toUpperCase() + p.substring(1);
-                   } else {
-                       p = "_" + p;
-                   }
-                   Main.key.put(c, p);
-               }
-           }
+            if (!Main.key.lockedC(c) && !Main.key.lockedP(c)) {
+                if (c.isEmpty()) {
+                    Main.colors.put(selectedColor.toString(), "_");
+                    transcriptionChanged = true;
+                    Main.key.put("_", "_");
+                } else {
+                    if (p.length() >= 1 && p.charAt(0) >= 'a' && p.charAt(0) <= 'z') {
+                        p = p.substring(0, 1).toUpperCase() + p.substring(1);
+                    } else {
+                        p = "_" + p;
+                    }
+                    Main.key.put(c, p);
+                }
+            }
         } else {
             if (Main.key.lockedC(c) && Main.key.lockedP(c)) {
                 Main.key.remove(c);
@@ -389,16 +393,16 @@ public class SelectionArea extends HBox {
     public void unselectRectangle() {
         hideZoomedImage();
         updateIconButtonsVisibility();
-        if (selectedColor != null ) {
+        if (selectedColor != null) {
             displayIcons(false);
         }
     }
-
 
     public void selectRectangle(int idx, Rectangle newSelected) {
         showZoomedImage(TranscribedImage.transcribedImages[idx].image, newSelected, true);
         updateIconButtonsVisibility();
     }
+
     public void hideZoomedImage() {
         selectedImageView.setVisible(false);
         selectedImageView.setId("");
@@ -407,17 +411,17 @@ public class SelectionArea extends HBox {
     public void showZoomedImage(Image image, Rectangle r, boolean setId) {
         selectedImageView.setVisible(true);
 
-        //selectedImageView.setImage(image);
+        // selectedImageView.setImage(image);
         double maxDim = Math.max(r.getWidth(), r.getHeight()) + 50;
         double addX = maxDim - r.getWidth();
         double addY = maxDim - r.getHeight();
         double w = r.getWidth() + addX;
         double h = r.getHeight() + addY;
 
-        if (w/h > ZOOM_WIDTH/ ZOOM_HEIGHT) {
+        if (w / h > ZOOM_WIDTH / ZOOM_HEIGHT) {
             h = w * ZOOM_HEIGHT / ZOOM_WIDTH;
             addY = h - r.getHeight();
-        } else if (w/h < ZOOM_WIDTH/ ZOOM_HEIGHT) {
+        } else if (w / h < ZOOM_WIDTH / ZOOM_HEIGHT) {
             w = h * ZOOM_WIDTH / ZOOM_HEIGHT;
             addX = w - r.getWidth();
         }
@@ -428,14 +432,15 @@ public class SelectionArea extends HBox {
         Rectangle2D viewportRect = new Rectangle2D(x, y, w, h);
         selectedImageView.setViewport(viewportRect);
 
-        selectedImageView.setImage(ImageUtils.negativeAround((int)x, (int)y, (int) (w), (int) (h), (int) addX / 2, (int) addY / 2, image));
+        selectedImageView.setImage(ImageUtils.negativeAround((int) x, (int) y, (int) (w), (int) (h), (int) addX / 2,
+                (int) addY / 2, image));
 
         if (setId) {
             selectedImageView.setId(TranscribedImage.rectangleToId(TranscribedImage.rectangleToIndex(r), r));
         }
     }
 
-    public void refresh(){
+    public void refresh() {
         if (selectedColor != null) {
             selectColor(selectedColor, true);
         }
@@ -504,7 +509,7 @@ public class SelectionArea extends HBox {
 
     void displayIcons(boolean updateScrollBar) {
 
-        //System.out.println(updateScrollBar);
+        // System.out.println(updateScrollBar);
 
         rightTilePane.getChildren().clear();
 
@@ -542,7 +547,6 @@ public class SelectionArea extends HBox {
                                     hBox.getChildren().add(iv);
                                 }
 
-
                                 if (Selection.size() == 1) {
                                     content.putString(firstId);
                                 } else {
@@ -557,15 +561,15 @@ public class SelectionArea extends HBox {
                             event.consume();
                         });
                         imageView.setOnMouseClicked(mouseEvent -> {
-                            //Utils.start();
+                            // Utils.start();
 
                             final Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
                             String clickedId = intersectedNode.getId();
                             int idx = TranscribedImage.idToIndex(clickedId);
-                            //Utils.stop("idToIndex");
+                            // Utils.stop("idToIndex");
 
                             Rectangle nr = TranscribedImage.idToRectangle(clickedId);
-                            //Utils.stop("idToRectangle");
+                            // Utils.stop("idToRectangle");
                             if (idx == -1 && nr == null) {
                                 System.out.printf("Undefined id: %s\n", clickedId);
                             }
@@ -577,14 +581,13 @@ public class SelectionArea extends HBox {
                             } else {
                                 iv2.setImage(TranscribedImage.image(idx).image);
                             }
-                            //Utils.stop("clickedId");
+                            // Utils.stop("clickedId");
 
                             selectRectangle(idx, nr);
-                            //Utils.stop("Select rectangle");
+                            // Utils.stop("Select rectangle");
 
                             Main.symbolClickedFromSelectionArea(clickedId, idx, nr);
-                            //Utils.stop("symbolClickedFromSelectionArea");
-
+                            // Utils.stop("symbolClickedFromSelectionArea");
 
                         });
                     }
@@ -600,14 +603,12 @@ public class SelectionArea extends HBox {
                     new KeyFrame(Duration.millis(300),
                             event -> {
                                 if (_selectedImageView != null) {
-                                    Utils.adjustVerticalScrollBar(rightScrollPane, _selectedImageView, 1.0, 10.0 / _count);
+                                    Utils.adjustVerticalScrollBar(rightScrollPane, _selectedImageView, 1.0,
+                                            10.0 / _count);
                                 }
-                            }
-                    ));
+                            }));
             tl.setCycleCount(3);
             tl.play();
-
-
 
         }
 
@@ -649,9 +650,7 @@ public class SelectionArea extends HBox {
         imageView.setVisible(true);
         imageView.setId(id);
 
-
         updateImageView(id, index, r, imageView);
-
 
         return imageView;
     }
@@ -666,6 +665,5 @@ public class SelectionArea extends HBox {
         Rectangle2D viewport = new Rectangle2D(r.getLayoutX(), r.getLayoutY(), r.getWidth(), r.getHeight());
         imageView.setViewport(viewport);
     }
-
 
 }

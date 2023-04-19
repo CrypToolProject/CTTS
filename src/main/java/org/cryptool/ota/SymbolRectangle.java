@@ -16,12 +16,12 @@
 
 package org.cryptool.ota;
 
-
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class SymbolRectangle extends Rectangle {
-    SymbolRectangle(double layoutX, double layoutY, double width, double height, Color color, double opacity, boolean visible){
+    SymbolRectangle(double layoutX, double layoutY, double width, double height, Color color, double opacity,
+            boolean visible) {
         super(width, height);
         setLayoutX(layoutX);
         setLayoutY(layoutY);

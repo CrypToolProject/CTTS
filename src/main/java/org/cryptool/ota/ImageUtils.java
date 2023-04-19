@@ -37,7 +37,7 @@ public class ImageUtils {
         if (isSupportedFormat(f)) {
             return f.substring(0, f.length() - 4);
         }
-        for (String format : new String[] {".jpg", ".png", ".bmp"}) {
+        for (String format : new String[] { ".jpg", ".png", ".bmp" }) {
             if (f.contains(format)) {
                 int pos = f.lastIndexOf(format);
                 return f.substring(0, pos) + f.substring(pos + 4);
@@ -45,11 +45,12 @@ public class ImageUtils {
         }
         return f;
     }
+
     public static String replaceImageFormat(String f, String s) {
         if (isSupportedFormat(f)) {
             return f.substring(0, f.length() - 4) + s;
         }
-        for (String format : new String[] {".jpg", ".png", ".bmp"}) {
+        for (String format : new String[] { ".jpg", ".png", ".bmp" }) {
             if (f.contains(format)) {
                 int pos = f.lastIndexOf(format);
                 return f.substring(0, pos) + s + f.substring(pos + 4);
@@ -70,18 +71,20 @@ public class ImageUtils {
         }
         return image;
     }
+
     public static boolean hasTransparency(Image imageIn) {
         PixelReader reader = imageIn.getPixelReader();
         for (int x = 0; x < imageIn.getWidth(); x++) {
             for (int y = 0; y < imageIn.getHeight(); y++) {
                 Color color = reader.getColor(x, y);
                 if (color.equals(Color.TRANSPARENT)) {
-                   return true;
+                    return true;
                 }
             }
         }
         return false;
     }
+
     public static WritableImage removeTransparentMargins(WritableImage imageIn) {
 
         int leftMargin = 0;
@@ -151,7 +154,6 @@ public class ImageUtils {
             }
         }
 
-
         if (topMargin + rightMargin + leftMargin + bottomMargin == 0) {
             return imageIn;
         }
@@ -179,7 +181,8 @@ public class ImageUtils {
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 Color col = reader.getColor(i, j);
-                double grayscale = 0.6 * Math.sqrt(Math.pow((i - centerX)/image.getWidth(), 2) + Math.pow((j - centerY)/image.getHeight(), 2));
+                double grayscale = 0.6 * Math.sqrt(
+                        Math.pow((i - centerX) / image.getWidth(), 2) + Math.pow((j - centerY) / image.getHeight(), 2));
                 boolean transparent = col.equals(Color.TRANSPARENT);
                 if (!transparent && r.nextFloat() < 0.05) {
                     transparent = true;
@@ -192,11 +195,10 @@ public class ImageUtils {
             }
         }
 
-
         return image;
 
-
     }
+
     public static WritableImage blackAndWhite(Image imageIn) {
 
         final double MAX_GRAY_SCALE = 0.60;
@@ -224,15 +226,14 @@ public class ImageUtils {
             }
         }
 
-
-        //Instantiating the GaussianBlur class
+        // Instantiating the GaussianBlur class
         GaussianBlur gaussianBlur = new GaussianBlur();
 
-        //Setting the radius to apply the Gaussian Blur effect
+        // Setting the radius to apply the Gaussian Blur effect
         gaussianBlur.setRadius(BLUR_RADIUS);
         ImageView iv = new ImageView(imageIn);
         iv.setEffect(gaussianBlur);
-        image =  iv.snapshot(new SnapshotParameters(), null);
+        image = iv.snapshot(new SnapshotParameters(), null);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setContrast(CONTRAST);
         iv.setEffect(colorAdjust);
@@ -255,11 +256,9 @@ public class ImageUtils {
         }
         return image2;
 
-
     }
 
     public static WritableImage negativeAround(int x, int y, int w, int h, int marginX, int marginY, Image imageIn) {
-
 
         WritableImage image = new WritableImage((int) imageIn.getWidth(), (int) imageIn.getHeight());
 
@@ -283,16 +282,17 @@ public class ImageUtils {
         gaussianBlur.setRadius(blurRadius);
         ImageView iv = new ImageView(image2);
         iv.setEffect(gaussianBlur);
-        WritableImage image =  iv.snapshot(new SnapshotParameters(), null);
-        return removeMargin(image, (int) blurRadius /2 );
+        WritableImage image = iv.snapshot(new SnapshotParameters(), null);
+        return removeMargin(image, (int) blurRadius / 2);
     }
+
     static WritableImage motionBlur(Image image2, double blurRadius) {
         MotionBlur motionBlur = new MotionBlur();
         motionBlur.setRadius(blurRadius);
         ImageView iv = new ImageView(image2);
         iv.setEffect(motionBlur);
-        WritableImage image =  iv.snapshot(new SnapshotParameters(), null);
-        return removeMargin(image, (int) blurRadius /2 );
+        WritableImage image = iv.snapshot(new SnapshotParameters(), null);
+        return removeMargin(image, (int) blurRadius / 2);
     }
 
     static WritableImage contrast(Image imageIn, double contrast) {
@@ -311,10 +311,10 @@ public class ImageUtils {
         WritableImage image2 = new WritableImage(width, height);
         PixelWriter writer2 = image2.getPixelWriter();
         for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height ; j++) {
+            for (int j = 0; j < height; j++) {
                 Color col = reader.getColor(i, j);
                 double grayscale = col.getRed() * 0.3 + col.getGreen() * 0.59 + col.getBlue() * 0.11;
-                if (grayscale >  1 - maxGrayScale) {
+                if (grayscale > 1 - maxGrayScale) {
                     col = Color.TRANSPARENT;
                 } else {
                     col = Color.BLACK;
@@ -325,7 +325,7 @@ public class ImageUtils {
         return image2;
     }
 
-    private static WritableImage removeMargin(Image image, int margin){
+    private static WritableImage removeMargin(Image image, int margin) {
         PixelReader reader2 = image.getPixelReader();
         final int width = (int) image.getWidth();
         final int height = (int) image.getHeight();

@@ -16,6 +16,12 @@
 
 package org.cryptool.ota;
 
+import static org.cryptool.ota.DetailedTranscriptionPane.ICON_SIZE;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -24,7 +30,19 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.PerspectiveTransform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -33,17 +51,11 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
 
-import static org.cryptool.ota.DetailedTranscriptionPane.ICON_SIZE;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-
 public class SimulatedImage extends Popup {
 
     Pane mainPane;
     int index;
+
     private SimulatedImage(int index, boolean effects, boolean decryption, boolean edited) {
         this.index = index;
         setX(50);
@@ -62,7 +74,8 @@ public class SimulatedImage extends Popup {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setMaxSize(2000, 1000);
 
-        final Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background globalBackground = new Background(
+                new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
         mainPane.setBackground(globalBackground);
 
         if (effects) {
@@ -82,8 +95,6 @@ public class SimulatedImage extends Popup {
         mainPane.getChildren().add(lines);
         getContent().addAll(scrollPane);
 
-
-
     }
 
     public static void simulatedImageSnapshot(int i, boolean effects, boolean decryption, boolean edited) {
@@ -92,13 +103,15 @@ public class SimulatedImage extends Popup {
         p.snapshot(effects, decryption, edited);
         p.hide();
     }
+
     public static class SymbolStackPane extends StackPane {
         ImageView icon = new ImageView();
         Text pText = new Text();
 
-        SymbolStackPane(boolean decryption, Key key){
+        SymbolStackPane(boolean decryption, Key key) {
 
-            final Background globalBackground = new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
+            final Background globalBackground = new Background(
+                    new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
 
             icon.setFitHeight(Utils.adjust(ICON_SIZE));
             icon.setPreserveRatio(true);
@@ -118,9 +131,7 @@ public class SimulatedImage extends Popup {
             region2.setMinHeight(Utils.adjust(18));
             VBox.setVgrow(region2, Priority.ALWAYS);
 
-
             Pane iPane = new Pane(icon);
-
 
             VBox vBox = new VBox();
 
@@ -131,7 +142,6 @@ public class SimulatedImage extends Popup {
                 vBox.getChildren().add(psp);
             }
 
-
             StackPane.setAlignment(icon, Pos.CENTER);
             StackPane.setAlignment(pText, Pos.CENTER);
 
@@ -139,12 +149,15 @@ public class SimulatedImage extends Popup {
             HBox.setMargin(this, new Insets(Utils.adjust(0), Utils.adjust(5), Utils.adjust(0), Utils.adjust(5)));
 
         }
+
         void update(Key key, List<String> decryptionSequence, int i, Rectangle r, boolean effects) {
-            final Font pFont = Font.font("Verdana", FontWeight.BOLD,  Utils.adjust(24));
-            final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD,  Utils.adjust(16));
+            final Font pFont = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(24));
+            final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(16));
             pText.setFill(Color.RED);
 
-            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i) ? decryptionSequence.get(i) : "";
+            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i)
+                    ? decryptionSequence.get(i)
+                    : "";
 
             Color color = (Color) r.getFill();
 
@@ -193,10 +206,10 @@ public class SimulatedImage extends Popup {
                 pText.setFont(pFont);
             }
 
-
         }
 
     }
+
     private static VBox drawLines(int index, boolean effects, boolean decryption, boolean edited) {
         VBox lines = new VBox();
         if (!edited) {
@@ -210,11 +223,12 @@ public class SimulatedImage extends Popup {
             }
 
             int size = 50;
-            for (int z = 0; z < (allSymbols.size() + size - 1)/size; z++) {
-                HBox line = symbolDisplayLine(Main.key, allSymbols.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)),
-                        allDecryption.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)), effects, decryption);
+            for (int z = 0; z < (allSymbols.size() + size - 1) / size; z++) {
+                HBox line = symbolDisplayLine(Main.key,
+                        allSymbols.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)),
+                        allDecryption.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)), effects,
+                        decryption);
                 lines.getChildren().add(line);
-
 
             }
         } else {
@@ -241,7 +255,9 @@ public class SimulatedImage extends Popup {
         }
         return lines;
     }
-    private static HBox symbolDisplayLine(Key key, List<Rectangle> lineOfSymbols, List<String> decryptionSequence, boolean effects, boolean decryption) {
+
+    private static HBox symbolDisplayLine(Key key, List<Rectangle> lineOfSymbols, List<String> decryptionSequence,
+            boolean effects, boolean decryption) {
         HBox line = new HBox();
         line.setSpacing(0);
         for (int i = 0; i < lineOfSymbols.size(); i++) {
@@ -252,12 +268,12 @@ public class SimulatedImage extends Popup {
         }
         return line;
     }
+
     private void snapshot(boolean effects, boolean decryption, boolean edited) {
-        int format = 1 + (edited ? 0 : 4) +(effects ? 0 : 2) + (decryption ? 0 : 1);
-        FileUtils.snapshot("simulation", TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", "_format" + format), mainPane);
+        int format = 1 + (edited ? 0 : 4) + (effects ? 0 : 2) + (decryption ? 0 : 1);
+        FileUtils.snapshot("simulation",
+                TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", "_format" + format), mainPane);
 
     }
-
-
 
 }

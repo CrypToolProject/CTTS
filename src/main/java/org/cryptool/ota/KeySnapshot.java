@@ -36,11 +36,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
 public class KeySnapshot extends Popup {
     private final static String RAW_PLAINTEXT_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÃÅΆĄÂªªÇČÐĎΛĚÊÈÉĘËĮÎÌÍÏŁŇŃÑØÒÓÔŐÕΘº°ǪΦÞŘŔŠ§ŤÚŰÙÛŮ×ÝŻŽŹ";
 
-    private final static String RAW_PLAINTEXT_LETTERS_LOWER = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÃÅΆĄÂªªÇČÐĎΛĚÊÈÉĘËĮÎÌÍÏŁŇŃÑØÒÓÔŐÕΘº°ǪΦÞŘŔŠ§ŤÚŰÙÛŮ×ÝŻŽŹ".toLowerCase();
+    private final static String RAW_PLAINTEXT_LETTERS_LOWER = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÃÅΆĄÂªªÇČÐĎΛĚÊÈÉĘËĮÎÌÍÏŁŇŃÑØÒÓÔŐÕΘº°ǪΦÞŘŔŠ§ŤÚŰÙÛŮ×ÝŻŽŹ"
+            .toLowerCase();
 
     private Pane mainPane;
 
@@ -60,7 +60,8 @@ public class KeySnapshot extends Popup {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setMaxSize(2100, 1200);
 
-        final Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background globalBackground = new Background(
+                new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
         mainPane.setBackground(globalBackground);
         canvas.setWidth(100);
         canvas.setHeight(100);
@@ -73,7 +74,8 @@ public class KeySnapshot extends Popup {
         }
         Set<String> doubles = new TreeSet<>();
         for (String v : Main.key.values()) {
-            if (v.length() == 2 && (RAW_PLAINTEXT_LETTERS.contains(v.substring(0, 1)) || RAW_PLAINTEXT_LETTERS_LOWER.contains(v.substring(0, 1))) && v.charAt(0) == v.charAt(1)) {
+            if (v.length() == 2 && (RAW_PLAINTEXT_LETTERS.contains(v.substring(0, 1))
+                    || RAW_PLAINTEXT_LETTERS_LOWER.contains(v.substring(0, 1))) && v.charAt(0) == v.charAt(1)) {
                 doubles.add(v);
             }
         }
@@ -151,8 +153,6 @@ public class KeySnapshot extends Popup {
             all.getChildren().add(sp);
         }
 
-
-
         mainPane.getChildren().add(all);
         getContent().addAll(scrollPane);
 
@@ -161,7 +161,8 @@ public class KeySnapshot extends Popup {
     private HBox alphabet(Set<String> letters) {
         HBox lettersHBox = new HBox();
         final Font verdana = Font.font("Verdana", FontWeight.BOLD, 28);
-        final Background letterBg = new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY));
+        final Background letterBg = new Background(
+                new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY));
         for (String letter : letters) {
             boolean add = false;
             if (!lettersHBox.getChildren().isEmpty()) {
@@ -236,8 +237,7 @@ public class KeySnapshot extends Popup {
             }
         }
 
-
-        tilePane.setPrefRows((count + 3)/ 4);
+        tilePane.setPrefRows((count + 3) / 4);
 
         final Font verdana = Font.font("Verdana", FontWeight.BOLD, 12);
         for (String word : words) {
@@ -293,7 +293,6 @@ public class KeySnapshot extends Popup {
 
     private VBox specific(String value, String desc) {
 
-
         ArrayList<HBox> hBoxes = new ArrayList<>();
         HBox hBox = new HBox();
 
@@ -337,14 +336,12 @@ public class KeySnapshot extends Popup {
             }
         }
 
-
         if (!hBox.getChildren().isEmpty()) {
             hBoxes.add(hBox);
         }
         if (hBoxes.isEmpty()) {
             return null;
         }
-
 
         final Font verdana = Font.font("Verdana", FontWeight.BOLD, 12);
         Text text = new Text(desc);
@@ -360,7 +357,6 @@ public class KeySnapshot extends Popup {
         if (!Main.key.isKeyAvailable()) {
             return;
         }
-
 
         KeySnapshot k = new KeySnapshot();
         k.show(Main.myStage);

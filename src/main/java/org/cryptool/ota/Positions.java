@@ -16,11 +16,18 @@
 
 package org.cryptool.ota;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.io.*;
-import java.util.ArrayList;
 
 public class Positions implements Serializable {
     static final long serialVersionUID = 7394092863997515706L;
@@ -28,7 +35,7 @@ public class Positions implements Serializable {
     public static String SECOND_COPY = "_SECOND_COPY";
     public static final String POSITIONS = "positions";
 
-    private Positions(){
+    private Positions() {
 
     }
 
@@ -39,14 +46,16 @@ public class Positions implements Serializable {
         Positions record = new Positions();
         ArrayList<Rectangle> positions = Alignment.sortedPositions(index);
         for (Rectangle r : positions) {
-            String s = "" + r.getLayoutX() + ":" + r.getLayoutY() + ":" + r.getWidth() + ":" + r.getHeight() + ":" + r.getFill().toString();
+            String s = "" + r.getLayoutX() + ":" + r.getLayoutY() + ":" + r.getWidth() + ":" + r.getHeight() + ":"
+                    + r.getFill().toString();
             record.positions.add(s);
         }
-        //record.save(backupFilename);
+        // record.save(backupFilename);
         String textFile = ImageUtils.removeImageFormat(backupFilename) + ".txt";
 
         savePositionsTextFile(textFile, index);
     }
+
     public static ArrayList<Rectangle> restore(String backupFilename) {
         backupFilename += "_" + POSITIONS;
         String textFile = ImageUtils.removeImageFormat(backupFilename) + ".txt";
@@ -61,8 +70,8 @@ public class Positions implements Serializable {
             text = text.replaceAll(",", ".");
 
             ArrayList<Rectangle> nodes = parsePositions(text, Colors.colorSet());
-//            System.out.println(textFile);
-//            return nodes;
+            // System.out.println(textFile);
+            // return nodes;
             ArrayList<Rectangle> nodesOldColorSet = parsePositions(text, Colors.colorSetOld());
             final int assignedWithOld = positionsWithTranscriptionValues(nodesOldColorSet);
             final int assignedWithNew = positionsWithTranscriptionValues(nodes);
@@ -70,13 +79,16 @@ public class Positions implements Serializable {
             if (assignedWithNew > 0 || assignedWithOld > 0) {
                 if (assignedWithNew >= assignedWithOld) {
 
-                    System.out.printf("Read %s/%s - %,d symbols (%,d assigned)\n", dir, textFile, nodes.size(), assignedWithNew);
+                    System.out.printf("Read %s/%s - %,d symbols (%,d assigned)\n", dir, textFile, nodes.size(),
+                            assignedWithNew);
                     return nodes;
                 }
-                System.out.printf("Read %s/%s - %,d symbols (%,d assigned) using old colorset\n", dir, textFile, nodesOldColorSet.size(), assignedWithOld);
+                System.out.printf("Read %s/%s - %,d symbols (%,d assigned) using old colorset\n", dir, textFile,
+                        nodesOldColorSet.size(), assignedWithOld);
                 return nodesOldColorSet;
             } else if (nodes.size() > 0) {
-                System.out.printf("Read %s/%s - %,d symbols (%,d assigned)\n", dir, textFile, nodes.size(), assignedWithNew);
+                System.out.printf("Read %s/%s - %,d symbols (%,d assigned)\n", dir, textFile, nodes.size(),
+                        assignedWithNew);
                 return nodes;
             }
         }
@@ -91,7 +103,7 @@ public class Positions implements Serializable {
                     continue;
                 }
 
-                //System.out.println(s);
+                // System.out.println(s);
 
                 double x = Double.parseDouble(values[0]);
                 double y = Double.parseDouble(values[1]);
@@ -116,7 +128,7 @@ public class Positions implements Serializable {
         return new ArrayList<>();
     }
 
-    private static int positionsWithTranscriptionValues(ArrayList<Rectangle> positions){
+    private static int positionsWithTranscriptionValues(ArrayList<Rectangle> positions) {
         int count = 0;
         for (Rectangle r : positions) {
             String c = Main.colors.getOrDefault(r.getFill().toString(), "");
@@ -166,7 +178,8 @@ public class Positions implements Serializable {
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
         for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
             for (Rectangle r : lineOfSymbols) {
-                String line = String.format("%f %f %f %f %3d\n", r.getLayoutX(), r.getLayoutY(), r.getWidth(), r.getHeight(),
+                String line = String.format("%f %f %f %f %3d\n", r.getLayoutX(), r.getLayoutY(), r.getWidth(),
+                        r.getHeight(),
                         Main.colors.indexOf((Color) r.getFill()));
                 s.append(line);
             }
@@ -177,14 +190,10 @@ public class Positions implements Serializable {
 
     }
 
-
-
-
     private void save(String backupFilename) {
         write(backupFilename);
         write(backupFilename + SECOND_COPY);
     }
-
 
     private static Positions readTwoCopies(String backupFilename) {
         Positions state = read(backupFilename);
@@ -208,6 +217,7 @@ public class Positions implements Serializable {
             i.printStackTrace();
         }
     }
+
     private static Positions read(String backupFilename) {
         try {
             FileInputStream fileIn = new FileInputStream(backupFilename);
@@ -219,16 +229,18 @@ public class Positions implements Serializable {
 
             return state;
         } catch (InvalidClassException e) {
-            System.out.printf("Could not restore serialized state from %s - incompatible class - check serialVersionUID - currently: %d\n", backupFilename, serialVersionUID);
+            System.out.printf(
+                    "Could not restore serialized state from %s - incompatible class - check serialVersionUID - currently: %d\n",
+                    backupFilename, serialVersionUID);
             System.out.println(e);
             System.exit(0);
             return null;
         } catch (FileNotFoundException e) {
             System.out.printf("File not found: %s\n", backupFilename);
             return null;
-        }  catch (IOException | ClassNotFoundException i) {
+        } catch (IOException | ClassNotFoundException i) {
             System.out.printf("Could not restore serialized state from %s\n", backupFilename);
-            //i.printStackTrace();
+            // i.printStackTrace();
             return null;
         }
     }

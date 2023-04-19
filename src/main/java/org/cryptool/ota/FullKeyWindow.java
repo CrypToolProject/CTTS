@@ -16,15 +16,19 @@
 
 package org.cryptool.ota;
 
+import java.util.ArrayList;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
-
 
 public class FullKeyWindow extends ScrollPane {
     static FullKeyWindow scrollPane;
@@ -37,14 +41,13 @@ public class FullKeyWindow extends ScrollPane {
         final Group group = new Group(pane);
         setContent(group);
 
-
         setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         setMaxSize(Utils.adjust(2100), Utils.adjust(750));
-        setMinSize( Utils.adjust(2100), Utils.adjust(750));
+        setMinSize(Utils.adjust(2100), Utils.adjust(750));
 
-
-        final Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background globalBackground = new Background(
+                new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
         tilePane.setBackground(globalBackground);
 
         tilePane.setVgap(Utils.adjust(6.0));
@@ -53,7 +56,6 @@ public class FullKeyWindow extends ScrollPane {
         tilePane.setOrientation(Orientation.VERTICAL);
 
         refresh();
-
 
     }
 
@@ -68,7 +70,7 @@ public class FullKeyWindow extends ScrollPane {
         }
     }
 
-    public void show(){
+    public void show() {
         final double width = getParent().getBoundsInParent().getWidth();
         final double height = getParent().getBoundsInParent().getHeight();
         setMinWidth(width);
@@ -79,18 +81,19 @@ public class FullKeyWindow extends ScrollPane {
         tilePane.setMinWidth(width);
         tilePane.setMinHeight(height - Utils.adjust(20));
         tilePane.setMaxWidth(width);
-        tilePane.setMaxHeight(height  - Utils.adjust(20));
+        tilePane.setMaxHeight(height - Utils.adjust(20));
         refresh();
         setVisible(true);
     }
-    public void hide(){
-//        setMaxHeight(0);
-//        setMinHeight(0);
+
+    public void hide() {
+        // setMaxHeight(0);
+        // setMinHeight(0);
         setVisible(false);
         setMaxWidth(0);
         setMinWidth(0);
     }
-    final static Background whiteBg = new Background(new BackgroundFill(Color.WHITE, null, null));
 
+    final static Background whiteBg = new Background(new BackgroundFill(Color.WHITE, null, null));
 
 }

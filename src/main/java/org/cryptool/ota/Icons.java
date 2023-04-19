@@ -16,12 +16,11 @@
 
 package org.cryptool.ota;
 
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-
-import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class Icons {
     final static String ICONS_DIR_NAME = "icons";

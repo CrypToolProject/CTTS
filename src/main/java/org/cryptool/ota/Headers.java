@@ -20,7 +20,12 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -33,7 +38,7 @@ public class Headers {
     static Text legend;
     static Text status;
 
-    static void updateTopTitle(){
+    static void updateTopTitle() {
         String fs = FileUtils.currentDirectoryFullpathString();
         Main.myStage.setTitle("Offline Transcription Application (OTA - V3.5 - 02/10/2022) - " + fs);
     }
@@ -53,7 +58,7 @@ public class Headers {
                 + " F5/F6 Zoom In/Out"
                 + " F7 Snapshot"
                 + " F8 Cryptanalysis"
-                + " F9 " +  f9String
+                + " F9 " + f9String
                 + " F10 Save"
                 + " F11/tab Symbols Types"
                 + " F12 Transcription Review"
@@ -92,30 +97,37 @@ public class Headers {
                 + " F12 Symbols Types - List View"
                 + " ESC Exit";
 
-
         switch (Main.mode) {
             case IMAGE:
                 leftTitle.setText(Main.detailed ? " Transcription Review" : " Transcription ");
                 if (TranscribedImage.transcribedImages.length > 1) {
-                    rightTitle.setText(TranscribedImage.current().filename + " [" + (TranscribedImage.currentImageIndex + 1) + "/" + TranscribedImage.size() + " - " + FileUtils.currentDirectoryString()+ "] ");
+                    rightTitle.setText(
+                            TranscribedImage.current().filename + " [" + (TranscribedImage.currentImageIndex + 1) + "/"
+                                    + TranscribedImage.size() + " - " + FileUtils.currentDirectoryString() + "] ");
                 } else {
-                    rightTitle.setText(TranscribedImage.current().filename + " [" + FileUtils.currentDirectoryString()+ "] ");
+                    rightTitle.setText(
+                            TranscribedImage.current().filename + " [" + FileUtils.currentDirectoryString() + "] ");
                 }
                 if (Main.key.isKeyAvailable()) {
-                    status.setText("[" + TranscribedImage.current().positions().size() + " symbols in " + TranscribedImage.current().filename + "]"  + " " + "[Key: " + Main.key.getKeyFilename() + "]");
+                    status.setText("[" + TranscribedImage.current().positions().size() + " symbols in "
+                            + TranscribedImage.current().filename + "]" + " " + "[Key: " + Main.key.getKeyFilename()
+                            + "]");
                 } else {
-                    status.setText("[" + TranscribedImage.current().positions().size() + " symbols in " + TranscribedImage.current().filename + "]");
+                    status.setText("[" + TranscribedImage.current().positions().size() + " symbols in "
+                            + TranscribedImage.current().filename + "]");
                 }
                 legend.setText(Main.detailed ? LEGEND_IMAGE_DETAILED_VIEW : LEGEND_IMAGE_VIEW);
 
                 break;
             case CLUSTER:
-                leftTitle.setText(Main.detailed ? " Symbols Types - Grid View": " Symbols Types - List View");
+                leftTitle.setText(Main.detailed ? " Symbols Types - Grid View" : " Symbols Types - List View");
                 legend.setText(Main.detailed ? LEGEND_CLUSTER_DETAILED_VIEW : LEGEND_CLUSTER_VIEW);
                 if (Main.key.isKeyAvailable()) {
-                    status.setText("[" + TranscribedImage.totalSymbols() + " symbols in " + TranscribedImage.size() + " documents]" + " " + "[Key: " + Main.key.getKeyFilename() + "]");
+                    status.setText("[" + TranscribedImage.totalSymbols() + " symbols in " + TranscribedImage.size()
+                            + " documents]" + " " + "[Key: " + Main.key.getKeyFilename() + "]");
                 } else {
-                    status.setText("[" + TranscribedImage.totalSymbols() + " symbols in " + TranscribedImage.size() + " documents]");
+                    status.setText("[" + TranscribedImage.totalSymbols() + " symbols in " + TranscribedImage.size()
+                            + " documents]");
                 }
                 rightTitle.setText("");
                 break;
@@ -125,8 +137,6 @@ public class Headers {
         if (Main.colors.changed() || Main.key.changed() || TranscribedImage.change()) {
             status.setText(status.getText() + " *");
         }
-
-
 
     }
 
@@ -144,17 +154,16 @@ public class Headers {
         legendHBox.setMaxHeight(Utils.adjust(30));
         HBox.setHgrow(legendMidRegion, Priority.ALWAYS);
 
-
         Timeline tl = new Timeline(
                 new KeyFrame(Duration.millis(1000),
                         event -> {
-                            boolean changed = Main.colors.changed() || Main.key.changed() || TranscribedImage.change() || EditedRecord.changed;
+                            boolean changed = Main.colors.changed() || Main.key.changed() || TranscribedImage.change()
+                                    || EditedRecord.changed;
                             boolean changedShown = status.getText().endsWith("*");
                             if (changedShown != changed) {
                                 updateHeadersAndBottom();
                             }
-                        }
-                ));
+                        }));
         tl.setCycleCount(Animation.INDEFINITE);
         tl.play();
 

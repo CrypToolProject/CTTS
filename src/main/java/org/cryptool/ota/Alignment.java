@@ -16,11 +16,12 @@
 
 package org.cryptool.ota;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 /*
     Algorithm to obtain lines of symbols.
  */
@@ -29,6 +30,7 @@ public class Alignment {
         final ArrayList<Rectangle> rectangles = TranscribedImage.image(index).positions();
         return linesOfSymbols(rectangles);
     }
+
     public static ArrayList<Rectangle> sortedPositions(int index) {
 
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = linesOfSymbols(index);
@@ -45,7 +47,8 @@ public class Alignment {
         // Sort everything from left to right.
         rectangles.sort(Comparator.comparingDouble(Node::getLayoutX));
 
-        // Each line will be populated and sorted from left to right, but the lines are vertically sorted only after
+        // Each line will be populated and sorted from left to right, but the lines are
+        // vertically sorted only after
         // they are populated.
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = new ArrayList<>();
 
@@ -60,7 +63,8 @@ public class Alignment {
                 Rectangle lastInLine = lineOfSymbols.get(lineOfSymbols.size() - 1);
                 double verticalOverlap = verticalOverlapRatio(p, lastInLine);
 
-                // For robustness, also look at the rectangle before the last one, in case the last one is an outlier.
+                // For robustness, also look at the rectangle before the last one, in case the
+                // last one is an outlier.
                 if (lineOfSymbols.size() >= 2) {
                     Rectangle penultimateInLine = lineOfSymbols.get(lineOfSymbols.size() - 2);
                     verticalOverlap = Math.max(verticalOverlapRatio(p, penultimateInLine), verticalOverlap);
@@ -114,7 +118,5 @@ public class Alignment {
 
         return overlap / Math.min(r1.getHeight(), r2.getHeight());
     }
-
-
 
 }

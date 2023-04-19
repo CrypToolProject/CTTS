@@ -16,13 +16,18 @@
 
 package org.cryptool.ota;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,7 +36,20 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -40,9 +58,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
-
-import java.util.*;
-
 
 public class DetailedTranscriptionPane {
 
@@ -58,8 +73,9 @@ public class DetailedTranscriptionPane {
         Text pText = new Text();
         ImageView symbol = new ImageView();
 
-        SymbolStackPane(){
-            Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        SymbolStackPane() {
+            Background globalBackground = new Background(
+                    new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
             if (!showTranscriptionValue) {
                 globalBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
             }
@@ -67,7 +83,6 @@ public class DetailedTranscriptionPane {
             icon.setPreserveRatio(true);
 
             StackPane.setAlignment(cText, Pos.BOTTOM_CENTER);
-
 
             StackPane psp = new StackPane(pText);
             if (!showTranscriptionValue) {
@@ -127,18 +142,19 @@ public class DetailedTranscriptionPane {
             StackPane.setAlignment(icon, Pos.CENTER);
             StackPane.setAlignment(pText, Pos.CENTER);
 
-
             getChildren().add(vBox);
             HBox.setMargin(this, new Insets(Utils.adjust(0), Utils.adjust(3), Utils.adjust(0), Utils.adjust(3)));
 
-
         }
+
         void update(ArrayList<String> decryptionSequence, int i, Rectangle r, String id) {
             final Font cFont = Font.font("Verdana", FontWeight.NORMAL, Utils.adjust(16));
-            final Font pFont = Font.font("Verdana", FontWeight.BOLD,  Utils.adjust(24));
-            final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD,  Utils.adjust(16));
+            final Font pFont = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(24));
+            final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(16));
 
-            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i) ? decryptionSequence.get(i) : "";
+            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i)
+                    ? decryptionSequence.get(i)
+                    : "";
 
             Color color = (Color) r.getFill();
             Color symbolBackgroundColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.4);
@@ -164,13 +180,11 @@ public class DetailedTranscriptionPane {
                 cText.setFont(pFont);
             }
 
-
             if (Selection.contains(id)) {
                 symbol.setImage(TranscribedImage.current().negative);
             } else {
                 symbol.setImage(TranscribedImage.current().image);
             }
-
 
             Rectangle2D viewport = new Rectangle2D(r.getLayoutX(), r.getLayoutY(), r.getWidth(), r.getHeight());
             symbol.setViewport(viewport);
@@ -182,7 +196,6 @@ public class DetailedTranscriptionPane {
                 pText.setFont(pFont);
             }
 
-
             setBackground(new Background(new BackgroundFill(symbolBackgroundColor, null, null)));
 
             Utils.recursiveSetId(this, id);
@@ -193,7 +206,7 @@ public class DetailedTranscriptionPane {
 
     }
 
-    static void updateBorders(int idx){
+    static void updateBorders(int idx) {
 
         for (Rectangle r : TranscribedImage.image(idx).positions()) {
             String id = TranscribedImage.rectangleToId(idx, r);
@@ -217,7 +230,6 @@ public class DetailedTranscriptionPane {
             idToSp.get(id).setBorder(new Border(borderStroke));
         }
     }
-
 
     static Map<String, SymbolStackPane> idToSp = new HashMap<>();
     static Map<Integer, HBox> lineToHbox = new TreeMap<>();
@@ -244,7 +256,8 @@ public class DetailedTranscriptionPane {
     static void show() {
 
         MainImagePane.mainPane.getChildren().clear();
-        Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        Background globalBackground = new Background(
+                new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
         if (!showTranscriptionValue) {
             globalBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
         }
@@ -267,18 +280,19 @@ public class DetailedTranscriptionPane {
                                     }
                                 }
                             }
-                        }
-                ));
+                        }));
         tl.setCycleCount(1);
         tl.play();
 
     }
+
     public static void restoreZoomAndScroll() {
         MainImagePane.zoom(TranscribedImage.current().detailedScaleValue);
         MainImagePane.scrollPane.setVvalue(TranscribedImage.current().detailedvValue);
         MainImagePane.scrollPane.setHvalue(TranscribedImage.current().detailedhValue);
     }
-    final static int ICON_SIZE =  40;
+
+    final static int ICON_SIZE = 40;
 
     public static VBox drawLines(int index) {
         final Font italicFont = Font.font("Verdana", FontWeight.BOLD, FontPosture.ITALIC, Utils.adjust(28));
@@ -306,10 +320,10 @@ public class DetailedTranscriptionPane {
             }
             lines.getChildren().add(line);
             if (showDecryptionContinuousText && Main.key.isKeyAvailable()) {
-                //TextArea decryptionContinuousText = new TextArea();
+                // TextArea decryptionContinuousText = new TextArea();
                 TextField decryptionContinuousText = new TextField();
 
-                //decryptionContinuousText.setPrefRowCount(0);
+                // decryptionContinuousText.setPrefRowCount(0);
                 String editedRecord = EditedRecord.get(TranscribedImage.image(index).filename, lineNumber);
                 if (editedRecord == null) {
                     decryptionContinuousText.setText(decryptionLineString(decryptionSequence));
@@ -319,12 +333,12 @@ public class DetailedTranscriptionPane {
                     decryptionContinuousText.setFont(italicFont);
                 }
                 lastDecryptionTextUpdate = System.currentTimeMillis();
-                //double h = requiredHeight(decryptionContinuousText.getText(), decryptionContinuousText);
+                // double h = requiredHeight(decryptionContinuousText.getText(),
+                // decryptionContinuousText);
 
-
-                //double padding = Utils.adjust(25);
-                //decryptionContinuousText.setMinHeight(h + padding);
-                //decryptionContinuousText.setWrapText(true);
+                // double padding = Utils.adjust(25);
+                // decryptionContinuousText.setMinHeight(h + padding);
+                // decryptionContinuousText.setWrapText(true);
 
                 decryptionContinuousText.setId(TranscribedImage.image(index).filename + "|" + lineNumber);
                 decryptionContinuousText.textProperty().addListener((obs, oldText, newText) -> {
@@ -340,13 +354,13 @@ public class DetailedTranscriptionPane {
 
                         }
                     }
-//                    double h1 = requiredHeight(newText, decryptionContinuousText);
-//                    double h2 = requiredHeight(oldText, decryptionContinuousText);
-//
-//                    if (h1 != h2) {
-//                        //double padding = Utils.adjust(25);
-//                        decryptionContinuousText.setMinHeight(h1 + padding);
-//                    }
+                    // double h1 = requiredHeight(newText, decryptionContinuousText);
+                    // double h2 = requiredHeight(oldText, decryptionContinuousText);
+                    //
+                    // if (h1 != h2) {
+                    // //double padding = Utils.adjust(25);
+                    // decryptionContinuousText.setMinHeight(h1 + padding);
+                    // }
                 });
 
                 decryptionContinuousText.setMinWidth(Utils.adjust(1600));
@@ -360,15 +374,16 @@ public class DetailedTranscriptionPane {
         return lines;
     }
 
-//    private static double requiredHeight(String newText, TextArea decryptionContinuousText) {
-//        double base = decryptionContinuousText.getFont().getSize() * 1.25;
-//        Text t = new Text(newText);
-//        t.setWrappingWidth(decryptionContinuousText.getWidth() - 100);
-//        t.setFont(decryptionContinuousText.getFont());
-//        StackPane p = new StackPane(t);
-//        p.layout();
-//        return Math.round(t.getLayoutBounds().getHeight() / base) * base;
-//    }
+    // private static double requiredHeight(String newText, TextArea
+    // decryptionContinuousText) {
+    // double base = decryptionContinuousText.getFont().getSize() * 1.25;
+    // Text t = new Text(newText);
+    // t.setWrappingWidth(decryptionContinuousText.getWidth() - 100);
+    // t.setFont(decryptionContinuousText.getFont());
+    // StackPane p = new StackPane(t);
+    // p.layout();
+    // return Math.round(t.getLayoutBounds().getHeight() / base) * base;
+    // }
 
     public static void updateSymbol(int index, String id) {
 
@@ -483,7 +498,6 @@ public class DetailedTranscriptionPane {
             idToSp.put(id, sp);
             sp.update(decryptionSequence, i, r, id);
 
-
             line.getChildren().add(sp);
 
         }
@@ -498,7 +512,6 @@ public class DetailedTranscriptionPane {
     }
 
     public static ArrayList<String> decryptionSequence(Key key, ArrayList<Rectangle> lineOfSymbols) {
-
 
         ArrayList<String> rawP = new ArrayList<>();
         ArrayList<String> rawC = new ArrayList<>();
@@ -520,7 +533,6 @@ public class DetailedTranscriptionPane {
         }
 
         ArrayList<String> processedP = new ArrayList<>();
-
 
         String lastC = "";
         String lastP = "";
@@ -576,7 +588,6 @@ public class DetailedTranscriptionPane {
         TranscribedImage.current().detailedScaleValue = ((Scale) MainImagePane.mainPane.getTransforms().get(0)).getX();
     }
 
-
     private static HBox imageSegment(Image transcribedImage, int lineNumber, ArrayList<Rectangle> lineOfSymbols) {
 
         int symbols = lineOfSymbols.size();
@@ -604,10 +615,9 @@ public class DetailedTranscriptionPane {
             ImageView imageView = new ImageView(transcribedImage);
             Rectangle2D viewport = new Rectangle2D(minX, minY, maxX - minX, maxY - minY);
             imageView.setViewport(viewport);
-            imageView.setFitWidth(Utils.adjust(symbols * 1.25 * ICON_SIZE ));
+            imageView.setFitWidth(Utils.adjust(symbols * 1.25 * ICON_SIZE));
             imageView.setFitHeight(Utils.adjust(200));
             imageView.setPreserveRatio(true);
-
 
             final Font hugeFont = Font.font("Verdana", FontWeight.NORMAL, Utils.adjust(36));
             final Text t1 = new Text("" + lineNumber);

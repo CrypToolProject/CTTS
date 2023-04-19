@@ -25,7 +25,7 @@ public class Ngrams6 {
     }
 
     static int[] stats(ArrayList<Token> tokens, int dim, CryptanalysisParameters p) {
-        int[] stats = new int[(int)Math.pow(dim, 6)];
+        int[] stats = new int[(int) Math.pow(dim, 6)];
         int p1 = -1;
         int p2 = -1;
         int p3 = -1;

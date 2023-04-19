@@ -28,9 +28,9 @@ public class DragResizeMod {
 
     public interface OnDragResizeEventListener {
         void onDrag(Node node, double x, double y, double h, double w);
+
         void onResize(Node node, double x, double y, double h, double w);
     }
-
 
     private static final OnDragResizeEventListener defaultListener = new OnDragResizeEventListener() {
         @Override
@@ -116,33 +116,50 @@ public class DragResizeMod {
         boolean top = isTopResizeZone(event);
         boolean bottom = isBottomResizeZone(event);
 
-        if (left && top) state = S.NW_RESIZE;
-        else if (left && bottom) state = S.SW_RESIZE;
-        else if (right && top) state = S.NE_RESIZE;
-        else if (right && bottom) state = S.SE_RESIZE;
-        else if (right) state = S.E_RESIZE;
-        else if (left) state = S.W_RESIZE;
-        else if (top) state = S.N_RESIZE;
-        else if (bottom) state = S.S_RESIZE;
-        else if (isInDragZone(event)) state = S.DRAG;
+        if (left && top)
+            state = S.NW_RESIZE;
+        else if (left && bottom)
+            state = S.SW_RESIZE;
+        else if (right && top)
+            state = S.NE_RESIZE;
+        else if (right && bottom)
+            state = S.SE_RESIZE;
+        else if (right)
+            state = S.E_RESIZE;
+        else if (left)
+            state = S.W_RESIZE;
+        else if (top)
+            state = S.N_RESIZE;
+        else if (bottom)
+            state = S.S_RESIZE;
+        else if (isInDragZone(event))
+            state = S.DRAG;
 
         return state;
     }
 
     private static Cursor getCursorForState(S state) {
         switch (state) {
-            case NW_RESIZE : return Cursor.NW_RESIZE;
-            case SW_RESIZE : return Cursor.SW_RESIZE;
-            case NE_RESIZE : return Cursor.NE_RESIZE;
-            case SE_RESIZE : return Cursor.SE_RESIZE;
-            case E_RESIZE : return Cursor.E_RESIZE;
-            case W_RESIZE : return Cursor.W_RESIZE;
-            case N_RESIZE : return Cursor.N_RESIZE;
-            case S_RESIZE : return Cursor.S_RESIZE;
-            default : return Cursor.DEFAULT;
+            case NW_RESIZE:
+                return Cursor.NW_RESIZE;
+            case SW_RESIZE:
+                return Cursor.SW_RESIZE;
+            case NE_RESIZE:
+                return Cursor.NE_RESIZE;
+            case SE_RESIZE:
+                return Cursor.SE_RESIZE;
+            case E_RESIZE:
+                return Cursor.E_RESIZE;
+            case W_RESIZE:
+                return Cursor.W_RESIZE;
+            case N_RESIZE:
+                return Cursor.N_RESIZE;
+            case S_RESIZE:
+                return Cursor.S_RESIZE;
+            default:
+                return Cursor.DEFAULT;
         }
     }
-
 
     protected void mouseDragged(MouseEvent event) {
 
@@ -152,7 +169,7 @@ public class DragResizeMod {
             if (state == S.DRAG) {
                 listener.onDrag(node, mouseX - clickX, mouseY - clickY, nodeH, nodeW);
             } else if (state != S.DEFAULT) {
-                //resizing
+                // resizing
                 double newX = nodeX;
                 double newY = nodeY;
                 double newH = nodeH;
@@ -178,7 +195,7 @@ public class DragResizeMod {
                     newH = nodeH + nodeY - newY;
                 }
 
-                //min valid rect Size Check
+                // min valid rect Size Check
                 if (newW < MIN_W) {
                     if (state == S.W_RESIZE || state == S.NW_RESIZE || state == S.SW_RESIZE)
                         newX = newX - MIN_W + newW;

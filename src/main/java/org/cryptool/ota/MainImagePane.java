@@ -16,6 +16,9 @@
 
 package org.cryptool.ota;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -23,7 +26,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -32,11 +41,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 public class MainImagePane {
-    enum SubMode {SYMBOLS, LINES, DECRYPTION}
+    enum SubMode {
+        SYMBOLS, LINES, DECRYPTION
+    }
+
     public static final double OPACITY = 0.5;
     static Pane mainPane;
     static ScrollPane scrollPane;
@@ -45,7 +54,7 @@ public class MainImagePane {
     static Rectangle baseRectangle;
     static double decryptionFontSizeFactor = 1.0;
 
-    public static SubMode nextSubMode(){
+    public static SubMode nextSubMode() {
         switch (subMode) {
             case SYMBOLS:
                 return SubMode.LINES;
@@ -65,7 +74,8 @@ public class MainImagePane {
         saveZoomAndScrollState();
         zoom(1.0);
 
-        FileUtils.snapshot("snapshots", ImageUtils.replaceImageFormat(TranscribedImage.current().filename, "_symbols"), mainPane);
+        FileUtils.snapshot("snapshots", ImageUtils.replaceImageFormat(TranscribedImage.current().filename, "_symbols"),
+                mainPane);
 
         zoom(TranscribedImage.current().scaleValue);
         scrollPane.setVvalue(TranscribedImage.current().vValue);
@@ -83,7 +93,6 @@ public class MainImagePane {
         ((Scale) mainPane.getTransforms().get(0)).setX(scaleValue);
         ((Scale) mainPane.getTransforms().get(0)).setY(scaleValue);
     }
-
 
     public static void scrollTo(ScrollPane scrollPane, Node selected) {
         if (Main.mode != Mode.IMAGE) {
@@ -220,7 +229,6 @@ public class MainImagePane {
             mainPane.getChildren().add(line);
         }
 
-
     }
 
     static void showDecryption() {
@@ -257,11 +265,11 @@ public class MainImagePane {
 
                     double maxWidth;
                     if (i == lineOfSymbols.size() - 1) {
-                        maxWidth= r.getWidth();
+                        maxWidth = r.getWidth();
                     } else {
                         maxWidth = lineOfSymbols.get(i + 1).getLayoutX() - r.getLayoutX();
                     }
-                    //maxWidth = Math.min(avgWidth * p.length() * 1.3, maxWidth);
+                    // maxWidth = Math.min(avgWidth * p.length() * 1.3, maxWidth);
 
                     double sumY = 0;
                     int countY = 0;
@@ -270,7 +278,8 @@ public class MainImagePane {
                         countY++;
                     }
 
-                    StackPane d = d (p, 50, maxWidth * decryptionFontSizeFactor, maxHeight * decryptionFontSizeFactor, fontColor);
+                    StackPane d = d(p, 50, maxWidth * decryptionFontSizeFactor, maxHeight * decryptionFontSizeFactor,
+                            fontColor);
                     d.setLayoutX(r.getLayoutX());
                     d.setLayoutY(sumY / countY - maxHeight);
                     mainPane.getChildren().add(d);
@@ -280,7 +289,6 @@ public class MainImagePane {
         }
 
     }
-
 
     static StackPane d(String text, int maxTextLength, double maxWidth, double maxHeight, Color color) {
         boolean polyphonic = text.contains("|");
@@ -303,7 +311,7 @@ public class MainImagePane {
                 if (dim[0] <= maxWidth) {
                     found = true;
                     if (polyphonic) {
-                        final Font font2 = Font.font("Verdana", weight, size/2);
+                        final Font font2 = Font.font("Verdana", weight, size / 2);
                         textField.setFill(new Color(1.0, 0.0, 0.3, 0.7));
                         textField.setFont(font2);
                     }
@@ -334,7 +342,6 @@ public class MainImagePane {
         return stackPane;
     }
 
-
     public static void handleMouseEvents(MouseEvent mouseEvent) {
         if (Main.mode == Mode.IMAGE && Main.detailed) {
             if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
@@ -344,7 +351,7 @@ public class MainImagePane {
                     Rectangle nr = TranscribedImage.idToRectangle(id);
                     if (idx != -1 && idx == TranscribedImage.currentImageIndex && nr != null) {
                         Main.symbolSelectedFromImagePane(nr);
-                        if(mouseEvent.getClickCount() == 2){
+                        if (mouseEvent.getClickCount() == 2) {
                             Main.selectionArea.toggleLocked();
                         }
                     }
@@ -352,29 +359,37 @@ public class MainImagePane {
             }
         }
         if (Main.mode == Mode.IMAGE && !Main.detailed && MainImagePane.subMode == SubMode.SYMBOLS) {
-            if (mouseEvent.getX() < imageCanvas.getWidth() && mouseEvent.getY() < imageCanvas.getHeight() && DragResizeMod.acceptMainPaneMouseEvents) {
+            if (mouseEvent.getX() < imageCanvas.getWidth() && mouseEvent.getY() < imageCanvas.getHeight()
+                    && DragResizeMod.acceptMainPaneMouseEvents) {
                 if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
                     baseRectangle.setVisible(false);
                     DragResizeMod.pressed[0] = mouseEvent.getX();
                     DragResizeMod.pressed[1] = mouseEvent.getY();
-                    //System.out.printf("PRESSED: %f %f %f %f\n", baseRectangle.getLayoutX(), baseRectangle.getLayoutY(), baseRectangle.getWidth(), baseRectangle.getHeight());
+                    // System.out.printf("PRESSED: %f %f %f %f\n", baseRectangle.getLayoutX(),
+                    // baseRectangle.getLayoutY(), baseRectangle.getWidth(),
+                    // baseRectangle.getHeight());
                 }
                 if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                     baseRectangle.setLayoutX(Math.min(mouseEvent.getX(), DragResizeMod.pressed[0]));
                     baseRectangle.setLayoutY(Math.min(mouseEvent.getY(), DragResizeMod.pressed[1]));
                     baseRectangle.setWidth(Math.abs(mouseEvent.getX() - DragResizeMod.pressed[0]));
                     baseRectangle.setHeight(Math.abs(mouseEvent.getY() - DragResizeMod.pressed[1]));
-                    //System.out.printf("DRAGGED: %f %f %f %f\n", baseRectangle.getLayoutX(), baseRectangle.getLayoutY(), baseRectangle.getWidth(), baseRectangle.getHeight());
+                    // System.out.printf("DRAGGED: %f %f %f %f\n", baseRectangle.getLayoutX(),
+                    // baseRectangle.getLayoutY(), baseRectangle.getWidth(),
+                    // baseRectangle.getHeight());
                     baseRectangle.setVisible(true);
 
-                    //Main.selectionArea.showZoomedImage(TranscribedImage.current().image, baseRectangle, false);
+                    // Main.selectionArea.showZoomedImage(TranscribedImage.current().image,
+                    // baseRectangle, false);
                 }
                 if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
                     baseRectangle.setLayoutX(Math.min(mouseEvent.getX(), DragResizeMod.pressed[0]));
                     baseRectangle.setLayoutY(Math.min(mouseEvent.getY(), DragResizeMod.pressed[1]));
                     baseRectangle.setWidth(Math.abs(mouseEvent.getX() - DragResizeMod.pressed[0]));
                     baseRectangle.setHeight(Math.abs(mouseEvent.getY() - DragResizeMod.pressed[1]));
-                    //System.out.printf("RELEASED: %f %f %f %f\n", baseRectangle.getLayoutX(), baseRectangle.getLayoutY(), baseRectangle.getWidth(), baseRectangle.getHeight());
+                    // System.out.printf("RELEASED: %f %f %f %f\n", baseRectangle.getLayoutX(),
+                    // baseRectangle.getLayoutY(), baseRectangle.getWidth(),
+                    // baseRectangle.getHeight());
                     baseRectangle.setVisible(false);
 
                     if (baseRectangle.getWidth() > 3 && baseRectangle.getHeight() > 3) {
@@ -399,9 +414,7 @@ public class MainImagePane {
         @Override
         public void handle(ScrollEvent scrollEvent) {
 
-
             if (scrollEvent.isControlDown()) {
-
 
                 if (scrollEvent.getDeltaY() > 0) {
                     zoomIn();

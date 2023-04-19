@@ -16,6 +16,10 @@
 
 package org.cryptool.ota;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -32,8 +36,20 @@ import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -42,14 +58,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 /*
     List view of the key
  */
 public class ClusterListView extends ListView<String> {
-    ClusterListView(){
+    ClusterListView() {
 
         this.setItems(items);
         this.setCellFactory(l -> new ColorRectCell());
@@ -66,12 +79,12 @@ public class ClusterListView extends ListView<String> {
                                 refresh();
                                 updateListView = false;
                             }
-                        }
-                ));
+                        }));
         tl.setCycleCount(Timeline.INDEFINITE);
         tl.play();
     }
-    public void updateListView(boolean now){
+
+    public void updateListView(boolean now) {
         if (now) {
             refresh();
             updateListView = false;
@@ -79,18 +92,21 @@ public class ClusterListView extends ListView<String> {
             updateListView = true;
         }
     }
-    public void show(boolean clusterView){
+
+    public void show(boolean clusterView) {
         refresh();
         setVisible(true);
         resize(clusterView);
     }
-    public void hide(){
+
+    public void hide() {
         setMaxHeight(0);
         setMinHeight(0);
         setMaxWidth(0);
         setMinWidth(0);
         setVisible(false);
     }
+
     public void reset() {
         ArrayList<String> usedColors = Main.colors.sortedColors();
 
@@ -98,6 +114,7 @@ public class ClusterListView extends ListView<String> {
         items.addAll(usedColors);
 
     }
+
     // This is also used for the grid view of the key
     public static HBox line(String item, boolean gridView, boolean noCache) {
         final int maxTextLength = 36;
@@ -170,7 +187,7 @@ public class ClusterListView extends ListView<String> {
             if (!noCache && cache.containsKey(cachePKey)) {
                 plaintextSymbolPane = cache.get(cachePKey);
             } else {
-                plaintextSymbolPane =  d(plaintext, maxTextLength, iconSize, color);
+                plaintextSymbolPane = d(plaintext, maxTextLength, iconSize, color);
                 cache.put(cachePKey, plaintextSymbolPane);
             }
             hBox.getChildren().add(plaintextSymbolPane);
@@ -331,7 +348,6 @@ public class ClusterListView extends ListView<String> {
                 Main.colorSelected(r.getFill().toString());
             }
 
-
         });
 
         hBox.setId(color.toString());
@@ -341,7 +357,8 @@ public class ClusterListView extends ListView<String> {
         hBox.setOnDragDetected((MouseEvent event) -> {
             if (Main.mode == Mode.CLUSTER && Main.detailed) {
                 Main.unselectRectangle();
-                Dragboard db = hBox.startDragAndDrop((event.getButton() == MouseButton.SECONDARY) ? TransferMode.MOVE : TransferMode.COPY);
+                Dragboard db = hBox.startDragAndDrop(
+                        (event.getButton() == MouseButton.SECONDARY) ? TransferMode.MOVE : TransferMode.COPY);
                 ClipboardContent content = new ClipboardContent();
                 SnapshotParameters snapshotParameters = new SnapshotParameters();
                 HBox h = line(hBox.getId(), true, true);
@@ -358,7 +375,6 @@ public class ClusterListView extends ListView<String> {
                 }
                 h.getChildren().add(0, text);
 
-
                 WritableImage image = h.snapshot(snapshotParameters, null);
                 content.putImage(image);
 
@@ -369,10 +385,12 @@ public class ClusterListView extends ListView<String> {
 
         return hBox;
     }
+
     private boolean updateListView = false;
     private ObservableList<String> items = FXCollections.observableArrayList();
     private static Map<String, StackPane> cache = new HashMap<>();
-    private static StackPane d(String text, int maxTextLength, int iconSize, Color color){
+
+    private static StackPane d(String text, int maxTextLength, int iconSize, Color color) {
         if (text.length() > maxTextLength) {
             text = text.substring(0, maxTextLength) + " ...";
         }
@@ -416,7 +434,8 @@ public class ClusterListView extends ListView<String> {
         textField.setId(color.toString());
         return stackPane;
     }
-    private static StackPane t(String text, int maxTextLength, int iconSize, Color newColor, Color color){
+
+    private static StackPane t(String text, int maxTextLength, int iconSize, Color newColor, Color color) {
         if (text.length() > maxTextLength) {
             text = text.substring(0, maxTextLength) + " ...";
         }
@@ -464,6 +483,7 @@ public class ClusterListView extends ListView<String> {
         return stackPane;
 
     }
+
     private void resize(boolean full) {
         if (full) {
             setMinWidth(getParent().getBoundsInParent().getWidth());
@@ -474,6 +494,7 @@ public class ClusterListView extends ListView<String> {
         }
         reset();
     }
+
     private static class ColorRectCell extends ListCell<String> {
         @Override
         public void updateItem(String item, boolean empty) {
@@ -486,6 +507,7 @@ public class ClusterListView extends ListView<String> {
 
         }
     }
+
     private void select(String colorString) {
 
         if (colorString == null) {
@@ -493,6 +515,7 @@ public class ClusterListView extends ListView<String> {
         }
         Main.colorSelected(colorString);
     }
+
     private static boolean shouldScrollTo(ListView<?> t, int index) {
         try {
             ListViewSkin<?> ts = (ListViewSkin<?>) t.getSkin();
@@ -506,6 +529,5 @@ public class ClusterListView extends ListView<String> {
         }
 
     }
-
 
 }

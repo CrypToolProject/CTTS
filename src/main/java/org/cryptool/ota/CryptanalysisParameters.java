@@ -16,7 +16,11 @@
 
 package org.cryptool.ota;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 class CryptanalysisParameters {
     Language language;
@@ -76,35 +80,43 @@ class CryptanalysisParameters {
         for (char c : sb.toString().toCharArray()) {
             switch (c) {
                 case 'u': {
-                    if (uToV) c = 'v';
+                    if (uToV)
+                        c = 'v';
                     break;
                 }
                 case 'w': {
-                    if (wToV) c = 'v';
+                    if (wToV)
+                        c = 'v';
                     break;
                 }
                 case 'j': {
-                    if (jToI) c = 'i';
+                    if (jToI)
+                        c = 'i';
                     break;
                 }
                 case 'y': {
-                    if (yToI) c = 'i';
+                    if (yToI)
+                        c = 'i';
                     break;
                 }
                 case 'z': {
-                    if (zToS) c = 's';
+                    if (zToS)
+                        c = 's';
                     break;
                 }
                 case 'k': {
-                    if (kToC) c = 'c';
+                    if (kToC)
+                        c = 'c';
                     break;
                 }
                 case 'h': {
-                    if (removeH) c = ' ';
+                    if (removeH)
+                        c = ' ';
                     break;
                 }
                 case 'x': {
-                    if (removeX) c = ' ';
+                    if (removeX)
+                        c = ' ';
                     break;
                 }
             }

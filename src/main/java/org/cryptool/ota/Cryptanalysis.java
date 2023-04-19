@@ -16,7 +16,13 @@
 
 package org.cryptool.ota;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,14 +36,14 @@ public class Cryptanalysis {
     static final ConcurrentLinkedQueue sequence = new ConcurrentLinkedQueue();
 
     final private static int[][] MAX_HOMOPHONE_GROUP_SIZE = {
-            {-1},                                   //0
-            {-1, 26},                              //1
-            {-1, 16, 10},                           //2
-            {-1,  8,  8, 10},                       //3
-            {-1,  5,  5,  6, 10},                   //4
-            {-1,  4,  4,  4,  4, 10},               //5
-            {-1,  3,  3,  3,  3,  4, 10},           //6
-            {-1,  2,  2,  3,  3,  3,  3, 10},       //7
+            { -1 }, // 0
+            { -1, 26 }, // 1
+            { -1, 16, 10 }, // 2
+            { -1, 8, 8, 10 }, // 3
+            { -1, 5, 5, 6, 10 }, // 4
+            { -1, 4, 4, 4, 4, 10 }, // 5
+            { -1, 3, 3, 3, 3, 4, 10 }, // 6
+            { -1, 2, 2, 3, 3, 3, 3, 10 }, // 7
 
     };
 
@@ -76,7 +82,6 @@ public class Cryptanalysis {
             ciphertextTokenIndices[len++] = token.cIndex;
         }
         ciphertextTokenIndices = Arrays.copyOf(ciphertextTokenIndices, len);
-
 
         int[] maxHomophonesAll = new int[pListSize];
 
@@ -140,7 +145,8 @@ public class Cryptanalysis {
 
         for (int t = 0; t < Math.min(maxTasks, Math.max(1, cores / 4)); t++) {
             final int _t = t;
-            new Thread(() -> SA(_t, parameters, _ciphertextTokenIndices, stats, cToPforced, maxHomophonesAll, 100000, 0, 250, ciphertextTokens, cList, pList)).start();
+            new Thread(() -> SA(_t, parameters, _ciphertextTokenIndices, stats, cToPforced, maxHomophonesAll, 100000, 0,
+                    250, ciphertextTokens, cList, pList)).start();
         }
 
     }
@@ -152,7 +158,7 @@ public class Cryptanalysis {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //System.out.println("Waiting 500 ms");
+        // System.out.println("Waiting 500 ms");
     }
 
     public static int assignable(CryptanalysisParameters parameters, int pListSize) {
@@ -167,8 +173,9 @@ public class Cryptanalysis {
         return assignable;
     }
 
-    private static void SA(int task, CryptanalysisParameters parameters, int[] ciphertextTokenIndices, int[] stats, int[] cToPforcedExternal, int[] maxHomophonesAll, double maxTemp, double minTemp, int rounds,
-                           ArrayList<Token> ciphertextTokens, ArrayList<String> cList, ArrayList<String> pList) {
+    private static void SA(int task, CryptanalysisParameters parameters, int[] ciphertextTokenIndices, int[] stats,
+            int[] cToPforcedExternal, int[] maxHomophonesAll, double maxTemp, double minTemp, int rounds,
+            ArrayList<Token> ciphertextTokens, ArrayList<String> cList, ArrayList<String> pList) {
 
         int[] cToPforced = Arrays.copyOf(cToPforcedExternal, cToPforcedExternal.length);
 
@@ -181,7 +188,7 @@ public class Cryptanalysis {
         double[] pCounts = new double[pListSize];
 
         Random r = new Random();
-        for (int cycle = 0; ; cycle++) {
+        for (int cycle = 0;; cycle++) {
             int[] cToP = new int[cListSize];
             int[] homophoneCounts = new int[pListSize];
 
@@ -192,7 +199,6 @@ public class Cryptanalysis {
             }
             for (int round = 0; round < rounds; round++) {
 
-
                 int shift1 = r.nextInt(cListSize);
                 double temp = minTemp + r.nextFloat() * (maxTemp - minTemp) * (rounds - round + 1) / rounds;
                 for (int c_ = 0; c_ < cListSize; c_++) {
@@ -201,7 +207,7 @@ public class Cryptanalysis {
                     int shift2 = r.nextInt(pListSize);
                     for (int p_ = 0; p_ < pListSize; p_++) {
                         if (!started.get()) {
-                            //System.out.println("exit SA");
+                            // System.out.println("exit SA");
                             return;
                         }
                         int p = (p_ + shift2) % pListSize;
@@ -221,12 +227,12 @@ public class Cryptanalysis {
                         if (SimulatedAnnealing.accept(score, current, temp, random)) {
                             current = score;
 
-
                             if (current > bestOverall.get()) {
                                 bestOverall.set(current);
                                 int[] keepForced = Arrays.copyOf(cToPforced, cToPforced.length);
                                 updateForced(parameters, ciphertextTokens, pList, cToP, cToPforced);
-                                StringBuilder keySb = keySb(task, score, cycle, round, rounds, temp, pList, cList, cToP, cToPforced);
+                                StringBuilder keySb = keySb(task, score, cycle, round, rounds, temp, pList, cList, cToP,
+                                        cToPforced);
                                 System.arraycopy(keepForced, 0, cToPforced, 0, cToPforced.length);
 
                                 synchronized (Cryptanalysis.keySb) {
@@ -249,7 +255,7 @@ public class Cryptanalysis {
 
                     for (int c2_ = c1_ + 1; c2_ < cListSize; c2_++) {
                         if (!started.get()) {
-                            //System.out.println("exit SA");
+                            // System.out.println("exit SA");
                             return;
                         }
 
@@ -274,7 +280,8 @@ public class Cryptanalysis {
 
                                 int[] keepForced = Arrays.copyOf(cToPforced, cToPforced.length);
                                 updateForced(parameters, ciphertextTokens, pList, cToP, cToPforced);
-                                StringBuilder keySb = keySb(task, score, cycle, round, rounds, temp, pList, cList, cToP, cToPforced);
+                                StringBuilder keySb = keySb(task, score, cycle, round, rounds, temp, pList, cList, cToP,
+                                        cToPforced);
                                 System.arraycopy(keepForced, 0, cToPforced, 0, cToPforced.length);
 
                                 synchronized (Cryptanalysis.keySb) {
@@ -294,17 +301,18 @@ public class Cryptanalysis {
         }
     }
 
-    private static void updateForced(CryptanalysisParameters params, ArrayList<Token> ciphertextTokens, ArrayList<String> pList, int[] cToP, int[] cToPforced) {
+    private static void updateForced(CryptanalysisParameters params, ArrayList<Token> ciphertextTokens,
+            ArrayList<String> pList, int[] cToP, int[] cToPforced) {
 
         String pS = "";
         int[] c = new int[ciphertextTokens.size()];
 
-
-        for (int i = 0; i  < ciphertextTokens.size(); i++) {
+        for (int i = 0; i < ciphertextTokens.size(); i++) {
             Token t = ciphertextTokens.get(i);
             c[i] = t.cIndex;
             String p;
-            if (t.type == Token.Type.HOMOPHONE && t.cIndex != -1 && cToPforced[t.cIndex] == -1 && cToP[t.cIndex] != -1) {
+            if (t.type == Token.Type.HOMOPHONE && t.cIndex != -1 && cToPforced[t.cIndex] == -1
+                    && cToP[t.cIndex] != -1) {
                 final String pp = pList.get(cToP[t.cIndex]);
                 if (pp.length() == 1) {
                     p = pp;
@@ -324,18 +332,17 @@ public class Cryptanalysis {
             pS += p;
         }
 
-        for (int i = 0; i  < ciphertextTokens.size() - params.referenceSequenceLengthForLocking; i++) {
+        for (int i = 0; i < ciphertextTokens.size() - params.referenceSequenceLengthForLocking; i++) {
             String sequence = pS.substring(i, i + params.referenceSequenceLengthForLocking);
             if (params.referenceSequences.contains(sequence)) {
                 for (int z = 0; z < params.referenceSequenceLengthForLocking; z++) {
                     final int cIndex = c[i + z];
                     cToPforced[cIndex] = cToP[cIndex];
-                    //System.out.printf("%s %d %d %d => %d\n", sequence, i, z, cIndex, pIndex);
+                    // System.out.printf("%s %d %d %d => %d\n", sequence, i, z, cIndex, pIndex);
 
                 }
             }
         }
-
 
     }
 
@@ -353,7 +360,8 @@ public class Cryptanalysis {
         return previousP;
     }
 
-    private static void randomAssignment(int pListSize, int[] cToP, int[] homophoneCounts, int[] maxHomophones, int[] cToPforced) {
+    private static void randomAssignment(int pListSize, int[] cToP, int[] homophoneCounts, int[] maxHomophones,
+            int[] cToPforced) {
 
         int maxAssignableHomophones = 0;
         for (int p = 0; p < pListSize; p++) {
@@ -397,8 +405,11 @@ public class Cryptanalysis {
 
     }
 
-    private static StringBuilder keySb(int task, long score, int cycle, int round, int rounds, double temp, ArrayList<String> pList, ArrayList<String> cList, int[] cToP, int[] cToPforced) {
-        StringBuilder sb = new StringBuilder(String.format("Score: %,10d [Task: %d Cycle: %,d Round: %,d/%,d Temp: %.2f Update: %d]\n", score, task, cycle, round, rounds, temp, updates.get() + 1));
+    private static StringBuilder keySb(int task, long score, int cycle, int round, int rounds, double temp,
+            ArrayList<String> pList, ArrayList<String> cList, int[] cToP, int[] cToPforced) {
+        StringBuilder sb = new StringBuilder(
+                String.format("Score: %,10d [Task: %d Cycle: %,d Round: %,d/%,d Temp: %.2f Update: %d]\n", score, task,
+                        cycle, round, rounds, temp, updates.get() + 1));
 
         Map<String, Set<String>> homophones = new TreeMap<>();
 
@@ -455,7 +466,8 @@ public class Cryptanalysis {
         throw new RuntimeException("Invalid ngrams: " + parameters.ngrams);
     }
 
-    private static long score(CryptanalysisParameters parameters, int[] cToP, int[] ciphertextTokenIndices, int[] stats, int pListSize, double[] pCounts) {
+    private static long score(CryptanalysisParameters parameters, int[] cToP, int[] ciphertextTokenIndices, int[] stats,
+            int pListSize, double[] pCounts) {
 
         switch (parameters.ngrams) {
             case 4:
@@ -468,6 +480,5 @@ public class Cryptanalysis {
         }
         throw new RuntimeException("Invalid ngrams: " + parameters.ngrams);
     }
-
 
 }

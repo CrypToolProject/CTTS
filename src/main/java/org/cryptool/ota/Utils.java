@@ -16,29 +16,28 @@
 
 package org.cryptool.ota;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Utils {
 
     static int screenWidth = -1;
     static int screenHeight = -1;
 
-
     static int adjust(int z) {
 
         return Math.min(z * screenWidth / 2194, z * screenHeight / 1234);
     }
+
     static double adjust(double z) {
         return Math.min(z * screenWidth / 2194, z * screenHeight / 1234);
     }
-
 
     public static int extractNumber(String s) {
         Pattern p = Pattern.compile("[^0-9]*([0-9]+)[^0-9]*");
@@ -57,15 +56,12 @@ public class Utils {
 
         double hvalue = scrollPane.getHvalue();
 
-
         double contentWidth = scrollPane.getContent().getLayoutBounds().getWidth();
         double viewportWidth = scrollPane.getViewportBounds().getWidth();
 
-        double lowestXPixelShown =
-                Math.max(0, contentWidth - viewportWidth) * (hvalue - hmin) / (hmax - hmin);
+        double lowestXPixelShown = Math.max(0, contentWidth - viewportWidth) * (hvalue - hmin) / (hmax - hmin);
 
         double highestXPixelShown = lowestXPixelShown + viewportWidth;
-
 
         return highestXPixelShown;
 
@@ -80,11 +76,9 @@ public class Utils {
         double contentHeight = scrollPane.getContent().getLayoutBounds().getHeight();
         double viewportHeight = scrollPane.getViewportBounds().getHeight();
 
-        double lowestYPixelShown =
-                Math.max(0, contentHeight - viewportHeight) * (vvalue - vmin) / (vmax - vmin);
+        double lowestYPixelShown = Math.max(0, contentHeight - viewportHeight) * (vvalue - vmin) / (vmax - vmin);
 
         double highestYPixelShown = lowestYPixelShown + viewportHeight;
-
 
         return highestYPixelShown;
 
@@ -96,12 +90,10 @@ public class Utils {
 
         double hvalue = scrollPane.getHvalue();
 
-
         double contentWidth = scrollPane.getContent().getLayoutBounds().getWidth();
         double viewportWidth = scrollPane.getViewportBounds().getWidth();
 
-        double lowestXPixelShown =
-                Math.max(0, contentWidth - viewportWidth) * (hvalue - hmin) / (hmax - hmin);
+        double lowestXPixelShown = Math.max(0, contentWidth - viewportWidth) * (hvalue - hmin) / (hmax - hmin);
 
         return lowestXPixelShown;
 
@@ -109,15 +101,14 @@ public class Utils {
 
     private static double lowestYPixelShown(ScrollPane scrollPane) {
 
-         double vmin = scrollPane.getVmin();
+        double vmin = scrollPane.getVmin();
         double vmax = scrollPane.getVmax();
         double vvalue = scrollPane.getVvalue();
 
         double contentHeight = scrollPane.getContent().getLayoutBounds().getHeight();
         double viewportHeight = scrollPane.getViewportBounds().getHeight();
 
-        double lowestYPixelShown =
-                Math.max(0, contentHeight - viewportHeight) * (vvalue - vmin) / (vmax - vmin);
+        double lowestYPixelShown = Math.max(0, contentHeight - viewportHeight) * (vvalue - vmin) / (vmax - vmin);
 
         return lowestYPixelShown;
 
@@ -129,24 +120,25 @@ public class Utils {
         final double x = reference.getLayoutX() * scaleValue;
         final double w = reference.getBoundsInParent().getWidth() * scaleValue;
         double xMargin = w;
-//        System.out.printf("[Contents: total: %.0f Visible: %.0f-%.0f] [Node: x: %.0f w: %.0f]\n",
-//                contentHeight, lowestXPixelShown, highestXPixelShown, x, w);
+        // System.out.printf("[Contents: total: %.0f Visible: %.0f-%.0f] [Node: x: %.0f
+        // w: %.0f]\n",
+        // contentHeight, lowestXPixelShown, highestXPixelShown, x, w);
 
         while (x - xMargin < lowestXPixelShown) {
             final double newVvalue = scrollPane.getHvalue() - increment;
             if (newVvalue < 0.0) {
                 break;
             }
-            //System.out.printf("[%f => %f]\n", scrollPane.getHvalue(), newHvalue);
+            // System.out.printf("[%f => %f]\n", scrollPane.getHvalue(), newHvalue);
             scrollPane.setHvalue(newVvalue);
             lowestXPixelShown = lowestXPixelShown(scrollPane);
         }
-        while (x + w + xMargin> highestXPixelShown) {
+        while (x + w + xMargin > highestXPixelShown) {
             final double newVvalue = scrollPane.getHvalue() + increment;
             if (newVvalue > 1.0) {
                 break;
             }
-            //System.out.printf("[%f => %f]\n", scrollPane.getVvalue(), newVvalue);
+            // System.out.printf("[%f => %f]\n", scrollPane.getVvalue(), newVvalue);
             scrollPane.setHvalue(newVvalue);
             highestXPixelShown = highestXPixelShown(scrollPane);
         }
@@ -159,8 +151,9 @@ public class Utils {
         double highestYPixelShown = highestYPixelShown(scrollPane);
 
         double yMargin = h;
-//        System.out.printf("[Contents: total: %.0f Visible: %.0f-%.0f] [Node: y: %.0f h: %.0f]\n",
-//                contentHeight, lowestYPixelShown, highestYPixelShown, y, h);
+        // System.out.printf("[Contents: total: %.0f Visible: %.0f-%.0f] [Node: y: %.0f
+        // h: %.0f]\n",
+        // contentHeight, lowestYPixelShown, highestYPixelShown, y, h);
 
         if (y > lowestYPixelShown && y + h < highestYPixelShown) {
             return;
@@ -171,7 +164,7 @@ public class Utils {
             if (newVvalue < 0.0) {
                 break;
             }
-            //System.out.printf("[%f => %f]\n", scrollPane.getVvalue(), newVvalue);
+            // System.out.printf("[%f => %f]\n", scrollPane.getVvalue(), newVvalue);
             scrollPane.setVvalue(newVvalue);
             lowestYPixelShown = lowestYPixelShown(scrollPane);
         }
@@ -180,7 +173,7 @@ public class Utils {
             if (newVvalue > 1.0) {
                 break;
             }
-            //System.out.printf("[%f => %f]\n", scrollPane.getVvalue(), newVvalue);
+            // System.out.printf("[%f => %f]\n", scrollPane.getVvalue(), newVvalue);
             scrollPane.setVvalue(newVvalue);
             highestYPixelShown = highestYPixelShown(scrollPane);
         }
@@ -193,16 +186,17 @@ public class Utils {
         helper.setWrappingWidth(0);
         helper.setLineSpacing(0);
         double w = Math.min(helper.prefWidth(-1), wrappingWidth);
-        helper.setWrappingWidth((int)Math.ceil(w));
+        helper.setWrappingWidth((int) Math.ceil(w));
         double textWidth = Math.ceil(helper.getLayoutBounds().getWidth());
         double textHeight = Math.ceil(helper.getLayoutBounds().getHeight());
-        return new double[] {textWidth, textHeight};
+        return new double[] { textWidth, textHeight };
     }
 
     public static boolean isSingleLetter(String c) {
         return singleLetterIndex(c) != -1;
     }
-    public static int singleLetterIndex(String c){
+
+    public static int singleLetterIndex(String c) {
         int penalty = 0;
         if (c.length() == 2) {
             if (c.charAt(0) != c.charAt(1)) {
@@ -225,8 +219,7 @@ public class Utils {
         if (l != -1) {
             l = 4 * l + 1;
         }
-        return Math.max(u,l) + penalty;
-
+        return Math.max(u, l) + penalty;
 
     }
 
@@ -243,11 +236,13 @@ public class Utils {
     }
 
     static long start;
-    static void start(){
+
+    static void start() {
         start = System.nanoTime();
     }
+
     static void stop(String s) {
-        System.out.printf("Timer for: %s %,d micro\n", s, (System.nanoTime() - start)/1000);
+        System.out.printf("Timer for: %s %,d micro\n", s, (System.nanoTime() - start) / 1000);
         start();
     }
 }

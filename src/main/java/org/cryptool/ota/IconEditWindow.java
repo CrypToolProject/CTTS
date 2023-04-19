@@ -31,7 +31,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
 public class IconEditWindow {
 
     final static double MAX_GRAY_SCALE = 0.60;
@@ -46,7 +45,6 @@ public class IconEditWindow {
 
     static Stage myDialog;
     private static final int ICON_SIZE = 40;
-
 
     static Button save = new Button("Save");
     static Button close = new Button("Cancel");
@@ -90,10 +88,9 @@ public class IconEditWindow {
         myDialog = new Stage();
         myDialog.initModality(Modality.APPLICATION_MODAL);
 
-
         VBox vBox = new VBox();
         vBox.setSpacing(30);
-        //vBox.setAlignment(Pos.CENTER);
+        // vBox.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(10));
 
         Color color = (Color) r.getFill();
@@ -108,40 +105,42 @@ public class IconEditWindow {
         vBox.getChildren().addAll(new HBox(sp, hRegion(0), origImageView));
         vBox.getChildren().addAll(new HBox(maxGrayScaleSb, hRegion(10), maxGrayScaleT));
         vBox.getChildren().addAll(new HBox(blurRadiusSb, hRegion(10), blurRadiusT));
-        //vBox.getChildren().addAll(new HBox(contrastSb, hRegion(10), contrastT));
+        // vBox.getChildren().addAll(new HBox(contrastSb, hRegion(10), contrastT));
         vBox.getChildren().add(new HBox(hRegion(40), save, hRegion(45), close));
-
 
         allowUpdates = false;
 
         maxGrayScaleSb.setMinWidth(Utils.adjust(150));
         maxGrayScaleSb.setMin(0.0);
         maxGrayScaleSb.setMax(1.0);
-        maxGrayScaleSb.valueProperty().addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
-            if (allowUpdates) {
-                update();
-            }
-        });
+        maxGrayScaleSb.valueProperty()
+                .addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+                    if (allowUpdates) {
+                        update();
+                    }
+                });
         maxGrayScaleSb.setValue(maxGrayScale);
 
         blurRadiusSb.setMinWidth(Utils.adjust(150));
         blurRadiusSb.setMin(0.0);
         blurRadiusSb.setMax(10.0);
-        blurRadiusSb.valueProperty().addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
-            if (allowUpdates) {
-                update();
-            }
-        });
+        blurRadiusSb.valueProperty()
+                .addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+                    if (allowUpdates) {
+                        update();
+                    }
+                });
 
         contrastSb.setValue(contrast);
         contrastSb.setMinWidth(Utils.adjust(150));
         contrastSb.setMin(0.0);
         contrastSb.setMax(1.0);
-        contrastSb.valueProperty().addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
-            if (allowUpdates) {
-                update();
-            }
-        });
+        contrastSb.valueProperty()
+                .addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+                    if (allowUpdates) {
+                        update();
+                    }
+                });
         contrastSb.setValue(contrast);
 
         save.setOnAction(arg0 -> {
@@ -156,7 +155,6 @@ public class IconEditWindow {
         });
         close.setOnAction(arg0 -> myDialog.close());
 
-
         Scene myDialogScene = new Scene(vBox);
         myDialog.setScene(myDialogScene);
         myDialog.setMinWidth(Utils.adjust(300));
@@ -169,7 +167,6 @@ public class IconEditWindow {
         allowUpdates = true;
         update();
 
-
         myDialog.show();
     }
 
@@ -180,14 +177,15 @@ public class IconEditWindow {
 
         iconImageView.setImage(transform(snapshot));
 
-        maxGrayScaleT.setText( String.format("Threshold: %4.2f", maxGrayScale));
-        blurRadiusT.setText( String.format(  "Soften: %4.2f", blurRadius/10.0));
-        contrastT.setText( String.format(  "Contrast: %4.2f", contrast));
+        maxGrayScaleT.setText(String.format("Threshold: %4.2f", maxGrayScale));
+        blurRadiusT.setText(String.format("Soften: %4.2f", blurRadius / 10.0));
+        contrastT.setText(String.format("Contrast: %4.2f", contrast));
 
     }
 
     private static WritableImage transform(Image snapshot) {
-        return ImageUtils.binarize(ImageUtils.gaussianBlur(ImageUtils.binarize(ImageUtils.contrast(snapshot, contrast), maxGrayScale), blurRadius), 0.1);
+        return ImageUtils.binarize(ImageUtils.gaussianBlur(
+                ImageUtils.binarize(ImageUtils.contrast(snapshot, contrast), maxGrayScale), blurRadius), 0.1);
     }
 
     static Region hRegion(double gap) {
@@ -199,6 +197,5 @@ public class IconEditWindow {
         region.setMinWidth(Utils.adjust(gap));
         return region;
     }
-
 
 }

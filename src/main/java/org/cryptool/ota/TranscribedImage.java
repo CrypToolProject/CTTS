@@ -16,12 +16,16 @@
 
 package org.cryptool.ota;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.*;
 
 public class TranscribedImage {
     public static TranscribedImage[] transcribedImages;
@@ -44,10 +48,11 @@ public class TranscribedImage {
 
     static Map<String, ArrayList<Rectangle>> symbolTypesCache = null;
 
-    TranscribedImage(String filename){
+    TranscribedImage(String filename) {
         this.filename = filename;
     }
-    static TranscribedImage[] extractFromArgs(String[] args){
+
+    static TranscribedImage[] extractFromArgs(String[] args) {
         int count = 0;
         for (String arg : args) {
             if (ImageUtils.isSupportedFormat(arg)) {
@@ -63,7 +68,8 @@ public class TranscribedImage {
                 if (transcribedImages[count].image == null) {
                     System.exit(-1);
                 }
-                String negativeFilename = arg.substring(0, arg.lastIndexOf(".")) + "_negative"+ arg.substring(arg.lastIndexOf("."));
+                String negativeFilename = arg.substring(0, arg.lastIndexOf(".")) + "_negative"
+                        + arg.substring(arg.lastIndexOf("."));
                 transcribedImages[count].negative = FileUtils.readImage(null, negativeFilename, true);
                 if (transcribedImages[count].negative == null) {
                     WritableImage negative = ImageUtils.negative(transcribedImages[count].image);
@@ -138,7 +144,7 @@ public class TranscribedImage {
         }
     }
 
-    public static boolean change(){
+    public static boolean change() {
         for (int i = 0; i < size(); i++) {
             if (TranscribedImage.image(i).changed) {
                 return true;
@@ -146,6 +152,7 @@ public class TranscribedImage {
         }
         return false;
     }
+
     private static void saveTranscriptions() {
 
         StringBuilder all = new StringBuilder();
@@ -173,7 +180,6 @@ public class TranscribedImage {
 
             all.append(lines);
 
-
         }
 
         FileUtils.writeTextFile("decryption", "all", all.toString());
@@ -182,7 +188,7 @@ public class TranscribedImage {
 
     }
 
-    static Map<String, Double> rawFreq(){
+    static Map<String, Double> rawFreq() {
 
         Map<String, Double> freq = new HashMap<>();
         int total = 0;
@@ -200,7 +206,8 @@ public class TranscribedImage {
         freq.replaceAll((n, v) -> freq.get(n) / finalTotal);
         return freq;
     }
-    static Map<String, Double> freq(String start){
+
+    static Map<String, Double> freq(String start) {
 
         Map<String, Double> freq = new HashMap<>();
         int total = 0;
@@ -226,9 +233,9 @@ public class TranscribedImage {
         return freq;
     }
 
-    static void consistencyCheck(String start){
+    static void consistencyCheck(String start) {
 
-        final String[] criteria = {"01|85", "13|65", "02|72", "20|41", "53|108", "22|131", "18|84"};
+        final String[] criteria = { "01|85", "13|65", "02|72", "20|41", "53|108", "22|131", "18|84" };
 
         for (int idx = 0; idx < size(); idx++) {
 
@@ -248,7 +255,6 @@ public class TranscribedImage {
                         String name = Main.colors.get(key);
                         counts.put(name, counts.getOrDefault(name, 0) + 1);
                     }
-
 
                     for (String c : criteria) {
                         String k1 = c.split("\\|")[0];
@@ -270,10 +276,9 @@ public class TranscribedImage {
             }
         }
 
-
     }
 
-    static double averageSymbolsPerLine(String start){
+    static double averageSymbolsPerLine(String start) {
 
         int total = 0;
         int totalLines = 0;
@@ -298,7 +303,8 @@ public class TranscribedImage {
 
         return 1.0 * total / totalLines;
     }
-    static int totalSymbols(String start){
+
+    static int totalSymbols(String start) {
 
         int total = 0;
         for (int idx = 0; idx < TranscribedImage.size(); idx++) {
@@ -319,7 +325,8 @@ public class TranscribedImage {
 
         return total;
     }
-    static int totalLines(String start){
+
+    static int totalLines(String start) {
 
         int total = 0;
         for (int idx = 0; idx < TranscribedImage.size(); idx++) {
@@ -337,6 +344,7 @@ public class TranscribedImage {
 
         return total;
     }
+
     public static Rectangle nextPosition(int index, Rectangle selected) {
         ArrayList<Rectangle> nodes = Alignment.sortedPositions(index);
         int selectedPos = nodes.indexOf(selected);
@@ -365,7 +373,7 @@ public class TranscribedImage {
         return next;
     }
 
-    public static int totalSymbols(){
+    public static int totalSymbols() {
         int total = 0;
         for (TranscribedImage transcribedImage : transcribedImages) {
             total += transcribedImage.positions.size();
@@ -391,6 +399,7 @@ public class TranscribedImage {
         }
         return null;
     }
+
     public static int rectangleToIndex(Rectangle nr) {
 
         double x = nr.getLayoutX();
@@ -407,6 +416,7 @@ public class TranscribedImage {
         }
         return -1;
     }
+
     public static int idToIndex(String id) {
         String[] values = id.split(":");
         if (values.length != 5) {
@@ -433,6 +443,7 @@ public class TranscribedImage {
             }
         }
     }
+
     public static Rectangle first(int index, Color color) {
 
         for (Rectangle nr : TranscribedImage.image(index).positions) {
@@ -443,6 +454,7 @@ public class TranscribedImage {
         }
         return null;
     }
+
     public static Rectangle first(int index) {
 
         for (Rectangle nr : TranscribedImage.image(index).positions) {
@@ -451,6 +463,7 @@ public class TranscribedImage {
         }
         return null;
     }
+
     public static Rectangle first(Color color) {
 
         buildSymbolTypesCacheIfNeeded();
@@ -461,8 +474,8 @@ public class TranscribedImage {
         }
         return list.get(0);
 
-
     }
+
     public static ArrayList<Rectangle> symbolsOfType(Color color) {
         buildSymbolTypesCacheIfNeeded();
         return symbolTypesCache.getOrDefault(color.toString(), new ArrayList<>());
@@ -503,6 +516,7 @@ public class TranscribedImage {
         symbolTypesCache = null;
         image(index).changed = true;
     }
+
     public static void resizeOrMove(Rectangle r, double x, double y, double w, double h) {
         r.setLayoutX(x);
         r.setLayoutY(y);

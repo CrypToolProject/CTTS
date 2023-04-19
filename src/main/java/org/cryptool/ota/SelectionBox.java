@@ -24,10 +24,11 @@ public class SelectionBox {
 
     static final double MARGIN_WIDTH = 3;
     static final Color COLOR = Color.valueOf("0xfe0000ff");
-    static final Rectangle rect1 = new Rectangle(200,200);
-    static final Rectangle rect2 = new Rectangle(200,200);
-    static final Rectangle rect3 = new Rectangle(200,200);
-    static final Rectangle rect4 = new Rectangle(200,200);
+    static final Rectangle rect1 = new Rectangle(200, 200);
+    static final Rectangle rect2 = new Rectangle(200, 200);
+    static final Rectangle rect3 = new Rectangle(200, 200);
+    static final Rectangle rect4 = new Rectangle(200, 200);
+
     static void add(Pane mainPane) {
         mainPane.getChildren().add(rect1);
         mainPane.getChildren().add(rect2);
@@ -35,14 +36,15 @@ public class SelectionBox {
         mainPane.getChildren().add(rect4);
         hide();
     }
-    static void hide(){
+
+    static void hide() {
         rect1.setVisible(false);
         rect2.setVisible(false);
         rect3.setVisible(false);
         rect4.setVisible(false);
     }
 
-    static void show(Rectangle r){
+    static void show(Rectangle r) {
         rect1.setFill(COLOR);
         rect1.setLayoutX(r.getLayoutX() - MARGIN_WIDTH);
         rect1.setLayoutY(r.getLayoutY() - MARGIN_WIDTH);

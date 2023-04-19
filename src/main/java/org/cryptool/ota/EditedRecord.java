@@ -46,7 +46,7 @@ public class EditedRecord {
         changed = true;
     }
 
-    static String get(String filename, int lineNumber){
+    static String get(String filename, int lineNumber) {
         filename = ImageUtils.removeImageFormat(filename);
         lineNumber++;
         final Map<Integer, EditedRecord> records = filenameToRecords.get(filename);
@@ -68,13 +68,12 @@ public class EditedRecord {
 
     static EditedRecord parse(String filename, String s) {
 
-// specify that we want to search for two groups in the string
+        // specify that we want to search for two groups in the string
         Pattern p = Pattern.compile("([0-9]+)\\|(.+)");
         Matcher m = p.matcher(s);
 
         // if our pattern matches the string, we can try to extract our groups
-        if (m.find())
-        {
+        if (m.find()) {
             // get the two groups we were looking for
             String lineNumberString = m.group(1);
             String text = m.group(2);
@@ -88,7 +87,6 @@ public class EditedRecord {
         }
         return null;
     }
-
 
     @Override
     public String toString() {
@@ -111,7 +109,7 @@ public class EditedRecord {
         return s;
     }
 
-    public static void save(){
+    public static void save() {
         if (changed) {
             StringBuilder all = new StringBuilder();
             int count = 0;
@@ -151,7 +149,8 @@ public class EditedRecord {
         }
 
     }
-    public static void restore(){
+
+    public static void restore() {
         filenameToRecords.clear();
         changed = false;
         int count = 0;
@@ -171,7 +170,7 @@ public class EditedRecord {
             for (String line : f.split("\n")) {
 
                 EditedRecord e = EditedRecord.parse(filenameShort, line);
-                //System.out.println(line);
+                // System.out.println(line);
                 if (e == null) {
                     System.out.printf("Bad edited record: %s\n", line);
                     continue;
@@ -190,15 +189,15 @@ public class EditedRecord {
         }
         System.out.printf("Read %d edited records %d files\n", count, filenameToRecords.size());
 
-
     }
+
     public static void main(String[] args) {
 
         for (String s : new String[] {
                 "t1.png|1|test1",
                 "t1.png|1",
 
-            }) {
+        }) {
             EditedRecord e = EditedRecord.parse("image.png", s);
             String es = e.toString();
             if (!s.equals(es)) {
