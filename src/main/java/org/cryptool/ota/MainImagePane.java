@@ -59,7 +59,7 @@ public class MainImagePane {
             case SYMBOLS:
                 return SubMode.LINES;
             case LINES:
-                if (Main.key.isKeyAvailable()) {
+                if (OTAApplication.key.isKeyAvailable()) {
                     return SubMode.DECRYPTION;
                 } else {
                     return SubMode.SYMBOLS;
@@ -95,7 +95,7 @@ public class MainImagePane {
     }
 
     public static void scrollTo(ScrollPane scrollPane, Node selected) {
-        if (Main.mode != Mode.IMAGE) {
+        if (OTAApplication.mode != Mode.IMAGE) {
             return;
         }
         ArrayList<ArrayList<Rectangle>> lines = Alignment.linesOfSymbols(TranscribedImage.currentImageIndex);
@@ -112,7 +112,7 @@ public class MainImagePane {
         }
 
         Node reference;
-        if (Main.detailed) {
+        if (OTAApplication.detailed) {
             reference = DetailedTranscriptionPane.lineToHbox.get(lineNumber);
         } else {
             reference = selected;
@@ -123,7 +123,7 @@ public class MainImagePane {
         double scaleValue = ((Scale) mainPane.getTransforms().get(0)).getX();
         final double increment = 1.0 / Math.min(10 * lines.size(), 100);
         Utils.adjustVerticalScrollBar(scrollPane, reference, scaleValue, increment);
-        if (!Main.detailed) {
+        if (!OTAApplication.detailed) {
             Utils.adjustHorizontalScrollBar(scrollPane, reference, scaleValue, increment);
         }
     }
@@ -172,18 +172,18 @@ public class MainImagePane {
         scrollPane = new ScrollPane(new Group(mainPane));
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        scrollPane.setOnKeyPressed(Main::keyPressed);
-        mainPane.setOnKeyPressed(Main::keyPressed);
+        scrollPane.setOnKeyPressed(OTAApplication::keyPressed);
+        mainPane.setOnKeyPressed(OTAApplication::keyPressed);
         mainPane.addEventFilter(MouseEvent.ANY, MainImagePane::handleMouseEvents);
         scrollPane.addEventFilter(ScrollEvent.ANY, new ZoomHandler());
 
-        baseRectangle = new SymbolRectangle(50, 50, 0, 0, Main.colors.get(0), MainImagePane.OPACITY, false);
+        baseRectangle = new SymbolRectangle(50, 50, 0, 0, OTAApplication.colors.get(0), MainImagePane.OPACITY, false);
 
     }
 
     static void zoomOut() {
-        if (Main.mode != Mode.CLUSTER) {
-            if (Main.detailed) {
+        if (OTAApplication.mode != Mode.CLUSTER) {
+            if (OTAApplication.detailed) {
                 TranscribedImage.current().detailedScaleValue /= 1.05;
                 zoom(TranscribedImage.current().detailedScaleValue);
             } else {
@@ -194,8 +194,8 @@ public class MainImagePane {
     }
 
     static void zoomIn() {
-        if (Main.mode != Mode.CLUSTER) {
-            if (Main.detailed) {
+        if (OTAApplication.mode != Mode.CLUSTER) {
+            if (OTAApplication.detailed) {
                 TranscribedImage.current().detailedScaleValue *= 1.05;
                 zoom(TranscribedImage.current().detailedScaleValue);
             } else {
@@ -207,14 +207,14 @@ public class MainImagePane {
 
     static void showLines() {
 
-        Main.unselect();
+        OTAApplication.unselect();
 
         subMode = SubMode.LINES;
 
         mainPane.getChildren().clear();
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(TranscribedImage.currentImageIndex);
         for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
-            Color color = Main.colors.get(new Random().nextInt(Colors.all().size()));
+            Color color = OTAApplication.colors.get(new Random().nextInt(Colors.all().size()));
             double sum = 0.0;
             for (Rectangle or : lineOfSymbols) {
                 Rectangle r = new Rectangle(or.getLayoutX(), or.getLayoutY(), or.getWidth(), or.getHeight());
@@ -233,7 +233,7 @@ public class MainImagePane {
 
     static void showDecryption() {
 
-        Main.unselect();
+        OTAApplication.unselect();
 
         subMode = SubMode.DECRYPTION;
 
@@ -257,8 +257,8 @@ public class MainImagePane {
             for (int i = 0; i < lineOfSymbols.size(); i++) {
                 Rectangle r = lineOfSymbols.get(i);
                 Color color = (Color) r.getFill();
-                String c = Main.colors.get(color.toString());
-                String p = Main.key.get(c);
+                String c = OTAApplication.colors.get(color.toString());
+                String p = OTAApplication.key.get(c);
                 if (p != null && !p.isEmpty()) {
 
                     double maxHeight = avgWidth * 0.7;
@@ -343,22 +343,22 @@ public class MainImagePane {
     }
 
     public static void handleMouseEvents(MouseEvent mouseEvent) {
-        if (Main.mode == Mode.IMAGE && Main.detailed) {
+        if (OTAApplication.mode == Mode.IMAGE && OTAApplication.detailed) {
             if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
                 final String id = mouseEvent.getPickResult().getIntersectedNode().getId();
                 if (id != null) {
                     int idx = TranscribedImage.idToIndex(id);
                     Rectangle nr = TranscribedImage.idToRectangle(id);
                     if (idx != -1 && idx == TranscribedImage.currentImageIndex && nr != null) {
-                        Main.symbolSelectedFromImagePane(nr);
+                        OTAApplication.symbolSelectedFromImagePane(nr);
                         if (mouseEvent.getClickCount() == 2) {
-                            Main.selectionArea.toggleLocked();
+                            OTAApplication.selectionArea.toggleLocked();
                         }
                     }
                 }
             }
         }
-        if (Main.mode == Mode.IMAGE && !Main.detailed && MainImagePane.subMode == SubMode.SYMBOLS) {
+        if (OTAApplication.mode == Mode.IMAGE && !OTAApplication.detailed && MainImagePane.subMode == SubMode.SYMBOLS) {
             if (mouseEvent.getX() < imageCanvas.getWidth() && mouseEvent.getY() < imageCanvas.getHeight()
                     && DragResizeMod.acceptMainPaneMouseEvents) {
                 if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
@@ -400,7 +400,7 @@ public class MainImagePane {
                         mainPane.getChildren().add(nr);
                         TranscribedImage.current().add(nr);
 
-                        Main.symbolSelectedFromImagePane(nr);
+                        OTAApplication.symbolSelectedFromImagePane(nr);
 
                     }
                 }

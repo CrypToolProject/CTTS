@@ -66,7 +66,7 @@ public class Key {
         if (!isKeyAvailable()) {
             return false;
         }
-        String transcription = Main.colors.get(colorString);
+        String transcription = OTAApplication.colors.get(colorString);
         if (transcription == null) {
             return false;
         }
@@ -78,7 +78,7 @@ public class Key {
         if (!isKeyAvailable()) {
             return null;
         }
-        String transcription = Main.colors.get(colorString);
+        String transcription = OTAApplication.colors.get(colorString);
         if (transcription == null) {
             return null;
         }
@@ -87,7 +87,7 @@ public class Key {
 
     void covered() {
         if (isKeyAvailable()) {
-            Set<String> covered = new TreeSet<>(Main.colors.values());
+            Set<String> covered = new TreeSet<>(OTAApplication.colors.values());
             for (String c : key.keySet()) {
                 if (!covered.contains(c)) {
                     System.out.printf("Key mapping not used: %s to %s\n", c, key.get(c));
@@ -208,7 +208,7 @@ public class Key {
         Map<String, String> homophones = new TreeMap<>();
         for (String c : key.keySet()) {
             String p = key.get(c);
-            if (Main.colors.values().contains(c)) {
+            if (OTAApplication.colors.values().contains(c)) {
                 String h = homophones.getOrDefault(p, "");
                 if (!h.isEmpty()) {
                     h += "|";

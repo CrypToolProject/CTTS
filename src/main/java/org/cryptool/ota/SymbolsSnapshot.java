@@ -72,7 +72,7 @@ public class SymbolsSnapshot extends Popup {
         // ((Scale) mainPane.getTransforms().get(0)).setX(0.5);
         // ((Scale) mainPane.getTransforms().get(0)).setY(0.5);
 
-        ArrayList<String> usedColors = Main.colors.sortedColors();
+        ArrayList<String> usedColors = OTAApplication.colors.sortedColors();
 
         HBox columns = new HBox();
 
@@ -101,7 +101,7 @@ public class SymbolsSnapshot extends Popup {
         Color color = Color.valueOf(item);
         Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.4);
 
-        String formatted = Main.colors.get(item);
+        String formatted = OTAApplication.colors.get(item);
         if (formatted.isEmpty()) {
             return null;
         }
@@ -143,11 +143,11 @@ public class SymbolsSnapshot extends Popup {
         }
         ciphertextSymbolPane.setMinSize(100, 25);
 
-        if (Main.key.isKeyAvailable()) {
+        if (OTAApplication.key.isKeyAvailable()) {
 
             String plaintext = "";
-            if (Main.key.fromColorStringAvailable(item)) {
-                plaintext = Main.key.fromColorString(item);
+            if (OTAApplication.key.fromColorStringAvailable(item)) {
+                plaintext = OTAApplication.key.fromColorString(item);
             }
 
             if (plaintext.length() > 17) {
@@ -203,12 +203,12 @@ public class SymbolsSnapshot extends Popup {
     public static void keySnapshot() {
 
         SymbolsSnapshot k = new SymbolsSnapshot(true, true);
-        k.show(Main.myStage);
+        k.show(OTAApplication.myStage);
         k.snapshot(true);
         k.hide();
 
         k = new SymbolsSnapshot(true, false);
-        k.show(Main.myStage);
+        k.show(OTAApplication.myStage);
         k.snapshot(false);
         k.hide();
 

@@ -129,7 +129,7 @@ public class Positions implements Serializable {
     private static int positionsWithTranscriptionValues(ArrayList<Rectangle> positions) {
         int count = 0;
         for (Rectangle r : positions) {
-            String c = Main.colors.getOrDefault(r.getFill().toString(), "");
+            String c = OTAApplication.colors.getOrDefault(r.getFill().toString(), "");
             if (c.length() > 0) {
                 count++;
             }
@@ -178,7 +178,7 @@ public class Positions implements Serializable {
             for (Rectangle r : lineOfSymbols) {
                 String line = String.format("%f %f %f %f %3d\n", r.getLayoutX(), r.getLayoutY(), r.getWidth(),
                         r.getHeight(),
-                        Main.colors.indexOf((Color) r.getFill()));
+                        OTAApplication.colors.indexOf((Color) r.getFill()));
                 s.append(line);
             }
             s.append("\n");

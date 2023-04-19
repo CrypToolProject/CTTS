@@ -40,7 +40,7 @@ public class Headers {
 
     static void updateTopTitle() {
         String fs = FileUtils.currentDirectoryFullpathString();
-        Main.myStage.setTitle("Offline Transcription Application (OTA - V3.5 - 02/10/2022) - " + fs);
+        OTAApplication.myStage.setTitle("Offline Transcription Application (OTA - V3.5 - 02/10/2022) - " + fs);
     }
 
     static void updateHeadersAndBottom() {
@@ -48,7 +48,7 @@ public class Headers {
         String f9String = MainImagePane.nextSubMode().toString();
         f9String = f9String.charAt(0) + f9String.toLowerCase().substring(1);
         String f3f4String = "Previous/Next Symbol";
-        if (Main.mode == Mode.IMAGE && !Main.detailed && MainImagePane.subMode == MainImagePane.SubMode.DECRYPTION) {
+        if (OTAApplication.mode == Mode.IMAGE && !OTAApplication.detailed && MainImagePane.subMode == MainImagePane.SubMode.DECRYPTION) {
             f3f4String = "Smaller/Bigger Font";
         }
 
@@ -97,9 +97,9 @@ public class Headers {
                 + " F12 Symbols Types - List View"
                 + " ESC Exit";
 
-        switch (Main.mode) {
+        switch (OTAApplication.mode) {
             case IMAGE:
-                leftTitle.setText(Main.detailed ? " Transcription Review" : " Transcription ");
+                leftTitle.setText(OTAApplication.detailed ? " Transcription Review" : " Transcription ");
                 if (TranscribedImage.transcribedImages.length > 1) {
                     rightTitle.setText(
                             TranscribedImage.current().filename + " [" + (TranscribedImage.currentImageIndex + 1) + "/"
@@ -108,23 +108,23 @@ public class Headers {
                     rightTitle.setText(
                             TranscribedImage.current().filename + " [" + FileUtils.currentDirectoryString() + "] ");
                 }
-                if (Main.key.isKeyAvailable()) {
+                if (OTAApplication.key.isKeyAvailable()) {
                     status.setText("[" + TranscribedImage.current().positions().size() + " symbols in "
-                            + TranscribedImage.current().filename + "]" + " " + "[Key: " + Main.key.getKeyFilename()
+                            + TranscribedImage.current().filename + "]" + " " + "[Key: " + OTAApplication.key.getKeyFilename()
                             + "]");
                 } else {
                     status.setText("[" + TranscribedImage.current().positions().size() + " symbols in "
                             + TranscribedImage.current().filename + "]");
                 }
-                legend.setText(Main.detailed ? LEGEND_IMAGE_DETAILED_VIEW : LEGEND_IMAGE_VIEW);
+                legend.setText(OTAApplication.detailed ? LEGEND_IMAGE_DETAILED_VIEW : LEGEND_IMAGE_VIEW);
 
                 break;
             case CLUSTER:
-                leftTitle.setText(Main.detailed ? " Symbols Types - Grid View" : " Symbols Types - List View");
-                legend.setText(Main.detailed ? LEGEND_CLUSTER_DETAILED_VIEW : LEGEND_CLUSTER_VIEW);
-                if (Main.key.isKeyAvailable()) {
+                leftTitle.setText(OTAApplication.detailed ? " Symbols Types - Grid View" : " Symbols Types - List View");
+                legend.setText(OTAApplication.detailed ? LEGEND_CLUSTER_DETAILED_VIEW : LEGEND_CLUSTER_VIEW);
+                if (OTAApplication.key.isKeyAvailable()) {
                     status.setText("[" + TranscribedImage.totalSymbols() + " symbols in " + TranscribedImage.size()
-                            + " documents]" + " " + "[Key: " + Main.key.getKeyFilename() + "]");
+                            + " documents]" + " " + "[Key: " + OTAApplication.key.getKeyFilename() + "]");
                 } else {
                     status.setText("[" + TranscribedImage.totalSymbols() + " symbols in " + TranscribedImage.size()
                             + " documents]");
@@ -134,7 +134,7 @@ public class Headers {
 
         }
 
-        if (Main.colors.changed() || Main.key.changed() || TranscribedImage.change()) {
+        if (OTAApplication.colors.changed() || OTAApplication.key.changed() || TranscribedImage.change()) {
             status.setText(status.getText() + " *");
         }
 
@@ -157,7 +157,7 @@ public class Headers {
         Timeline tl = new Timeline(
                 new KeyFrame(Duration.millis(1000),
                         event -> {
-                            boolean changed = Main.colors.changed() || Main.key.changed() || TranscribedImage.change()
+                            boolean changed = OTAApplication.colors.changed() || OTAApplication.key.changed() || TranscribedImage.change()
                                     || EditedRecord.changed;
                             boolean changedShown = status.getText().endsWith("*");
                             if (changedShown != changed) {

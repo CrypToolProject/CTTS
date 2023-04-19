@@ -145,7 +145,7 @@ public class ImageEditWindow {
         myDialog.setScene(myDialogScene);
         myDialog.setMinWidth(Utils.adjust(300));
         myDialog.setMinHeight(Utils.adjust(300));
-        myDialog.setTitle("Edit Icon - " + Main.colors.get(color.toString()));
+        myDialog.setTitle("Edit Icon - " + OTAApplication.colors.get(color.toString()));
 
         close.setMinWidth(70);
 

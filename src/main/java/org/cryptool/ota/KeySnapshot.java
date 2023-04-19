@@ -67,25 +67,25 @@ public class KeySnapshot extends Popup {
         canvas.setHeight(100);
 
         Set<String> letters = new TreeSet<>();
-        for (String v : Main.key.values()) {
+        for (String v : OTAApplication.key.values()) {
             if (v.length() == 1 && (RAW_PLAINTEXT_LETTERS.contains(v) || RAW_PLAINTEXT_LETTERS_LOWER.contains(v))) {
                 letters.add(v);
             }
         }
         Set<String> doubles = new TreeSet<>();
-        for (String v : Main.key.values()) {
+        for (String v : OTAApplication.key.values()) {
             if (v.length() == 2 && (RAW_PLAINTEXT_LETTERS.contains(v.substring(0, 1))
                     || RAW_PLAINTEXT_LETTERS_LOWER.contains(v.substring(0, 1))) && v.charAt(0) == v.charAt(1)) {
                 doubles.add(v);
             }
         }
         ArrayList<String> others = new ArrayList<>();
-        for (String colorString : Main.colors.sortedColors()) {
-            String c = Main.colors.get(colorString);
+        for (String colorString : OTAApplication.colors.sortedColors()) {
+            String c = OTAApplication.colors.get(colorString);
             if (c == null || c.isEmpty()) {
                 continue;
             }
-            String v = Main.key.get(c);
+            String v = OTAApplication.key.get(c);
             if (v != null && !v.isEmpty() && !letters.contains(v) && !doubles.contains(v)) {
                 if (!others.contains(v)) {
                     others.add(v);
@@ -180,12 +180,12 @@ public class KeySnapshot extends Popup {
             StackPane.setAlignment(text, Pos.CENTER);
             sp.setBackground(letterBg);
             vBox.getChildren().add(sp);
-            for (String colorString : Main.colors.keySet()) {
-                final String transcription = Main.colors.get(colorString);
+            for (String colorString : OTAApplication.colors.keySet()) {
+                final String transcription = OTAApplication.colors.get(colorString);
                 if (transcription == null || transcription.isEmpty()) {
                     continue;
                 }
-                final String decryption = Main.key.get(transcription);
+                final String decryption = OTAApplication.key.get(transcription);
                 if (decryption == null || decryption.isEmpty()) {
                     continue;
                 }
@@ -221,12 +221,12 @@ public class KeySnapshot extends Popup {
         int count = 0;
         for (String word : words) {
 
-            for (String colorString : Main.colors.keySet()) {
-                final String transcription = Main.colors.get(colorString);
+            for (String colorString : OTAApplication.colors.keySet()) {
+                final String transcription = OTAApplication.colors.get(colorString);
                 if (transcription == null || transcription.isEmpty()) {
                     continue;
                 }
-                final String decryption = Main.key.get(transcription);
+                final String decryption = OTAApplication.key.get(transcription);
                 if (decryption == null || decryption.isEmpty() || decryption.equals("?") || decryption.equals("_")) {
                     continue;
                 }
@@ -244,12 +244,12 @@ public class KeySnapshot extends Popup {
             HBox hBox = new HBox();
             boolean add = false;
 
-            for (String colorString : Main.colors.keySet()) {
-                final String transcription = Main.colors.get(colorString);
+            for (String colorString : OTAApplication.colors.keySet()) {
+                final String transcription = OTAApplication.colors.get(colorString);
                 if (transcription == null || transcription.isEmpty()) {
                     continue;
                 }
-                final String decryption = Main.key.get(transcription);
+                final String decryption = OTAApplication.key.get(transcription);
                 if (decryption == null || decryption.isEmpty() || decryption.equals("?") || decryption.equals("_")) {
                     continue;
                 }
@@ -296,12 +296,12 @@ public class KeySnapshot extends Popup {
         ArrayList<HBox> hBoxes = new ArrayList<>();
         HBox hBox = new HBox();
 
-        for (String colorString : Main.colors.sortedColors()) {
-            final String transcription = Main.colors.get(colorString);
+        for (String colorString : OTAApplication.colors.sortedColors()) {
+            final String transcription = OTAApplication.colors.get(colorString);
             if (transcription == null || transcription.isEmpty()) {
                 continue;
             }
-            final String decryption = Main.key.get(transcription);
+            final String decryption = OTAApplication.key.get(transcription);
 
             if (value.equals("?")) {
                 if (decryption != null && !decryption.isEmpty() && !decryption.equals(value)) {
@@ -354,12 +354,12 @@ public class KeySnapshot extends Popup {
 
     public static void keySnapshot() {
 
-        if (!Main.key.isKeyAvailable()) {
+        if (!OTAApplication.key.isKeyAvailable()) {
             return;
         }
 
         KeySnapshot k = new KeySnapshot();
-        k.show(Main.myStage);
+        k.show(OTAApplication.myStage);
         k.snapshot();
         k.hide();
 

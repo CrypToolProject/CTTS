@@ -88,13 +88,13 @@ public class SelectionArea extends HBox {
                 return;
             }
 
-            if (!newText.equals(oldText) && Main.colors.available() && selectedColor != null) {
+            if (!newText.equals(oldText) && OTAApplication.colors.available() && selectedColor != null) {
 
-                Main.colors.put(selectedColor.toString(), newText);
+                OTAApplication.colors.put(selectedColor.toString(), newText);
 
                 updateDecryptionFields(selectedColor, true);
 
-                Main.colorParametersChanged(selectedColor, true, false, true /* to be on the safe side */);
+                OTAApplication.colorParametersChanged(selectedColor, true, false, true /* to be on the safe side */);
             }
 
         });
@@ -112,19 +112,19 @@ public class SelectionArea extends HBox {
                 return;
             }
 
-            if (!newText.equals(oldText) && Main.colors.available() && selectedColor != null) {
+            if (!newText.equals(oldText) && OTAApplication.colors.available() && selectedColor != null) {
 
-                final String c = Main.colors.get(selectedColor.toString());
+                final String c = OTAApplication.colors.get(selectedColor.toString());
                 if (newText.isEmpty()) {
-                    Main.key.remove(c);
+                    OTAApplication.key.remove(c);
                 } else {
-                    Main.key.put(c, newText);
+                    OTAApplication.key.put(c, newText);
                 }
-                Main.key.markAsChanged();
+                OTAApplication.key.markAsChanged();
 
-                lockUnlock.setSelected(Key.lockedC(c) || Main.key.lockedP(c));
+                lockUnlock.setSelected(Key.lockedC(c) || OTAApplication.key.lockedP(c));
 
-                Main.colorParametersChanged(selectedColor, false, false, true);
+                OTAApplication.colorParametersChanged(selectedColor, false, false, true);
             }
 
         });
@@ -153,7 +153,7 @@ public class SelectionArea extends HBox {
         final Font smallButtonFont = new Font(Utils.adjust(12));
         lockUnlock.setFont(smallButtonFont);
 
-        lockUnlock.setVisible(Main.key.isKeyAvailable());
+        lockUnlock.setVisible(OTAApplication.key.isKeyAvailable());
         lockUnlock.setOnAction(e -> {
             boolean newState = lockUnlock.isSelected();
             updateLocked(newState);
@@ -172,14 +172,14 @@ public class SelectionArea extends HBox {
                         new FileChooser.ExtensionFilter("Png Files", "*.png"),
                         new FileChooser.ExtensionFilter("Jpeg Files", "*.jpg"));
                 fileChooser.setInitialDirectory(new File(Icons.ICONS_DIR_NAME));
-                File selectedFile = fileChooser.showOpenDialog(Main.myStage);
+                File selectedFile = fileChooser.showOpenDialog(OTAApplication.myStage);
                 if (selectedFile == null) {
                     return;
                 }
                 if (Icons.readIcon(selectedColor, selectedFile.getAbsolutePath(), false)) {
                     Icons.saveIcon(selectedColor, Icons.get(selectedColor.toString()));
 
-                    Main.colorParametersChanged(selectedColor, false, true, false);
+                    OTAApplication.colorParametersChanged(selectedColor, false, true, false);
                 }
             }
         });
@@ -192,7 +192,7 @@ public class SelectionArea extends HBox {
         deleteIconButton.setOnMousePressed(event -> {
             if (selectedColor != null) {
                 if (Icons.deleteIcon(selectedColor)) {
-                    Main.colorParametersChanged(selectedColor, false, true, false);
+                    OTAApplication.colorParametersChanged(selectedColor, false, true, false);
                 }
             }
         });
@@ -283,7 +283,7 @@ public class SelectionArea extends HBox {
         rightScrollPane.setMinHeight(Utils.adjust(310));
         rightScrollPane.setMaxHeight(Utils.adjust(310));
 
-        Main.unselect();
+        OTAApplication.unselect();
 
         setMinHeight(Utils.adjust(320));
         setMaxHeight(Utils.adjust(320));
@@ -293,30 +293,30 @@ public class SelectionArea extends HBox {
 
     public void updateLocked(boolean newState) {
         boolean transcriptionChanged = false;
-        String c = Main.colors.get(selectedColor.toString());
-        String p = Main.key.fromTranscriptionOrDefault(c, "");
+        String c = OTAApplication.colors.get(selectedColor.toString());
+        String p = OTAApplication.key.fromTranscriptionOrDefault(c, "");
         if (p == null) {
             p = "";
         }
 
         if (newState) {
-            if (!Key.lockedC(c) && !Main.key.lockedP(c)) {
+            if (!Key.lockedC(c) && !OTAApplication.key.lockedP(c)) {
                 if (c.isEmpty()) {
-                    Main.colors.put(selectedColor.toString(), "_");
+                    OTAApplication.colors.put(selectedColor.toString(), "_");
                     transcriptionChanged = true;
-                    Main.key.put("_", "_");
+                    OTAApplication.key.put("_", "_");
                 } else {
                     if (p.length() >= 1 && p.charAt(0) >= 'a' && p.charAt(0) <= 'z') {
                         p = p.substring(0, 1).toUpperCase() + p.substring(1);
                     } else {
                         p = "_" + p;
                     }
-                    Main.key.put(c, p);
+                    OTAApplication.key.put(c, p);
                 }
             }
         } else {
-            if (Key.lockedC(c) && Main.key.lockedP(c)) {
-                Main.key.remove(c);
+            if (Key.lockedC(c) && OTAApplication.key.lockedP(c)) {
+                OTAApplication.key.remove(c);
                 c = c.substring(1);
                 if (c.isEmpty()) {
                     c = selectedColor.toString();
@@ -329,15 +329,15 @@ public class SelectionArea extends HBox {
                         p = p.substring(1);
                     }
                 }
-                Main.key.put(c, p);
+                OTAApplication.key.put(c, p);
             } else if (Key.lockedC(c)) {
-                Main.key.remove(c);
+                OTAApplication.key.remove(c);
                 c = c.substring(1);
                 if (c.isEmpty()) {
                     c = selectedColor.toString();
                 }
-                Main.key.put(c, p);
-            } else if (Main.key.lockedP(c)) {
+                OTAApplication.key.put(c, p);
+            } else if (OTAApplication.key.lockedP(c)) {
                 while ((p.length() >= 1 && p.charAt(0) >= 'A' && p.charAt(0) <= 'Z') || p.startsWith("_")) {
                     if (p.charAt(0) >= 'A' && p.charAt(0) <= 'Z') {
                         p = p.substring(0, 1).toLowerCase() + p.substring(1);
@@ -346,18 +346,18 @@ public class SelectionArea extends HBox {
                         p = p.substring(1);
                     }
                 }
-                Main.key.put(c, p);
+                OTAApplication.key.put(c, p);
             }
         }
         transcriptionTextField.setText(c);
         updateDecryptionFields(selectedColor, false);
-        Main.colorParametersChanged(selectedColor, transcriptionChanged, false, true /* to be on the safe side */);
+        OTAApplication.colorParametersChanged(selectedColor, transcriptionChanged, false, true /* to be on the safe side */);
     }
 
     public void toggleLocked() {
-        String c = Main.colors.get(selectedColor.toString());
+        String c = OTAApplication.colors.get(selectedColor.toString());
 
-        if (Key.lockedC(c) || Main.key.lockedP(c)) {
+        if (Key.lockedC(c) || OTAApplication.key.lockedP(c)) {
             updateLocked(false);
         } else {
             updateLocked(true);
@@ -449,8 +449,8 @@ public class SelectionArea extends HBox {
     public void selectColor(Color color, boolean force) {
         boolean colorChanged = !color.equals(selectedColor);
         if (colorChanged || force) {
-            decryptionTextField.setVisible(Main.key.isKeyAvailable());
-            lockUnlock.setVisible(Main.key.isKeyAvailable());
+            decryptionTextField.setVisible(OTAApplication.key.isKeyAvailable());
+            lockUnlock.setVisible(OTAApplication.key.isKeyAvailable());
 
             leftPane.setVisible(true);
 
@@ -473,7 +473,7 @@ public class SelectionArea extends HBox {
 
             lastForcedTextUpdate = System.currentTimeMillis();
 
-            transcriptionTextField.setText(Main.colors.get(color.toString()));
+            transcriptionTextField.setText(OTAApplication.colors.get(color.toString()));
             updateDecryptionFields(color, true);
             updateIconButtonsVisibility();
 
@@ -488,7 +488,7 @@ public class SelectionArea extends HBox {
     }
 
     private void updateDecryptionFields(Color color, boolean setSelected) {
-        if (!Main.key.isKeyAvailable()) {
+        if (!OTAApplication.key.isKeyAvailable()) {
             decryptionTextField.setVisible(false);
             lockUnlock.setVisible(false);
             return;
@@ -496,14 +496,14 @@ public class SelectionArea extends HBox {
         decryptionTextField.setVisible(true);
         lockUnlock.setVisible(true);
         String plaintext = "";
-        String c = Main.colors.get(color.toString());
-        if (Main.key.fromTranscriptionAvailable(c)) {
-            plaintext = Main.key.fromTranscription(c);
+        String c = OTAApplication.colors.get(color.toString());
+        if (OTAApplication.key.fromTranscriptionAvailable(c)) {
+            plaintext = OTAApplication.key.fromTranscription(c);
         }
         decryptionTextField.setText(plaintext);
 
         if (setSelected) {
-            lockUnlock.setSelected(Main.key.lockedP(c) || Key.lockedC(c));
+            lockUnlock.setSelected(OTAApplication.key.lockedP(c) || Key.lockedC(c));
         }
     }
 
@@ -586,7 +586,7 @@ public class SelectionArea extends HBox {
                             selectRectangle(idx, nr);
                             // Utils.stop("Select rectangle");
 
-                            Main.symbolClickedFromSelectionArea(clickedId, idx, nr);
+                            OTAApplication.symbolClickedFromSelectionArea(clickedId, idx, nr);
                             // Utils.stop("symbolClickedFromSelectionArea");
 
                         });

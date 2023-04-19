@@ -287,15 +287,15 @@ public class CryptanalysisWindow {
                     params.referenceSequences();
 
                     params.lockedHomophones.clear();
-                    if (Main.key.isKeyAvailable() && !params.ignoreCurrentKey) {
+                    if (OTAApplication.key.isKeyAvailable() && !params.ignoreCurrentKey) {
                         Set<String> distinctPlaintext = new TreeSet<>();
                         for (Token t : params.referenceTokens) {
                             if (t.type == Token.Type.HOMOPHONE) {
                                 distinctPlaintext.add(t.p);
                             }
                         }
-                        for (String c : Main.key.keySet()) {
-                            final String p = Main.key.get(c);
+                        for (String c : OTAApplication.key.keySet()) {
+                            final String p = OTAApplication.key.get(c);
                             String pLowerCase = p.toLowerCase(Locale.ROOT);
                             if (params.jToI && pLowerCase.equals("j")) {
                                 pLowerCase = "i";
@@ -316,7 +316,7 @@ public class CryptanalysisWindow {
                                 pLowerCase = "c";
                             }
 
-                            if (Main.key.lockedHomophoneP(c)) {
+                            if (OTAApplication.key.lockedHomophoneP(c)) {
                                 if (distinctPlaintext.contains(pLowerCase)) {
                                     params.lockedHomophones.put(c, pLowerCase);
                                 }
@@ -347,7 +347,7 @@ public class CryptanalysisWindow {
             Cryptanalysis.stop();
             boolean save = false;
 
-            if (Main.key.isKeyAvailable()) {
+            if (OTAApplication.key.isKeyAvailable()) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
                 alert.setTitle("Save key from cryptanalysis");
@@ -373,7 +373,7 @@ public class CryptanalysisWindow {
 
                 replaceKey(params, Cryptanalysis.keySb);
 
-                Main.fullKeyChanged();
+                OTAApplication.fullKeyChanged();
             }
         });
 
@@ -521,7 +521,7 @@ public class CryptanalysisWindow {
                                             return o1.compareToIgnoreCase(o2);
 
                                         });
-                                        final ArrayList<String> colors = Main.colors.sortedColors();
+                                        final ArrayList<String> colors = OTAApplication.colors.sortedColors();
                                         double factor = 0.65;
                                         final double cellSizeAdjusted = factor * Utils.adjust(ICON_SIZE);
                                         final Font pFont = Font.font("Verdana", FontWeight.BOLD,
@@ -598,7 +598,7 @@ public class CryptanalysisWindow {
 
                                                 if (d != null && d.equals(p)) {
                                                     for (String colorString : colors) {
-                                                        if (Main.colors.get(colorString).equals(c)) {
+                                                        if (OTAApplication.colors.get(colorString).equals(c)) {
                                                             Image iconImage = Icons.get(colorString);
 
                                                             if (iconImage != null) {
@@ -791,7 +791,7 @@ public class CryptanalysisWindow {
 
     public static void replaceKey(CryptanalysisParameters parameters, StringBuilder keySb) {
         Key newKey = newKeyWithLocks(parameters, keySb);
-        Main.key.replace(newKey, "#ORIGIN: Cryptanalysis by OTA");
+        OTAApplication.key.replace(newKey, "#ORIGIN: Cryptanalysis by OTA");
 
     }
 
@@ -800,14 +800,14 @@ public class CryptanalysisWindow {
 
         newKey.parse("From cryptanalysis", keyString);
         if (!parameters.ignoreCurrentKey) {
-            for (String c : Main.key.keySet()) {
+            for (String c : OTAApplication.key.keySet()) {
 
                 if (Key.lockedC(c)) {
                     continue;
                 }
 
-                if (Main.key.lockedP(c)) {
-                    newKey.put(c, Main.key.fromTranscription(c));
+                if (OTAApplication.key.lockedP(c)) {
+                    newKey.put(c, OTAApplication.key.fromTranscription(c));
                 }
             }
         }
@@ -815,7 +815,7 @@ public class CryptanalysisWindow {
         Set<String> toLock = lockedBasedOnReferenceSequences(params);
 
         for (String c : toLock) {
-            newKey.put(c, Main.key.get(c).toUpperCase());
+            newKey.put(c, OTAApplication.key.get(c).toUpperCase());
         }
         return newKey;
     }
@@ -828,7 +828,7 @@ public class CryptanalysisWindow {
             String s = "";
             for (int z = 0; z < params.referenceSequenceLengthForLocking; z++) {
                 String c = ciphertext.get(i + z).c;
-                final String pp = Main.key.get(c);
+                final String pp = OTAApplication.key.get(c);
                 if (pp != null && !pp.isEmpty()) {
                     s += pp;
                 } else {
@@ -983,10 +983,10 @@ public class CryptanalysisWindow {
         }
 
         int locked = 0;
-        if (Main.key.isKeyAvailable() && !params.ignoreCurrentKey) {
+        if (OTAApplication.key.isKeyAvailable() && !params.ignoreCurrentKey) {
             params.lockedHomophones.clear();
-            for (String c : Main.key.keySet()) {
-                String p = Main.key.get(c);
+            for (String c : OTAApplication.key.keySet()) {
+                String p = OTAApplication.key.get(c);
                 String pLowerCase = p.toLowerCase(Locale.ROOT);
 
                 if (params.jToI && pLowerCase.equals("j")) {
@@ -1008,7 +1008,7 @@ public class CryptanalysisWindow {
                     pLowerCase = "c";
                 }
 
-                if (Main.key.lockedHomophoneP(c)) {
+                if (OTAApplication.key.lockedHomophoneP(c)) {
                     if (distinctPlaintext.contains(pLowerCase)) {
                         params.lockedHomophones.put(c, pLowerCase);
                     }
@@ -1044,15 +1044,15 @@ public class CryptanalysisWindow {
             for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
                 for (Rectangle symbol : lineOfSymbols) {
                     final String colorString = symbol.getFill().toString();
-                    if (Main.colors.contains(colorString)) {
-                        final String c = Main.colors.get(colorString);
+                    if (OTAApplication.colors.contains(colorString)) {
+                        final String c = OTAApplication.colors.get(colorString);
 
                         if (Key.lockedC(c)) {
                             tokens.add(new Token(Token.Type.OTHER, c));
-                        } else if (Main.key.lockedOtherP(c) && !params.ignoreCurrentKey) {
-                            tokens.add(new Token(Token.Type.OTHER, c, Main.key.fromTranscription(c)));
-                        } else if (Main.key.lockedHomophoneP(c) && !params.ignoreCurrentKey) {
-                            tokens.add(new Token(Token.Type.HOMOPHONE, c, Main.key.fromTranscription(c)));
+                        } else if (OTAApplication.key.lockedOtherP(c) && !params.ignoreCurrentKey) {
+                            tokens.add(new Token(Token.Type.OTHER, c, OTAApplication.key.fromTranscription(c)));
+                        } else if (OTAApplication.key.lockedHomophoneP(c) && !params.ignoreCurrentKey) {
+                            tokens.add(new Token(Token.Type.HOMOPHONE, c, OTAApplication.key.fromTranscription(c)));
                         } else {
                             tokens.add(new Token(Token.Type.HOMOPHONE, c));
                         }

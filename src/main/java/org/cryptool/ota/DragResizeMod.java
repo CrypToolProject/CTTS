@@ -35,14 +35,14 @@ public class DragResizeMod {
     private static final OnDragResizeEventListener defaultListener = new OnDragResizeEventListener() {
         @Override
         public void onDrag(Node node, double x, double y, double h, double w) {
-            if (Main.mode == Mode.IMAGE && !Main.detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
+            if (OTAApplication.mode == Mode.IMAGE && !OTAApplication.detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
                 setNodeSize(node, x, y, h, w);
             }
         }
 
         @Override
         public void onResize(Node node, double x, double y, double h, double w) {
-            if (Main.mode == Mode.IMAGE && !Main.detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
+            if (OTAApplication.mode == Mode.IMAGE && !OTAApplication.detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
                 setNodeSize(node, x, y, h, w);
             }
         }
@@ -52,7 +52,7 @@ public class DragResizeMod {
                 final Rectangle r = (Rectangle) node;
 
                 TranscribedImage.resizeOrMove(r, x, y, w, h);
-                Main.symbolResizedFromImagePane(r);
+                OTAApplication.symbolResizedFromImagePane(r);
             }
         }
     };
@@ -217,7 +217,7 @@ public class DragResizeMod {
 
         acceptMainPaneMouseEvents = false;
 
-        Main.symbolSelectedFromImagePane((Rectangle) node);
+        OTAApplication.symbolSelectedFromImagePane((Rectangle) node);
 
         if (isInResizeZone(event)) {
             setNewInitialEventCoordinates(event);

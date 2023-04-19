@@ -60,7 +60,7 @@ public class FullKeyWindow extends ScrollPane {
     }
 
     public void refresh() {
-        ArrayList<String> usedColors = Main.colors.sortedColors();
+        ArrayList<String> usedColors = OTAApplication.colors.sortedColors();
         tilePane.getChildren().clear();
         for (String color : usedColors) {
             final HBox line = ClusterListView.line(color, true, false);

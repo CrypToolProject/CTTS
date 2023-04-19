@@ -40,7 +40,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.cryptool.ota.NewMain</mainClass>
+                            <mainClass>org.cryptool.ota.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

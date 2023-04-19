@@ -34,7 +34,7 @@ public class Icons {
         if (image != null) {
             colorStringToImage.put(rgb.toString(), image);
         }
-        Main.colors.markAsChanged();
+        OTAApplication.colors.markAsChanged();
     }
 
     public static boolean readIcon(Color rgb, boolean silent) {
@@ -66,7 +66,7 @@ public class Icons {
 
         if (FileUtils.deleteFile(ICONS_DIR_NAME, rgb + ".png")) {
             colorStringToImage.remove(rgb.toString());
-            Main.colors.markAsChanged();
+            OTAApplication.colors.markAsChanged();
             return true;
         } else {
             return false;

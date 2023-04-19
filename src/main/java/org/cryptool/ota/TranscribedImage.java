@@ -107,7 +107,7 @@ public class TranscribedImage {
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
         for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
             for (Rectangle r : lineOfSymbols) {
-                lines.append(Main.colors.get(r.getFill().toString())).append(";");
+                lines.append(OTAApplication.colors.get(r.getFill().toString())).append(";");
             }
             lines.append("\n");
         }
@@ -133,7 +133,7 @@ public class TranscribedImage {
 
     static void saveTranscriptionsDecryptionsPositions() {
         saveTranscriptions();
-        if (Main.key.isKeyAvailable()) {
+        if (OTAApplication.key.isKeyAvailable()) {
             saveDecryptions();
         }
         for (int i = 0; i < size(); i++) {
@@ -184,7 +184,7 @@ public class TranscribedImage {
 
         FileUtils.writeTextFile("decryption", "all", all.toString());
 
-        Main.key.covered();
+        OTAApplication.key.covered();
 
     }
 
@@ -222,7 +222,7 @@ public class TranscribedImage {
                 total += transcribedImage.positions.size();
                 for (Rectangle r : transcribedImage.positions) {
                     final String key = r.getFill().toString();
-                    String name = Main.colors.get(key);
+                    String name = OTAApplication.colors.get(key);
                     freq.put(name, freq.getOrDefault(name, 0.0) + 1);
                 }
             }
@@ -252,7 +252,7 @@ public class TranscribedImage {
                     Map<String, Integer> counts = new TreeMap<>();
                     for (Rectangle r : line) {
                         final String key = r.getFill().toString();
-                        String name = Main.colors.get(key);
+                        String name = OTAApplication.colors.get(key);
                         counts.put(name, counts.getOrDefault(name, 0) + 1);
                     }
 

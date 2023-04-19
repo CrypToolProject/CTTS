@@ -99,7 +99,7 @@ public class SimulatedImage extends Popup {
 
     public static void simulatedImageSnapshot(int i, boolean effects, boolean decryption, boolean edited) {
         SimulatedImage p = new SimulatedImage(i, effects, decryption, edited);
-        p.show(Main.myStage);
+        p.show(OTAApplication.myStage);
         p.snapshot(effects, decryption, edited);
         p.hide();
     }
@@ -224,7 +224,7 @@ public class SimulatedImage extends Popup {
 
             int size = 50;
             for (int z = 0; z < (allSymbols.size() + size - 1) / size; z++) {
-                HBox line = symbolDisplayLine(Main.key,
+                HBox line = symbolDisplayLine(OTAApplication.key,
                         allSymbols.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)),
                         allDecryption.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)), effects,
                         decryption);
@@ -238,7 +238,7 @@ public class SimulatedImage extends Popup {
             int l = 0;
             for (ArrayList<Rectangle> lineOfSymbols : Alignment.linesOfSymbols(index)) {
                 ArrayList<String> decryptionSequence = DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
-                HBox line = symbolDisplayLine(Main.key, lineOfSymbols, decryptionSequence, effects, decryption);
+                HBox line = symbolDisplayLine(OTAApplication.key, lineOfSymbols, decryptionSequence, effects, decryption);
                 lines.getChildren().add(line);
                 if (decryption) {
                     String e = EditedRecord.get(TranscribedImage.image(index).filename, l);

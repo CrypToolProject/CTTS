@@ -172,7 +172,7 @@ public class Colors implements Serializable {
     }
 
     public void sortByDecryption() {
-        if (!Main.key.isKeyAvailable()) {
+        if (!OTAApplication.key.isKeyAvailable()) {
             defaultSorting();
             return;
         }
@@ -299,8 +299,8 @@ public class Colors implements Serializable {
     private int compareByDecryption(String o1, String o2) {
         String t1 = colorStringToText.get(o1);
         String t2 = colorStringToText.get(o2);
-        String d1 = Main.key.fromTranscription(t1);
-        String d2 = Main.key.fromTranscription(t2);
+        String d1 = OTAApplication.key.fromTranscription(t1);
+        String d2 = OTAApplication.key.fromTranscription(t2);
         if (d1 == null && d2 == null) {
             return defaultComparator(o1, o2);
         }

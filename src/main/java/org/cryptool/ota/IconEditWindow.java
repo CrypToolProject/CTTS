@@ -148,7 +148,7 @@ public class IconEditWindow {
 
             Icons.saveIcon(color, image);
             if (Icons.readIcon(color, false)) {
-                Main.colorParametersChanged(color, false, true, false);
+                OTAApplication.colorParametersChanged(color, false, true, false);
             }
 
             myDialog.close();
@@ -159,7 +159,7 @@ public class IconEditWindow {
         myDialog.setScene(myDialogScene);
         myDialog.setMinWidth(Utils.adjust(300));
         myDialog.setMinHeight(Utils.adjust(300));
-        myDialog.setTitle("Edit Icon - " + Main.colors.get(color.toString()));
+        myDialog.setTitle("Edit Icon - " + OTAApplication.colors.get(color.toString()));
 
         close.setMinWidth(70);
         save.setMinWidth(70);

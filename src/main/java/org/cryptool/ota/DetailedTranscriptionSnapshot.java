@@ -69,7 +69,7 @@ public class DetailedTranscriptionSnapshot extends Popup {
 
     static void detailedTranscriptionSnapshot(int i) {
         DetailedTranscriptionSnapshot p = new DetailedTranscriptionSnapshot(true, i);
-        p.show(Main.myStage);
+        p.show(OTAApplication.myStage);
         p.snapshot();
         p.hide();
     }

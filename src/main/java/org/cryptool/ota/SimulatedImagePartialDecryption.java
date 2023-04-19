@@ -86,7 +86,7 @@ public class SimulatedImagePartialDecryption extends Popup {
 
     public static void simulatedImageSnapshot(int index) {
         SimulatedImagePartialDecryption p = new SimulatedImagePartialDecryption(index);
-        p.show(Main.myStage);
+        p.show(OTAApplication.myStage);
         p.snapshot();
         p.hide();
     }
@@ -104,7 +104,7 @@ public class SimulatedImagePartialDecryption extends Popup {
         }
 
         for (int z = 0; z < (allSymbols.size() + SYMBOLS_PER_LINE - 1) / SYMBOLS_PER_LINE; z++) {
-            HBox line = symbolDisplayLine(Main.key,
+            HBox line = symbolDisplayLine(OTAApplication.key,
                     allSymbols.subList(z * SYMBOLS_PER_LINE, Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)),
                     allDecryption.subList(z * SYMBOLS_PER_LINE,
                             Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)));

@@ -129,7 +129,7 @@ public class DetailedTranscriptionPane {
             }
 
             vBox.getChildren().add(iPane);
-            if (Main.key.isKeyAvailable()) {
+            if (OTAApplication.key.isKeyAvailable()) {
                 if (showTranscriptionValue) {
                     vBox.getChildren().add(region);
                 }
@@ -163,7 +163,7 @@ public class DetailedTranscriptionPane {
             }
 
             final String colorString = color.toString();
-            String c = Main.colors.get(colorString);
+            String c = OTAApplication.colors.get(colorString);
             if (Selection.contains(id)) {
                 symbolBackgroundColor = Color.RED;
             }
@@ -173,7 +173,7 @@ public class DetailedTranscriptionPane {
             cText.setText(c);
 
             String p = "";
-            if (Main.key.isKeyAvailable()) {
+            if (OTAApplication.key.isKeyAvailable()) {
                 cText.setFont(cFont);
                 p = decryption;
             } else {
@@ -215,7 +215,7 @@ public class DetailedTranscriptionPane {
     }
 
     private static void updateSpBorder(Rectangle r, String id) {
-        if (Main.selectionArea.selectedColor != null && Main.selectionArea.selectedColor.equals(r.getFill())) {
+        if (OTAApplication.selectionArea.selectedColor != null && OTAApplication.selectionArea.selectedColor.equals(r.getFill())) {
             BorderStroke borderStroke = new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null,
                     new BorderWidths(4));
             idToSp.get(id).setBorder(new Border(borderStroke));
@@ -319,7 +319,7 @@ public class DetailedTranscriptionPane {
                 lines.getChildren().add(imageSegment);
             }
             lines.getChildren().add(line);
-            if (showDecryptionContinuousText && Main.key.isKeyAvailable()) {
+            if (showDecryptionContinuousText && OTAApplication.key.isKeyAvailable()) {
                 // TextArea decryptionContinuousText = new TextArea();
                 TextField decryptionContinuousText = new TextField();
 
@@ -445,7 +445,7 @@ public class DetailedTranscriptionPane {
             }
 
             if (decryptionValueChanged) {
-                if (Main.key.isKeyAvailable()) {
+                if (OTAApplication.key.isKeyAvailable()) {
                     if (EditedRecord.get(TranscribedImage.image(index).filename, lineNumber) == null) {
                         String lineP = decryptionLineString(decryptionSequence);
                         if (!lineP.equals(lineToDecryptionText.get(lineNumber).getText())) {
@@ -505,10 +505,10 @@ public class DetailedTranscriptionPane {
     }
 
     public static ArrayList<String> decryptionSequence(ArrayList<Rectangle> lineOfSymbols) {
-        if (!Main.key.isKeyAvailable()) {
+        if (!OTAApplication.key.isKeyAvailable()) {
             return new ArrayList<>();
         }
-        return decryptionSequence(Main.key, lineOfSymbols);
+        return decryptionSequence(OTAApplication.key, lineOfSymbols);
     }
 
     public static ArrayList<String> decryptionSequence(Key key, ArrayList<Rectangle> lineOfSymbols) {
@@ -519,7 +519,7 @@ public class DetailedTranscriptionPane {
             Color color = (Color) r.getFill();
             final String colorString = color.toString();
 
-            String c = Main.colors.get(colorString);
+            String c = OTAApplication.colors.get(colorString);
             rawC.add(c);
             String p = key.fromTranscriptionOrDefault(c, c.startsWith("_") ? c : "<" + c + ">");
             if (c.equals("_[x2]")) {

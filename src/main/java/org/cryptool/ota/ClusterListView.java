@@ -106,7 +106,7 @@ public class ClusterListView extends ListView<String> {
     }
 
     public void reset() {
-        ArrayList<String> usedColors = Main.colors.sortedColors();
+        ArrayList<String> usedColors = OTAApplication.colors.sortedColors();
 
         items.clear();
         items.addAll(usedColors);
@@ -117,7 +117,7 @@ public class ClusterListView extends ListView<String> {
     public static HBox line(String item, boolean gridView, boolean noCache) {
         final int maxTextLength = 36;
         final int iconSize = 35;
-        Color color = Main.colors.valueOf(item);
+        Color color = OTAApplication.colors.valueOf(item);
         if (color == null) {
             return null;
         }
@@ -160,7 +160,7 @@ public class ClusterListView extends ListView<String> {
         region.setMinWidth(Utils.adjust(5));
         hBox.getChildren().add(region);
 
-        String transcriptionValue = Main.colors.get(item);
+        String transcriptionValue = OTAApplication.colors.get(item);
         String cacheKey = gridView + "|" + color + "|" + transcriptionValue;
 
         StackPane ciphertextSymbolPane;
@@ -173,11 +173,11 @@ public class ClusterListView extends ListView<String> {
         }
         hBox.getChildren().add(ciphertextSymbolPane);
 
-        if (Main.key.isKeyAvailable()) {
+        if (OTAApplication.key.isKeyAvailable()) {
 
             String plaintext = "";
-            if (Main.key.fromColorStringAvailable(item)) {
-                plaintext = Main.key.fromColorString(item);
+            if (OTAApplication.key.fromColorStringAvailable(item)) {
+                plaintext = OTAApplication.key.fromColorString(item);
             }
 
             String cachePKey = gridView + "||" + color + "||" + plaintext;
@@ -191,7 +191,7 @@ public class ClusterListView extends ListView<String> {
             hBox.getChildren().add(plaintextSymbolPane);
         }
 
-        int maxSymbols = gridView ? (Main.key.isKeyAvailable() ? 0 : 3) : (Main.mode == Mode.CLUSTER ? 47 : 5);
+        int maxSymbols = gridView ? (OTAApplication.key.isKeyAvailable() ? 0 : 3) : (OTAApplication.mode == Mode.CLUSTER ? 47 : 5);
 
         if (maxSymbols != 0) {
             int maxWidth = maxSymbols * Utils.adjust(iconSize);
@@ -217,8 +217,8 @@ public class ClusterListView extends ListView<String> {
                     imageView.setId(TranscribedImage.rectangleToId(index, r));
 
                     imageView.setOnDragDetected((MouseEvent event) -> {
-                        if (Main.mode == Mode.CLUSTER && !Main.detailed) {
-                            Main.unselectRectangle();
+                        if (OTAApplication.mode == Mode.CLUSTER && !OTAApplication.detailed) {
+                            OTAApplication.unselectRectangle();
                             Dragboard db = imageView.startDragAndDrop(TransferMode.COPY);
                             ClipboardContent content = new ClipboardContent();
                             SnapshotParameters snapshotParameters = new SnapshotParameters();
@@ -250,7 +250,7 @@ public class ClusterListView extends ListView<String> {
         }
 
         hBox.setOnDragDropped((DragEvent event) -> {
-            Color droppedColor = Main.colors.valueOf(hBox.getId());
+            Color droppedColor = OTAApplication.colors.valueOf(hBox.getId());
             if (droppedColor == null) {
                 return;
             }
@@ -296,20 +296,20 @@ public class ClusterListView extends ListView<String> {
                             System.out.printf("ClusterView Drop Undefined id: %s\n", selectedId);
                         }
                     }
-                    Main.symbolChangedColor(draggedR, draggedColor);
+                    OTAApplication.symbolChangedColor(draggedR, draggedColor);
                 } else if (draggedR != null) {
                     TranscribedImage.changeColor(id, draggedR, droppedColor);
-                    Main.symbolChangedColor(draggedR, draggedColor);
+                    OTAApplication.symbolChangedColor(draggedR, draggedColor);
                 } else {
                     if (id.startsWith("swap")) {
-                        if (Main.colors.swap(draggedColor, droppedColor)) {
-                            Main.fullKeyWindow.refresh();
-                            Main.unselect();
+                        if (OTAApplication.colors.swap(draggedColor, droppedColor)) {
+                            OTAApplication.fullKeyWindow.refresh();
+                            OTAApplication.unselect();
                         }
                     } else if (id.startsWith("insert")) {
-                        if (Main.colors.insert(draggedColor, droppedColor)) {
-                            Main.fullKeyWindow.refresh();
-                            Main.unselect();
+                        if (OTAApplication.colors.insert(draggedColor, droppedColor)) {
+                            OTAApplication.fullKeyWindow.refresh();
+                            OTAApplication.unselect();
                         }
                     }
                 }
@@ -335,14 +335,14 @@ public class ClusterListView extends ListView<String> {
             }
 
             try {
-                Main.colorSelected(id);
+                OTAApplication.colorSelected(id);
                 return;
             } catch (IllegalArgumentException e) {
             }
 
             Rectangle r = TranscribedImage.idToRectangle(id);
             if (r != null) {
-                Main.colorSelected(r.getFill().toString());
+                OTAApplication.colorSelected(r.getFill().toString());
             }
 
         });
@@ -352,8 +352,8 @@ public class ClusterListView extends ListView<String> {
         hBox.setBackground(FullKeyWindow.whiteBg);
 
         hBox.setOnDragDetected((MouseEvent event) -> {
-            if (Main.mode == Mode.CLUSTER && Main.detailed) {
-                Main.unselectRectangle();
+            if (OTAApplication.mode == Mode.CLUSTER && OTAApplication.detailed) {
+                OTAApplication.unselectRectangle();
                 Dragboard db = hBox.startDragAndDrop(
                         (event.getButton() == MouseButton.SECONDARY) ? TransferMode.MOVE : TransferMode.COPY);
                 ClipboardContent content = new ClipboardContent();
@@ -510,7 +510,7 @@ public class ClusterListView extends ListView<String> {
         if (colorString == null) {
             return;
         }
-        Main.colorSelected(colorString);
+        OTAApplication.colorSelected(colorString);
     }    
 
 }
