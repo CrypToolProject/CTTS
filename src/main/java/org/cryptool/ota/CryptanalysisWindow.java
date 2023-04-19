@@ -456,8 +456,6 @@ public class CryptanalysisWindow {
                                         fadeTransition.play();
                                     }
 
-                                    long start = System.currentTimeMillis();
-
                                     StringBuilder keySb = null;
                                     StringBuilder results = null;
 
@@ -755,10 +753,6 @@ public class CryptanalysisWindow {
                                         }
 
                                     }
-                                    long end = System.currentTimeMillis();
-                                    // System.out.printf("Duration: %d Symbols: %d Slow: %s\n", end - start,
-                                    // TranscribedImage.totalSymbols(), CryptanalysisWindow.slowUpdate.get());
-
                                 } else {
                                     if (startStop.getText().contains("Stop")) {
                                         startStop.setText("Start Cryptanalysis");
@@ -1053,7 +1047,7 @@ public class CryptanalysisWindow {
                     if (Main.colors.contains(colorString)) {
                         final String c = Main.colors.get(colorString);
 
-                        if (Main.key.lockedC(c)) {
+                        if (Key.lockedC(c)) {
                             tokens.add(new Token(Token.Type.OTHER, c));
                         } else if (Main.key.lockedOtherP(c) && !params.ignoreCurrentKey) {
                             tokens.add(new Token(Token.Type.OTHER, c, Main.key.fromTranscription(c)));
