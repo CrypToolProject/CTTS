@@ -31,8 +31,6 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.skin.ListViewSkin;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -337,7 +335,6 @@ public class ClusterListView extends ListView<String> {
             }
 
             try {
-                Color col = Color.valueOf(id);
                 Main.colorSelected(id);
                 return;
             } catch (IllegalArgumentException e) {
@@ -514,20 +511,6 @@ public class ClusterListView extends ListView<String> {
             return;
         }
         Main.colorSelected(colorString);
-    }
-
-    private static boolean shouldScrollTo(ListView<?> t, int index) {
-        try {
-            ListViewSkin<?> ts = (ListViewSkin<?>) t.getSkin();
-            VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
-            int first = vf.getFirstVisibleCell().getIndex();
-            int last = vf.getLastVisibleCell().getIndex();
-
-            return index < first || index > last;
-        } catch (Exception ex) {
-            return false;
-        }
-
-    }
+    }    
 
 }

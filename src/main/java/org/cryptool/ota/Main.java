@@ -327,7 +327,7 @@ public class Main extends Application {
                     alert.setContentText("All changes were saved");
 
                     alert.initOwner(myStage.getOwner());
-                    Optional<ButtonType> res = alert.showAndWait();
+                    alert.showAndWait();
                 }
                 System.exit(0);
                 break;
@@ -450,7 +450,7 @@ public class Main extends Application {
                 alert.setContentText("All changes were saved");
 
                 alert.initOwner(myStage.getOwner());
-                Optional<ButtonType> res = alert.showAndWait();
+                alert.showAndWait();
 
                 break;
             case F11:

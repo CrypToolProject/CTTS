@@ -35,8 +35,6 @@ public class Runnables {
 
     public void run(int threads) {
 
-        long start = System.currentTimeMillis();
-
         ExecutorService threadExecutor = Executors.newFixedThreadPool(threads);
         for (Runnable runnable : runnables) {
             threadExecutor.execute(runnable);
@@ -52,9 +50,6 @@ public class Runnables {
                 Thread.currentThread().interrupt();
             }
         }
-        long end = System.currentTimeMillis();
-        // CtAPI.printf("Elapsed %10d millis for %6d tasks on %d threads\n", end -
-        // start, runnables.size(), threads);
 
     }
 }

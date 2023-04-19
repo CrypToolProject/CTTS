@@ -32,7 +32,6 @@ enum Language {
         }
         byte[] b = new byte[1_000_000];
         try {
-            int read = is.read(b);
             String s = new String(b);
 
             final String RAW_PLAINTEXT_LETTERS = "abcdefghijklmnopqrstuvwxyzàáãåάąäâªªçčðďλěêèéęëįîìíïłňńñöøòóôőõθº°ǫφþřŕš§ťüúűùûů×ýżžź";

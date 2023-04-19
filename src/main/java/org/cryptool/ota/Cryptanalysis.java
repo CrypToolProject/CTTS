@@ -33,7 +33,7 @@ public class Cryptanalysis {
     static final AtomicBoolean readUpdate = new AtomicBoolean(true);
     static final AtomicLong updates = new AtomicLong(0);
     static final AtomicLong bestOverall = new AtomicLong(0);
-    static final ConcurrentLinkedQueue sequence = new ConcurrentLinkedQueue();
+    static final ConcurrentLinkedQueue<String> sequence = new ConcurrentLinkedQueue<String>();
 
     final private static int[][] MAX_HOMOPHONE_GROUP_SIZE = {
             { -1 }, // 0

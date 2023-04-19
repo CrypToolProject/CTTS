@@ -122,7 +122,7 @@ public class SelectionArea extends HBox {
                 }
                 Main.key.markAsChanged();
 
-                lockUnlock.setSelected(Main.key.lockedC(c) || Main.key.lockedP(c));
+                lockUnlock.setSelected(Key.lockedC(c) || Main.key.lockedP(c));
 
                 Main.colorParametersChanged(selectedColor, false, false, true);
             }
@@ -300,7 +300,7 @@ public class SelectionArea extends HBox {
         }
 
         if (newState) {
-            if (!Main.key.lockedC(c) && !Main.key.lockedP(c)) {
+            if (!Key.lockedC(c) && !Main.key.lockedP(c)) {
                 if (c.isEmpty()) {
                     Main.colors.put(selectedColor.toString(), "_");
                     transcriptionChanged = true;
@@ -315,7 +315,7 @@ public class SelectionArea extends HBox {
                 }
             }
         } else {
-            if (Main.key.lockedC(c) && Main.key.lockedP(c)) {
+            if (Key.lockedC(c) && Main.key.lockedP(c)) {
                 Main.key.remove(c);
                 c = c.substring(1);
                 if (c.isEmpty()) {
@@ -330,7 +330,7 @@ public class SelectionArea extends HBox {
                     }
                 }
                 Main.key.put(c, p);
-            } else if (Main.key.lockedC(c)) {
+            } else if (Key.lockedC(c)) {
                 Main.key.remove(c);
                 c = c.substring(1);
                 if (c.isEmpty()) {
@@ -357,7 +357,7 @@ public class SelectionArea extends HBox {
     public void toggleLocked() {
         String c = Main.colors.get(selectedColor.toString());
 
-        if (Main.key.lockedC(c) || Main.key.lockedP(c)) {
+        if (Key.lockedC(c) || Main.key.lockedP(c)) {
             updateLocked(false);
         } else {
             updateLocked(true);

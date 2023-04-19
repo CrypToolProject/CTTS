@@ -380,12 +380,9 @@ public class Colors implements Serializable {
         String serialString = "";
         Type serialType = Type.EMPTY;
 
-        String keepS;
-
         static CompareFields get(String s) {
 
             CompareFields c = new CompareFields();
-            c.keepS = s;
 
             if (s.isEmpty()) {
                 return c;

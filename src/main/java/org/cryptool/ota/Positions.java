@@ -18,11 +18,9 @@ package org.cryptool.ota;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -190,33 +188,13 @@ public class Positions implements Serializable {
 
     }
 
-    private void save(String backupFilename) {
-        write(backupFilename);
-        write(backupFilename + SECOND_COPY);
-    }
-
     private static Positions readTwoCopies(String backupFilename) {
         Positions state = read(backupFilename);
         if (state == null) {
             state = read(backupFilename + SECOND_COPY);
         }
         return state;
-    }
-
-    private void write(String backupFilename) {
-
-        try {
-            FileOutputStream fileOut = new FileOutputStream(backupFilename);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(this);
-            out.close();
-            fileOut.close();
-            System.out.printf("State saved to %s \n", backupFilename);
-        } catch (IOException i) {
-            System.out.printf("Failed to save state to %s\n", backupFilename);
-            i.printStackTrace();
-        }
-    }
+    } 
 
     private static Positions read(String backupFilename) {
         try {

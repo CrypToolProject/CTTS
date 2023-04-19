@@ -17,11 +17,9 @@
 package org.cryptool.ota;
 
 import java.awt.image.RenderedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,8 +89,9 @@ public class FileUtils {
         if (file == null) {
             return null;
         }
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
+            fis = new FileInputStream(file);
             byte[] data = new byte[(int) file.length()];
             if (fis.read(data) != -1) {
                 fis.close();
@@ -110,11 +109,6 @@ public class FileUtils {
                     c8[c + 128]++;
                 }
 
-                // for (int i = 0; i < 256; i++) {
-                // if (c1[i] != c8[i]) {
-                // System.out.printf("%d %d %d\n", i - 128, c1[i], c8[i]);
-                // }
-                // }
                 if (c1[128 - 125] + c1[128 - 62] > 0) {
                     return s8;
                 }
@@ -125,6 +119,14 @@ public class FileUtils {
             return null;
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -360,46 +362,5 @@ public class FileUtils {
         });
 
         return filenameArray;
-    }
-
-    private static StringBuilder readFileAZSpaceOnly(String filename) {
-
-        final String RAW_PLAINTEXT_LETTERS = "abcdefghijklmnopqrstuvwxyzàáãåάąäâªªçčðďλěêèéęëįîìíïłňńñöøòóôőõθº°ǫφþřŕš§ťüúűùûů×ýżžź";
-        final String PLAINTEXT_LETTERS_MAP = "abcdefghijklmnopqrstuvwxyzaaaaaaaaaaccdddeeeeeeiiiiilnnnooooooooooopprrsstuuuuuuxyzzz";
-
-        try {
-            StringBuilder sb = new StringBuilder();
-            FileReader fileReader = new FileReader(filename);
-
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line;
-            boolean wasSpace = true;
-            while ((line = bufferedReader.readLine()) != null) {
-                line = line.toLowerCase(Locale.ROOT);
-                for (int i = 0; i < line.length(); i++) {
-                    char c = line.charAt(i);
-                    int index = RAW_PLAINTEXT_LETTERS.indexOf(c);
-                    if (index != -1) {
-                        sb.append(PLAINTEXT_LETTERS_MAP.charAt(index));
-                        wasSpace = false;
-                    } else if (c == 'ß') {
-                        sb.append("ss");
-                        wasSpace = false;
-                    } else if (!wasSpace) {
-                        wasSpace = true;
-                        sb.append(" ");
-                    }
-                }
-            }
-
-            bufferedReader.close();
-            return sb;
-        } catch (FileNotFoundException ex) {
-            System.out.println("Unable to open file '" + filename + "'");
-            return null;
-        } catch (IOException ex) {
-            System.out.println("Error reading file '" + filename + "'");
-            return null;
-        }
-    }
+    }    
 }
