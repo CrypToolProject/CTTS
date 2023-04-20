@@ -32,6 +32,7 @@ import org.cryptool.ota.OTAApplication;
 import org.cryptool.ota.util.Alignment;
 import org.cryptool.ota.util.FileUtils;
 import org.cryptool.ota.util.Icons;
+import org.cryptool.ota.util.Key;
 import org.cryptool.ota.util.Token;
 import org.cryptool.ota.util.TranscribedImage;
 import org.cryptool.ota.util.Utils;

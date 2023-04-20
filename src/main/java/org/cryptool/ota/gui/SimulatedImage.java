@@ -28,9 +28,9 @@ import org.cryptool.ota.util.EditedRecord;
 import org.cryptool.ota.util.FileUtils;
 import org.cryptool.ota.util.Icons;
 import org.cryptool.ota.util.ImageUtils;
+import org.cryptool.ota.util.Key;
 import org.cryptool.ota.util.TranscribedImage;
 import org.cryptool.ota.util.Utils;
-import org.cryptool.ota.cryptanalysis.Key;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

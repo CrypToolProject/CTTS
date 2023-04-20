@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package org.cryptool.ota.cryptanalysis;
+package org.cryptool.ota.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.cryptool.ota.OTAApplication;
-import org.cryptool.ota.util.FileUtils;
 
 public class Key {
     private final Map<String, String> key = new TreeMap<>();

@@ -26,10 +26,10 @@ import org.cryptool.ota.OTAApplication;
 import org.cryptool.ota.util.Alignment;
 import org.cryptool.ota.util.EditedRecord;
 import org.cryptool.ota.util.Icons;
+import org.cryptool.ota.util.Key;
 import org.cryptool.ota.util.Selection;
 import org.cryptool.ota.util.TranscribedImage;
 import org.cryptool.ota.util.Utils;
-import org.cryptool.ota.cryptanalysis.Key;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

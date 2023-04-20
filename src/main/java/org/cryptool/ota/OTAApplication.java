@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.cryptool.ota.cryptanalysis.CryptanalysisWindow;
-import org.cryptool.ota.cryptanalysis.Key;
 import org.cryptool.ota.gui.ClusterListView;
 import org.cryptool.ota.gui.DetailedTranscriptionPane;
 import org.cryptool.ota.gui.DetailedTranscriptionSnapshot;
@@ -37,6 +36,7 @@ import org.cryptool.ota.util.Colors;
 import org.cryptool.ota.util.EditedRecord;
 import org.cryptool.ota.util.FileUtils;
 import org.cryptool.ota.util.ImageUtils;
+import org.cryptool.ota.util.Key;
 import org.cryptool.ota.util.Selection;
 import org.cryptool.ota.util.SelectionBox;
 import org.cryptool.ota.util.TranscribedImage;
