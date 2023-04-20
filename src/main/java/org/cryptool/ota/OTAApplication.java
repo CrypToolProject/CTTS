@@ -20,6 +20,28 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.cryptool.ota.cryptanalysis.CryptanalysisWindow;
+import org.cryptool.ota.cryptanalysis.Key;
+import org.cryptool.ota.gui.ClusterListView;
+import org.cryptool.ota.gui.DetailedTranscriptionPane;
+import org.cryptool.ota.gui.DetailedTranscriptionSnapshot;
+import org.cryptool.ota.gui.FullKeyWindow;
+import org.cryptool.ota.gui.Headers;
+import org.cryptool.ota.gui.KeySnapshot;
+import org.cryptool.ota.gui.MainImagePane;
+import org.cryptool.ota.gui.SelectionArea;
+import org.cryptool.ota.gui.SimulatedImage;
+import org.cryptool.ota.gui.SimulatedImagePartialDecryption;
+import org.cryptool.ota.gui.SymbolsSnapshot;
+import org.cryptool.ota.util.Colors;
+import org.cryptool.ota.util.EditedRecord;
+import org.cryptool.ota.util.FileUtils;
+import org.cryptool.ota.util.ImageUtils;
+import org.cryptool.ota.util.Selection;
+import org.cryptool.ota.util.SelectionBox;
+import org.cryptool.ota.util.TranscribedImage;
+import org.cryptool.ota.util.Utils;
+
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -36,21 +58,23 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-enum Mode {
-    IMAGE, CLUSTER
-}
-
 public class OTAApplication extends Application {
+
+    public enum Mode {
+        IMAGE, 
+        CLUSTER
+    }
+
     public static final String COLORS_FILE = "colors";
     public static Colors colors;
     public static SelectionArea selectionArea;
 
     static ClusterListView listView;
-    static FullKeyWindow fullKeyWindow;
-    static Stage myStage;
+    public static FullKeyWindow fullKeyWindow;
+    public static Stage myStage;
 
-    static Mode mode = Mode.IMAGE;
-    static boolean detailed = false;
+    public static Mode mode = Mode.IMAGE;
+    public static boolean detailed = false;
 
     static String[] args;
 
@@ -182,7 +206,7 @@ public class OTAApplication extends Application {
         stage.setResizable(true);
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
 
-            if (colors.changed() || key.changed() || TranscribedImage.change() || EditedRecord.changed) {
+            if (colors.changed() || key.changed() || TranscribedImage.changed() || EditedRecord.changed) {
 
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
@@ -211,7 +235,7 @@ public class OTAApplication extends Application {
 
     }
 
-    static void unselectRectangle() {
+    public static void unselectRectangle() {
 
         String previousId = Selection.clear();
         if (previousId != null && mode == Mode.IMAGE && detailed) {
@@ -222,7 +246,7 @@ public class OTAApplication extends Application {
         selectionArea.unselectRectangle();
     }
 
-    static void unselect() {
+    public static void unselect() {
         if (selectionArea != null) {
             selectionArea.unselectColor();
             unselectRectangle();
@@ -232,7 +256,7 @@ public class OTAApplication extends Application {
         }
     }
 
-    static void fullKeyChanged() {
+    public static void fullKeyChanged() {
         listView.refresh();
         if (mode == Mode.IMAGE && detailed) {
             DetailedTranscriptionPane.show();
@@ -242,13 +266,13 @@ public class OTAApplication extends Application {
         selectionArea.refresh();
     }
 
-    static void symbolSelectedFromImagePane(Rectangle node) {
+    public static void symbolSelectedFromImagePane(Rectangle node) {
         selectRectangle(TranscribedImage.currentImageIndex, node, true);
         listView.updateListView(false);
         Headers.updateHeadersAndBottom();
     }
 
-    static void symbolChangedColor(Rectangle draggedR, Color draggedColor) {
+    public static void symbolChangedColor(Rectangle draggedR, Color draggedColor) {
         if (mode == Mode.CLUSTER) {
             unselectRectangle();
             selectColor(draggedColor);
@@ -263,7 +287,7 @@ public class OTAApplication extends Application {
         FullKeyWindow.scrollPane.refresh();
     }
 
-    static void colorSelected(String colorString) {
+    public static void colorSelected(String colorString) {
         Color color = Color.valueOf(colorString);
         if (color != null) {
             unselectRectangle();
@@ -273,7 +297,7 @@ public class OTAApplication extends Application {
         }
     }
 
-    static void colorParametersChanged(Color selectedColor, boolean transcriptionValueChanged, boolean iconChanged,
+    public static void colorParametersChanged(Color selectedColor, boolean transcriptionValueChanged, boolean iconChanged,
             boolean decryptionValueChanged) {
         fullKeyWindow.refresh();
         if (transcriptionValueChanged) {
@@ -289,7 +313,7 @@ public class OTAApplication extends Application {
         }
     }
 
-    static void symbolClickedFromSelectionArea(String clickedId, int idx, Rectangle nr) {
+    public static void symbolClickedFromSelectionArea(String clickedId, int idx, Rectangle nr) {
 
         saveZoomAndScrollState();
 
@@ -305,11 +329,11 @@ public class OTAApplication extends Application {
         }
     }
 
-    static void symbolResizedFromImagePane(Rectangle r) {
+    public static void symbolResizedFromImagePane(Rectangle r) {
         selectRectangle(TranscribedImage.currentImageIndex, r, true);
     }
 
-    static void keyPressed(javafx.scene.input.KeyEvent event) {
+    public static void keyPressed(javafx.scene.input.KeyEvent event) {
 
         saveZoomAndScrollState();
 
@@ -317,7 +341,7 @@ public class OTAApplication extends Application {
 
         switch (event.getCode()) {
             case ESCAPE:
-                if (colors.changed() || key.changed() || TranscribedImage.change() || EditedRecord.changed) {
+                if (colors.changed() || key.changed() || TranscribedImage.changed() || EditedRecord.changed) {
 
                     saveAll(false);
 
