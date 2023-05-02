@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.cryptool.ota</groupId>
-    <artifactId>ota</artifactId>
+    <groupId>org.cryptool.ctts</groupId>
+    <artifactId>ctts</artifactId>
     <version>3.5.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,7 +40,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.cryptool.ota.Main</mainClass>
+                            <mainClass>org.cryptool.ctts.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
