@@ -48,7 +48,7 @@ public class Headers {
 
     public static void updateTopTitle() {
         String fs = FileUtils.currentDirectoryFullpathString();
-        CTTSApplication.myStage.setTitle("CrypTool Transcription & Solver (CTTS - V3.5 - 2023-05-02) - " + fs);
+        CTTSApplication.myStage.setTitle("CrypTool Transcriber & Solver (CTTS - V3.5 - 2023-05-02) - " + fs);
     }
 
     public static void updateHeadersAndBottom() {
