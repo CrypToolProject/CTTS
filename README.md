@@ -70,3 +70,13 @@ Images to be transcribed with CTTS should be either .bmp, .jpg, or .png files. T
 The images in the tutorial have already been prepared for use by CTTS.
 
 # Transcribing Multiple Images 
+
+While is also more convenient to start gui.jar without parameters (java -jar gui.jar, CTTS will search for jpg, bmp, and png files in the current directory, and open them), you can add specific the images in the command line parameters. Using the directory Tutorial 2, we show an example, with 4 images (see the command line to start Tutorial 2):
+
+![multiple_images.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/multiple_images.png)
+
+![multiple_images_gui.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/multiple_images_gui.png)
+
+On the top right-side, [1/4]  indicates that you will be transcribing 4 ciphertext documents with the same types of symbols. Press function F1 to view the next document.
+
+![multiple_images_gui_2.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/multiple_images_gui_2.png)
