@@ -3,6 +3,8 @@
 CrypTool Transcriber &amp; Solver is a ciphertext transcription and cryptanalysis tool initially developed by George Lasry and now maintained by the CrypTool team.
 The tool is written in Java; the user interface is built using JavaFx.
 
+The following documentation is based on the "May 10, 2022 Version 3.2" documentation written initially by George Lasry. It was converted from Word format to this document here, to have a single online version of the documentation.
+
 ## ℹ️ About
 
 CTTS allows for the manual transcription of historical ciphertexts, represented by graphic symbols, letters, or digits, in an efficient manner, via a primarily graphical user interface. It supports the following features:
