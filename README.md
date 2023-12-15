@@ -1,9 +1,9 @@
 # CTTS: CrypTool Transcriber &amp; Solver 
 
 CrypTool Transcriber &amp; Solver is a ciphertext transcription and cryptanalysis tool initially developed by George Lasry and now maintained by the CrypTool team.
-The tool is written in Java; the user interface is built using JavaFx.
+The tool is written in Java; the user interface is built using JavaFx. It was formerly known as OTA (Offline Transcription Application).
 
-The following documentation is based on the "May 10, 2022 Version 3.2" documentation written initially by George Lasry. It was converted from Word format to this document here, to have a single online version of the documentation.
+The following documentation is based on the "May 10, 2022 Version 3.2" OTA documentation written initially by George Lasry. It was converted from Word format to this document here, to have a single online version of the documentation.
 
 ## ℹ️ About
 
@@ -93,3 +93,64 @@ To delete a symbol, click on it to select it, then press the Delete key (in MacO
 
 After (or before) selecting a few instances of the symbol, we may want to give the symbol type some name, and assign some generic icon to represent it. Click on the white rectangle near the zoomed view of the selected symbol, and type in some name or serial number. In this tutorial, we will assign it to 00. Note that as you type the name, the item changes instantly in the list.
 
+![transcription_gui_explanation2.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/transcription_gui_explanation2.png)
+
+We can also assign a generic icon to this symbol type, by importing an icon file (Import Icon), or saving (Save as Icon) the selected (zoomed) symbol from the document as the icon, after choosing one which looks generic enough. Basic image processing is then applied to it. 
+
+![transcription_gui_explanation3.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/transcription_gui_explanation3.png)
+
+The icons are stored under the icons/ directory. To use an icon from an existing set of icons, use Import Icon. You are now ready to mark instances of a new type of symbol. First, select the desired color from the list (it is recommended to scroll down the list, and select a non-similar color). 
+
+# Editing Symbol Assignment 
+
+You have learned how to mark symbols on a document and assign them some names and icons.  We will now show how to change those assignments. Start the tutorial in directory Tutorial 3. 
+
+![symbol_assignment_console.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/symbol_assignment_console.png)
+
+![symbol_assignment_gui.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/symbol_assignment_gui.png)
+
+It is easy to observe that one of the symbols under 02 actually belongs to the 00 symbol type. To fix the error, select it, and simply drag it from the bottom pane (not from the document image! - this will only move the marker), into the correct line on the left list. 
+
+![symbol_assignment_gui_explanation.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/symbol_assignment_gui_explanation.png)
+
+After fixing the problem:
+
+![symbol_assignment_gui_fixed_problem.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/symbol_assignment_gui_fixed_problem.png)
+
+# Using the Symbol Types Views
+
+Start the tutorial in the Tutorial 4 directory. It contains 4 image documents, fully transcribed.:
+
+![using_symbol_types_console.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_console.png)
+
+![using_symbol_types_gui.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_gui.png)
+
+There are multiple errors in the transcription that we will need to find and fix in an efficient manner. For that purpose, we shall be using the Symbol Types views. The Symbol Types views can be reached by pressing F11 or tab (pressing again F11 or tab will move back to Transcription). Note: On MacOS, only tab works, as F11 is reserved. The default view is the Symbol Types - List View, which conveniently shows some of the symbols from the documents currently associated with each type.
+
+We now select the symbol 01 in the list. It is evident that several symbols do not belong here.
+
+![using_symbol_types_correct.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_correct.png)
+
+It is possible to select and drag each one into the correct type (05), one by one. But there is a more efficient way to do that.
+
+You can select them, one-by-one, then drag the whole selection together into the correct symbol type, a much more efficient process.
+
+![using_symbol_types_multiple_drag.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_multiple_drag.png)
+
+The  Symbol Types - List View is most convenient when there is only a small number of distinct symbols types (a few tens). For larger numbers of types, the  Symbol Types - Grid View might be more convenient, especially for the case in the tutorial, where we have 150 distinct symbol types. You can move to the Symbol Types - Grid View by pressing F12.
+
+![using_symbol_types_grid_view.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_grid_view.png)
+
+In the Symbol Types - Grid View you can select, drag & drop, one or more symbols from the bottom part, as in the Symbol Types - List View. You can get back to Symbol Types - List View by pressing F12 again. To get back to Transcription (from any of those views), press F11 or tab (in MacOS, only tab). It is possible to change the order of the symbols in Symbol Types - Grid View (this also affect their order in the left list, shown in various modes). With F1, you can sort by name (as show above). With F2, you can sort by decryption value - single letters are always shown first (see left image). With F3, you can sort by frequency (the more frequent are shown at the beginning - see image at the right, after pressing F12 to get back to Symbol Types - List View. As expected, it can be seen that E, S, and R (encoded with 01, 02, 04, respectively) are the most frequent.
+
+![using_symbol_types_grid_and_list_view.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_grid_and_list_view.png)
+
+In addition to those simple sorting methods, it is possible to place a symbol anywhere on the grid view. Click on symbol, drag it, and drop it to the desired place - the ones right after will be shift by one place: For example, we want to move symbol “c.” (27 = ION) near “c” (01 = E), there are two options:
+* a)	Insert: Click on 27 = ION with left mouse button, drag to 02 = Y, and drop it. The symbols right after will be shifted by one.
+* b)	Swap: Click on 27 = ION with right mouse button, drag to 02 = Y, and drop it. 27 = ION has exchanged their positions (not change in the other symbols).
+
+![using_symbol_types_place_a_symbol.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_place_a_symbol.png)
+
+The ability to freely position the symbols is useful, for example, if you want to group together similar looking symbols. 
+
+# Reviewing the Transcription
