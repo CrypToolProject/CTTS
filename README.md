@@ -5,6 +5,8 @@ The tool is written in Java; the user interface is built using JavaFx. It was fo
 
 The following documentation is based on the "May 10, 2022 Version 3.2" OTA documentation written initially by George Lasry. It was converted from Word format to this document here, to have a single online version of the documentation.
 
+The authors hopes that this document and the associated tutorials will be helpful to the reader, and especially, that CTTS is effective for their own research.
+
 ## ℹ️ About
 
 CTTS allows for the manual transcription of historical ciphertexts, represented by graphic symbols, letters, or digits, in an efficient manner, via a primarily graphical user interface. It supports the following features:
@@ -146,8 +148,8 @@ In the Symbol Types - Grid View you can select, drag & drop, one or more symbols
 ![using_symbol_types_grid_and_list_view.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_grid_and_list_view.png)
 
 In addition to those simple sorting methods, it is possible to place a symbol anywhere on the grid view. Click on symbol, drag it, and drop it to the desired place - the ones right after will be shift by one place: For example, we want to move symbol “c.” (27 = ION) near “c” (01 = E), there are two options:
-* a)	Insert: Click on 27 = ION with left mouse button, drag to 02 = Y, and drop it. The symbols right after will be shifted by one.
-* b)	Swap: Click on 27 = ION with right mouse button, drag to 02 = Y, and drop it. 27 = ION has exchanged their positions (not change in the other symbols).
+  a)	Insert: Click on 27 = ION with left mouse button, drag to 02 = Y, and drop it. The symbols right after will be shifted by one.
+  b)	Swap: Click on 27 = ION with right mouse button, drag to 02 = Y, and drop it. 27 = ION has exchanged their positions (not change in the other symbols).
 
 ![using_symbol_types_place_a_symbol.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_place_a_symbol.png)
 
@@ -164,9 +166,9 @@ This view is also helpful in case a symbol was wrongly assigned, because it was 
 ![reviewing_transcription_see_problem.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/reviewing_transcription_see_problem.png)
 
 To fix the problem:
-* 1)	Select the symbol
-* 2)	Drag it into the correct symbol type.
-* 3)	Press F12 to return to Transcription. The relevant symbol will be shown as selected, and you may simply resize it.
+  1)	Select the symbol
+  2)	Drag it into the correct symbol type.
+  3)	Press F12 to return to Transcription. The relevant symbol will be shown as selected, and you may simply resize it.
 
 ![reviewing_transcription_resize_rectangle.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/reviewing_transcription_resize_rectangle.png)
 
@@ -242,3 +244,41 @@ After a few iterations, it is possible to read additional parts of the deciphere
 
 # Snapshots
 
+A snapshot of the current mode or view can be generated, by pressing F7. Those snapshots can be used to share results with collaborators that do not have access to CTTS. These include:
+  1)	A snapshot of the Symbol Types  including the decryption values
+  2)	A snapshot of the  symbols marked on the image - Transcription mode
+  3)	A snapshot of the Transcription Review window.
+
+![snapshots_examples.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/snapshots_examples.png)
+
+  4)	A snapshot of the decryption key (if available)
+
+![snapshots_decryption_key.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/snapshots_decryption_key.png)
+
+  5) A snapshot of the decryption on top of the image (first, press F9 twice while in the Transcription window)
+
+![snapshot_decryption_image.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/snapshot_decryption_image.png)
+
+# Tips
+
+Transcribing documents with a large number of symbols
+
+Using CTTS, there are multiple possible strategies to transcribe a set of documents with a large number of symbols, e.g. more than 500 symbols (for simplicity, we assume that there is already a list of symbol types, with names and icons):
+
+1)	Symbol-by-symbol segmentation and classification: For each symbol on the image, select the relevant symbol type (classification), then mark the symbol on the document (segmentation). 
+2)	Segmentation and classification by symbol type: Select a symbol type, then mark all the matching symbols on the document.
+3)	Segmentation, then classification: Using the Transcription mode, select a default (e.g., new 1000) symbol type, then mark all the symbols (of any type) on the document. When a few hundred of such unclassified symbols have been marked, using one of the
+
+Symbol Types views, for each symbol type, select all the relevant symbols (currently assigned to 1000, then perform a bulk drag-and-drop operation, to correctly (re)classify them.
+
+Option (1) is only applicable to documents with a small number of symbols, as for each symbol, you need to (a) click on the relevant symbol type from the list (b) mark the symbol on the document. With options (2) and (3), you will still need to mark the symbols individually, but the classification is done only once per symbol type. 
+
+The advantage of (2) over (3) is that with (3), you will need an additional click on each symbol, to select it, before the bulk drag-and-drop operation. On the other hand, segmenting all the symbols sequentially, rather than marking only specific ones, can be done much more quickly, without the risk (in option (2)) of forgetting some symbols of a certain type, while (2) also requires multiple visual inspections of the same document, per symbol type). 
+
+The author has experimented with all methods and found that working according to (3) and each time segmenting about 10-15 lines (or 500 symbols), then classifying them with bulk operations, is often the most efficient way to make quick progress. A fourth option that worked well is to divide the symbol types into a small number of categories (e.g. symbols with a dot vs. symbols without a dot), first segmenting all the symbols of one category, then continuing with the next category, with a different color, and so on.
+
+# Transcribing documents with inconsistent or poor line alignment
+
+CTTS has an internal line segmentation algorithm, to generate the transcription text files, with the symbols in the right order (line after line, from left to right), and to render the Transcription Review window, which presents line-by-line comprehensive information. For both purposes, CTTS needs to figure out the order of the symbols, and how they should be divided into lines. Sometimes, symbols are so badly unaligned in the image that CTTS may produce inaccurate results (with the March 24, 2022 version 2.2 of CTTS, this is less likely to happen, however). In order to verify the correct alignment of the symbols, press F9 from the Transcription mode, as shown below. To fix any alignment issue, you may need to move or stretch the boxes around those outlier symbols, closer to other symbols in the desired line,  after press F9 again to return to normal Transcription mode.
+
+![line_segmentation_visualization.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/line_segmentation_visualization.png)
