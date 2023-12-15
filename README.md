@@ -197,3 +197,48 @@ The names of the symbols are separated with ;, and therefore, ; may not be a sym
 The working directory includes multiples backup copies for the symbols, in the form of binary files (*_positions, *_positions_SECOND_COPY), as well as for the symbol types (color* - yes, a bad name for symbol types :-)). Also, a negative version of each image is pre-generated, to save processing time. 
 
 # Using a Decryption Key
+
+Following cryptanalysis (externally, using the transcription output files, or with built-in cryptanalysis), or using a key obtained from original historical documents, it is possible to further review and improve the transcription of the documents. This is also a critical step, in order to obtain a clean-enough transcription, and an accurate-enough key, necessary to decipher a historical text so that it is readable and usable for historical research. The key file must follow the guidelines set by DECRYPT (https://cl.lingfil.uu.se/~bea/publ/transcription-guidelines-v2.pdf). For example (metadata lines starting with # are ignored):
+
+![using_a_decryption_key_example.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_a_decryption_key_example.png)
+
+To use a key file, add -k key.txt to the command line - for example (assuming the file gui.jar is in the current directory):
+java -jar gui.jar f42a.jpg f42b.jpg f42c.jpg f42d.jpg -k key.txt 
+It is also possible to start CTTS without any parameters (java -jar gui.jar), in which case, CTTS will look for a key.txt file in the current directory, in addition to image files. 
+
+New in version 3.0 and above: It is now possible to modify the key and edit the decryption value of symbol types. 
+The decryption values from the key file are reflected in all the views.
+
+![using_a_decryption_key_gui_description.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_a_decryption_key_gui_description.png)
+
+The most important use of information from a key file is in the Transcription Review window. With all the elements being available in one place - the original image segments, the selected symbol, the symbol type icon, and the decryption value, as well as tentative decryption, it is possible to significantly improve the accuracy of the transcription, and validate/improve the key, with the end goal of producing a readable decryption.
+
+![using_a_decryption_key_gui_description2.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_a_decryption_key_gui_description2.png)
+
+# New in Version 3.0: Built-in Cryptanalysis
+
+To run this example, copy the file key.txt to keyKeep.txt, then delete key.txt, and restart CTTS without parameters. Following transcription, it is possible to recover an initial key, using the built-in Cryptanalysis function, which can be started with F8 from any mode. First, enter the parameters as described below. 
+
+![built_in_cryptanalysis_gui_description.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_gui_description.png)
+
+When the parameters are ready, press Start Cryptanalysis. In this case, the number of remaining distinct ciphertext symbols to be assigned (76) is higher than the number of homophones that may be assigned (68). 
+
+![built_in_cryptanalysis_too_many_ciphertext_symbols.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_too_many_ciphertext_symbols.png)
+
+To fix the problem, we set a higher count threshold for a ciphertext symbol type to be considered (10). Still, 93% of the transcribed symbols will be processed. 
+
+![built_in_cryptanalysis_higher_threshold.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_higher_threshold.png)
+
+We press again Start Cryptanalysis.
+
+![built_in_cryptanalysis_running_analysis.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_running_analysis.png)
+
+To retain the recovered key, press Save Key. This will provide with a initial key, which does not cover the nomenclature, and some homophones are likely to be wrong, mostly because we don’t know yet which symbols types are nomenclature/nulls. If we know them, we can give them some transcription value starting with _, e.g., _100, so that they are ignored in cryptanalysis. Typically, the next step after cryptanalysis and saving the key is to go the Transcription Review mode, and improve/edit the key iteratively. Initially, decryption values from cryptanalysis are in lower case. 
+
+When some words can be read clearly, the relevant decrypted values of the homophone symbols (symbols representing a single letter) can be changed to capital letters, and in the example below, the letters that form the word COVRIR = COURIR - to run, or by selecting Locked. It is possible to run cryptanalysis again, and the algorithm will not try to change the decrypted value of locked homophones. After confirming/fixing the decryption value of more homophones, it becomes possible to identify nomenclature symbols that represent short word/suffixes/prefixes. In addition, any symbol with a name starting with _ (e.g., _, or _122, _clear_), or a decrypted value starting with _, will be ignored and treated as a null/word separator.
+After a few iterations, it is possible to read additional parts of the deciphered text, and try to deduce how the nomenclature looks like, and assign some nomenclature entries (e.g. short words, places, names) to some of the code values.
+
+![built_in_cryptanalysis_lock_homophones.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_lock_homophones.png)
+
+# Snapshots
+
