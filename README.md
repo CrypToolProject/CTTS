@@ -154,3 +154,46 @@ In addition to those simple sorting methods, it is possible to place a symbol an
 The ability to freely position the symbols is useful, for example, if you want to group together similar looking symbols. 
 
 # Reviewing the Transcription
+
+Another method, primarily visual, to review the correctness of the transcription is to use the Transcription Review window. It can be reached from the Transcription view, by pressing F12 (pressing F12 again will get back to Transcription).
+
+![reviewing_transcription_dragging_symbol.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/reviewing_transcription_dragging_symbol.png)
+
+This view is also helpful in case a symbol was wrongly assigned, because it was not properly marked, and some parts were not included, as shown below:
+
+![reviewing_transcription_see_problem.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/reviewing_transcription_see_problem.png)
+
+To fix the problem:
+* 1)	Select the symbol
+* 2)	Drag it into the correct symbol type.
+* 3)	Press F12 to return to Transcription. The relevant symbol will be shown as selected, and you may simply resize it.
+
+![reviewing_transcription_resize_rectangle.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/reviewing_transcription_resize_rectangle.png)
+
+# Saving Transcription Results
+
+All files are automatically saved upon exiting with ESC. You can also manually save by pressing F10 or CTRL+S from any mode or view. To exit without saving, press the X on the top-right corner. In MacOS, the close button is usually on the right top corner.
+
+The results are saved in the working directory, and in subdirectories:
+
+The icons\ directory contains the icon files, before image processing.
+
+![saving_transcription_results_icons.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_icons.png)
+
+The positions\ directory contains a text file per document (e.g., f42a_positions.txt), with the position and dimensions (x,y, w, h) of the rectangles surrounding the marked symbols, as well as a number indicating the symbol type they belong to (those are not the same as the numbers used for naming the symbol types - rather, those numbers are fixed, and won’t change if the name of a symbol type is changed). Those files are intended to serve as machine learning ground truths for training and validation.
+
+![saving_transcription_results_positions.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_positions.png)
+
+The snapshots\ directory contains the various snapshots manually or automatically generated. More on snapshots in another section. By default, a snapshot of the symbol types- similar to the Symbol Types - Grid View is automatically generated (key.png) when saving.
+
+![saving_transcription_results_snapshot_grid.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_snapshot_grid.png)
+
+The transcription\ directory contains text files with the transcriptions of each document (e.g., f42a.txt), and another all.txt with all the transcriptions together.
+
+![saving_transcription_results_transcription_text.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_transcription_text.png)
+
+The names of the symbols are separated with ;, and therefore, ; may not be a symbol name or part of a symbol type name. Those files are intended to serve as input for computerized cryptanalysis or decryption.
+
+The working directory includes multiples backup copies for the symbols, in the form of binary files (*_positions, *_positions_SECOND_COPY), as well as for the symbol types (color* - yes, a bad name for symbol types :-)). Also, a negative version of each image is pre-generated, to save processing time. 
+
+# Using a Decryption Key
