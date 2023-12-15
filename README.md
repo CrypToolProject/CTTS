@@ -80,3 +80,16 @@ While is also more convenient to start gui.jar without parameters (java -jar gui
 On the top right-side, [1/4]  indicates that you will be transcribing 4 ciphertext documents with the same types of symbols. Press function F1 to view the next document.
 
 ![multiple_images_gui_2.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/multiple_images_gui_2.png)
+
+Press F2 to return to the first document. You are now ready to start transcribing. 
+
+# Transcription 
+
+At any time, you may zoom out or in either with the F5 and F6 keys, with CTRL+<the + key> and  CTRL+<the - key>, or with CTRL +<mousewheel up/down>. To transcribe a symbol, using the mouse, mark the symbol, by pressing the mouse on one corner, and releasing it when on the opposite corner. In the following example, we have multiple instances of a symbol that looks like a “c”. 
+
+![transcription_gui_explanation.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/transcription_gui_explanation.png)
+
+To delete a symbol, click on it to select it, then press the Delete key (in MacOS, fn and delete). To move a symbol, click on its middle, and drag it to the desired position. To resize or change its boundary, hover over the border you wish to move, then drag the border, select a corner, and drag it to extend or reduce the surrounding box.
+
+After (or before) selecting a few instances of the symbol, we may want to give the symbol type some name, and assign some generic icon to represent it. Click on the white rectangle near the zoomed view of the selected symbol, and type in some name or serial number. In this tutorial, we will assign it to 00. Note that as you type the name, the item changes instantly in the list.
+
