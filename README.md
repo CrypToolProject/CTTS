@@ -1,4 +1,4 @@
-# CTTS: CrypTool Transcriber &amp; Solver 
+# 📜 CTTS: CrypTool Transcriber &amp; Solver 
 
 CrypTool Transcriber &amp; Solver is a ciphertext transcription and cryptanalysis tool initially developed by George Lasry and now maintained by the CrypTool team.
 The tool is written in Java; the user interface is built using JavaFx. It was formerly known as OTA (Offline Transcription Application).
@@ -31,7 +31,7 @@ This tool started as a proof of concept to understand the requirements for a gra
 
 It later evolved into a full-fledged application that was required to enable the transcription and decryption of the tens of thousands of graphical symbols contained in a collection in the French National Library. As such, it was significantly redesigned, and modified with the aim of supporting a large-scale transcription and decryption of documents, involving a large number of distinct graphical symbols (150) and total symbols (100,000).
 
-# Installing and Running CTTS
+# 💾 Installing and Running CTTS
 
 CTTS was developed in Java, using the JavaFX graphical library, JavaFX is an open-source, next-generation client application platform for desktop, mobile, and embedded systems built on Java. It is not intended for web-service development.
 
@@ -58,7 +58,7 @@ You may ignore the “File not found…” and “Could not restore …” messa
 
 **General note to MacOS users**: The function keys (e.g., F10) in MacOS are usually assigned to predefined functions like changing volume, luminosity, etc… To apply a function key in CTTS, you must press fn and the function key at the same time, e.g. fn F10. Same applies to the delete key used to delete a symbol, which requires fn delete on MacOS. It is also possible to change the Keyboard settings so that pressing fn is not necessary, but the default is that pressing fn is necessary. In MacOS, F11 is always used - with or without pressing fn - to view the desktop (F11 again returns from the desktop to the last application), so it cannot be used for CTTS. Therefore, CTTS allows tab to be used instead of F11 for MacOS users.
 
-# Preparing Images for Transcription 
+# 👍📃 Preparing Images for Transcription 
 
 Images to be transcribed with CTTS should be either .bmp, .jpg, or .png files. There are a few recommendations on preparing images for transcription, possibly using an image processing tool such as Photoshop (usually, a freeware utility like Photo Filtre should suffice):
 
@@ -71,7 +71,7 @@ Images to be transcribed with CTTS should be either .bmp, .jpg, or .png files. T
 
 The images in the tutorial have already been prepared for use by CTTS.
 
-# Transcribing Multiple Images 
+# 📃📃📃 Transcribing Multiple Images 
 
 While is also more convenient to start gui.jar without parameters (java -jar gui.jar, CTTS will search for jpg, bmp, and png files in the current directory, and open them), you can add specific the images in the command line parameters. Using the directory Tutorial 2, we show an example, with 4 images (see the command line to start Tutorial 2):
 
@@ -85,7 +85,7 @@ On the top right-side, [1/4]  indicates that you will be transcribing 4 cipherte
 
 Press F2 to return to the first document. You are now ready to start transcribing. 
 
-# Transcription 
+# 📝 Transcription 
 
 At any time, you may zoom out or in either with the F5 and F6 keys, with CTRL+<the + key> and  CTRL+<the - key>, or with CTRL +<mousewheel up/down>. To transcribe a symbol, using the mouse, mark the symbol, by pressing the mouse on one corner, and releasing it when on the opposite corner. In the following example, we have multiple instances of a symbol that looks like a “c”. 
 
@@ -103,7 +103,7 @@ We can also assign a generic icon to this symbol type, by importing an icon file
 
 The icons are stored under the icons/ directory. To use an icon from an existing set of icons, use Import Icon. You are now ready to mark instances of a new type of symbol. First, select the desired color from the list (it is recommended to scroll down the list, and select a non-similar color). 
 
-# Editing Symbol Assignment 
+# 🔍 Editing Symbol Assignment 
 
 You have learned how to mark symbols on a document and assign them some names and icons.  We will now show how to change those assignments. Start the tutorial in directory Tutorial 3. 
 
@@ -119,7 +119,7 @@ After fixing the problem:
 
 ![symbol_assignment_gui_fixed_problem.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/symbol_assignment_gui_fixed_problem.png)
 
-# Using the Symbol Types Views
+# 🔍 Using the Symbol Types Views
 
 Start the tutorial in the Tutorial 4 directory. It contains 4 image documents, fully transcribed.:
 
@@ -155,7 +155,7 @@ In addition to those simple sorting methods, it is possible to place a symbol an
 
 The ability to freely position the symbols is useful, for example, if you want to group together similar looking symbols. 
 
-# Reviewing the Transcription
+# 🔍 Reviewing the Transcription
 
 Another method, primarily visual, to review the correctness of the transcription is to use the Transcription Review window. It can be reached from the Transcription view, by pressing F12 (pressing F12 again will get back to Transcription).
 
@@ -172,7 +172,7 @@ To fix the problem:
 
 ![reviewing_transcription_resize_rectangle.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/reviewing_transcription_resize_rectangle.png)
 
-# Saving Transcription Results
+# 💾 Saving Transcription Results
 
 All files are automatically saved upon exiting with ESC. You can also manually save by pressing F10 or CTRL+S from any mode or view. To exit without saving, press the X on the top-right corner. In MacOS, the close button is usually on the right top corner.
 
@@ -198,7 +198,7 @@ The names of the symbols are separated with ;, and therefore, ; may not be a sym
 
 The working directory includes multiples backup copies for the symbols, in the form of binary files (*_positions, *_positions_SECOND_COPY), as well as for the symbol types (color* - yes, a bad name for symbol types :-)). Also, a negative version of each image is pre-generated, to save processing time. 
 
-# Using a Decryption Key
+# 🔑 Using a Decryption Key
 
 Following cryptanalysis (externally, using the transcription output files, or with built-in cryptanalysis), or using a key obtained from original historical documents, it is possible to further review and improve the transcription of the documents. This is also a critical step, in order to obtain a clean-enough transcription, and an accurate-enough key, necessary to decipher a historical text so that it is readable and usable for historical research. The key file must follow the guidelines set by DECRYPT (https://cl.lingfil.uu.se/~bea/publ/transcription-guidelines-v2.pdf). For example (metadata lines starting with # are ignored):
 
@@ -217,7 +217,7 @@ The most important use of information from a key file is in the Transcription Re
 
 ![using_a_decryption_key_gui_description2.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_a_decryption_key_gui_description2.png)
 
-# New in Version 3.0: Built-in Cryptanalysis
+# 📊 New in Version 3.0: Built-in Cryptanalysis
 
 To run this example, copy the file key.txt to keyKeep.txt, then delete key.txt, and restart CTTS without parameters. Following transcription, it is possible to recover an initial key, using the built-in Cryptanalysis function, which can be started with F8 from any mode. First, enter the parameters as described below. 
 
@@ -242,7 +242,7 @@ After a few iterations, it is possible to read additional parts of the deciphere
 
 ![built_in_cryptanalysis_lock_homophones.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_lock_homophones.png)
 
-# Snapshots
+# 📷 Snapshots
 
 A snapshot of the current mode or view can be generated, by pressing F7. Those snapshots can be used to share results with collaborators that do not have access to CTTS. These include:
   1)	A snapshot of the Symbol Types  including the decryption values
@@ -259,7 +259,7 @@ A snapshot of the current mode or view can be generated, by pressing F7. Those s
 
 ![snapshot_decryption_image.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/snapshot_decryption_image.png)
 
-# Tips
+# 🌞 Tips
 
 Transcribing documents with a large number of symbols
 
@@ -277,7 +277,7 @@ The advantage of (2) over (3) is that with (3), you will need an additional clic
 
 The author has experimented with all methods and found that working according to (3) and each time segmenting about 10-15 lines (or 500 symbols), then classifying them with bulk operations, is often the most efficient way to make quick progress. A fourth option that worked well is to divide the symbol types into a small number of categories (e.g. symbols with a dot vs. symbols without a dot), first segmenting all the symbols of one category, then continuing with the next category, with a different color, and so on.
 
-# Transcribing documents with inconsistent or poor line alignment
+# 📐 Transcribing documents with inconsistent or poor line alignment
 
 CTTS has an internal line segmentation algorithm, to generate the transcription text files, with the symbols in the right order (line after line, from left to right), and to render the Transcription Review window, which presents line-by-line comprehensive information. For both purposes, CTTS needs to figure out the order of the symbols, and how they should be divided into lines. Sometimes, symbols are so badly unaligned in the image that CTTS may produce inaccurate results (with the March 24, 2022 version 2.2 of CTTS, this is less likely to happen, however). In order to verify the correct alignment of the symbols, press F9 from the Transcription mode, as shown below. To fix any alignment issue, you may need to move or stretch the boxes around those outlier symbols, closer to other symbols in the desired line,  after press F9 again to return to normal Transcription mode.
 
