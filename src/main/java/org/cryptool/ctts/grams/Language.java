@@ -19,29 +19,28 @@ package org.cryptool.ctts.grams;
 import java.io.InputStream;
 import java.util.Locale;
 
-import org.cryptool.ctts.cryptanalysis.Cryptanalysis;
-
 public enum Language {
 
-    FRENCH, 
-    ENGLISH, 
-    GERMAN, 
-    SPANISH, 
-    ITALIAN, 
-    LATIN, 
+    FRENCH,
+    ENGLISH,
+    GERMAN,
+    SPANISH,
+    ITALIAN,
+    LATIN,
     DUTCH;
 
     public static StringBuilder readFileAZSpaceOnly(Language l) {
 
         // for static access, uses the class name directly
         final String filename = l.toString().toLowerCase(Locale.ROOT) + ".txt";
-        InputStream is = Cryptanalysis.class.getClassLoader().getResourceAsStream(filename);
+        InputStream is = Language.class.getClassLoader().getResourceAsStream(filename);
         if (is == null) {
             System.out.println("Could not open resource file: " + filename);
             System.exit(0);
         }
-        byte[] b = new byte[1_000_000];
+        byte[] b = new byte[10_000_000];
         try {
+            int read = is.read(b);
             String s = new String(b);
 
             final String RAW_PLAINTEXT_LETTERS = "abcdefghijklmnopqrstuvwxyzàáãåάąäâªªçčðďλěêèéęëįîìíïłňńñöøòóôőõθº°ǫφþřŕš§ťüúűùûů×ýżžź";
@@ -79,4 +78,5 @@ public enum Language {
         }
 
     }
+
 }

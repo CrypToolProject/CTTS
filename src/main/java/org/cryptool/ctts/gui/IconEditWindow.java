@@ -16,12 +16,6 @@
 
 package org.cryptool.ctts.gui;
 
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.ImageUtils;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -29,29 +23,32 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.Icons;
+import org.cryptool.ctts.util.ImageUtils;
+import org.cryptool.ctts.util.TranscribedImage;
+import org.cryptool.ctts.util.Utils;
 
 public class IconEditWindow {
 
     final static double MAX_GRAY_SCALE = 0.60;
     final static int BLUR_RADIUS = 3;
     final static double CONTRAST = 0.0;
-
+    private static final int ICON_SIZE = 40;
     static double maxGrayScale = MAX_GRAY_SCALE;
     static double blurRadius = BLUR_RADIUS;
     static double contrast = CONTRAST;
-
     static boolean allowUpdates = false;
-
     static Stage myDialog;
-    private static final int ICON_SIZE = 40;
-
     static Button save = new Button("Save");
     static Button close = new Button("Cancel");
     static ScrollBar maxGrayScaleSb = new ScrollBar();

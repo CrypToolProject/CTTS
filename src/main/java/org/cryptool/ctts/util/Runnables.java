@@ -22,8 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Runnables {
-
-    private ArrayList<Runnable> runnables = new ArrayList<Runnable>();
+    private final ArrayList<Runnable> runnables = new ArrayList<>();
 
     public void addRunnable(Runnable runnable) {
         runnables.add(runnable);
@@ -34,14 +33,11 @@ public class Runnables {
     }
 
     public void run(int threads) {
-
         ExecutorService threadExecutor = Executors.newFixedThreadPool(threads);
         for (Runnable runnable : runnables) {
             threadExecutor.execute(runnable);
         }
-
         threadExecutor.shutdown();
-
         boolean finished = false;
         while (!finished) {
             try {
@@ -50,6 +46,5 @@ public class Runnables {
                 Thread.currentThread().interrupt();
             }
         }
-
     }
 }

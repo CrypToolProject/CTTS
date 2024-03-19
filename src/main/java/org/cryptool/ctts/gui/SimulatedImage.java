@@ -16,22 +16,6 @@
 
 package org.cryptool.ctts.gui;
 
-import static org.cryptool.ctts.gui.DetailedTranscriptionPane.ICON_SIZE;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.Alignment;
-import org.cryptool.ctts.util.EditedRecord;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.ImageUtils;
-import org.cryptool.ctts.util.Key;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -40,19 +24,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.PerspectiveTransform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -60,6 +32,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 
 public class SimulatedImage extends Popup {
 
@@ -107,6 +86,63 @@ public class SimulatedImage extends Popup {
 
     }
 
+
+    public static VBox drawLines(int index, boolean effects, boolean decryption, boolean edited) {
+        VBox lines = new VBox();
+        if (!edited) {
+            ArrayList<Rectangle> allSymbols = new ArrayList<>();
+            ArrayList<String> allDecryption = new ArrayList<>();
+            ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
+            for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
+                ArrayList<String> decryptionSequence = DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
+                allSymbols.addAll(lineOfSymbols);
+                allDecryption.addAll(decryptionSequence);
+            }
+
+            int size = 50;
+            for (int z = 0; z < (allSymbols.size() + size - 1) / size; z++) {
+                HBox line = symbolDisplayLine(CTTSApplication.key, allSymbols.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)),
+                        allDecryption.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)), effects, decryption);
+                lines.getChildren().add(line);
+
+            }
+        } else {
+
+            final Font pFont = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(24));
+
+            int l = 0;
+            for (ArrayList<Rectangle> lineOfSymbols : Alignment.linesOfSymbols(index)) {
+                ArrayList<String> decryptionSequence = DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
+                HBox line = symbolDisplayLine(CTTSApplication.key, lineOfSymbols, decryptionSequence, effects, decryption);
+                lines.getChildren().add(line);
+                if (decryption) {
+                    String e = EditedRecord.get(TranscribedImage.image(index).filename, l);
+                    if (e != null && !e.isEmpty()) {
+                        Text t = new Text(e);
+                        t.setFill(Color.BLUE);
+                        t.setFont(pFont);
+                        lines.getChildren().add(t);
+                    }
+                    l++;
+                }
+            }
+
+        }
+        return lines;
+    }
+
+    private static HBox symbolDisplayLine(Key key, List<Rectangle> lineOfSymbols, List<String> decryptionSequence, boolean effects, boolean decryption) {
+        HBox line = new HBox();
+        line.setSpacing(0);
+        for (int i = 0; i < lineOfSymbols.size(); i++) {
+            Rectangle r = lineOfSymbols.get(i);
+            SymbolStackPane sp = new SymbolStackPane(decryption, key);
+            sp.update(key, decryptionSequence, i, r, effects);
+            line.getChildren().add(sp);
+        }
+        return line;
+    }
+
     public static void simulatedImageSnapshot(int i, boolean effects, boolean decryption, boolean edited) {
         SimulatedImage p = new SimulatedImage(i, effects, decryption, edited);
         p.show(CTTSApplication.myStage);
@@ -114,16 +150,22 @@ public class SimulatedImage extends Popup {
         p.hide();
     }
 
+    public void snapshot(boolean effects, boolean decryption, boolean edited) {
+        int format = 1 + (edited ? 0 : 4) + (effects ? 0 : 2) + (decryption ? 0 : 1);
+        FileUtils.snapshot("simulation", TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", "_format" + format), mainPane);
+
+    }
+
+
     public static class SymbolStackPane extends StackPane {
         ImageView icon = new ImageView();
         Text pText = new Text();
 
         public SymbolStackPane(boolean decryption, Key key) {
 
-            final Background globalBackground = new Background(
-                    new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
+            final Background globalBackground = new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
 
-            icon.setFitHeight(Utils.adjust(ICON_SIZE));
+            icon.setFitHeight(Utils.adjust(DetailedTranscriptionPane.ICON_SIZE));
             icon.setPreserveRatio(true);
 
             StackPane psp = new StackPane(pText);
@@ -165,9 +207,7 @@ public class SimulatedImage extends Popup {
             final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(16));
             pText.setFill(Color.RED);
 
-            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i)
-                    ? decryptionSequence.get(i)
-                    : "";
+            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i) ? decryptionSequence.get(i) : "";
 
             Color color = (Color) r.getFill();
 
@@ -217,72 +257,6 @@ public class SimulatedImage extends Popup {
             }
 
         }
-
-    }
-
-    private static VBox drawLines(int index, boolean effects, boolean decryption, boolean edited) {
-        VBox lines = new VBox();
-        if (!edited) {
-            ArrayList<Rectangle> allSymbols = new ArrayList<>();
-            ArrayList<String> allDecryption = new ArrayList<>();
-            ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
-            for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
-                ArrayList<String> decryptionSequence = DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
-                allSymbols.addAll(lineOfSymbols);
-                allDecryption.addAll(decryptionSequence);
-            }
-
-            int size = 50;
-            for (int z = 0; z < (allSymbols.size() + size - 1) / size; z++) {
-                HBox line = symbolDisplayLine(CTTSApplication.key,
-                        allSymbols.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)),
-                        allDecryption.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)), effects,
-                        decryption);
-                lines.getChildren().add(line);
-
-            }
-        } else {
-
-            final Font pFont = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(24));
-
-            int l = 0;
-            for (ArrayList<Rectangle> lineOfSymbols : Alignment.linesOfSymbols(index)) {
-                ArrayList<String> decryptionSequence = DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
-                HBox line = symbolDisplayLine(CTTSApplication.key, lineOfSymbols, decryptionSequence, effects, decryption);
-                lines.getChildren().add(line);
-                if (decryption) {
-                    String e = EditedRecord.get(TranscribedImage.image(index).filename, l);
-                    if (e != null && !e.isEmpty()) {
-                        Text t = new Text(e);
-                        t.setFill(Color.BLUE);
-                        t.setFont(pFont);
-                        lines.getChildren().add(t);
-                    }
-                    l++;
-                }
-            }
-
-        }
-        return lines;
-    }
-
-    private static HBox symbolDisplayLine(Key key, List<Rectangle> lineOfSymbols, List<String> decryptionSequence,
-            boolean effects, boolean decryption) {
-        HBox line = new HBox();
-        line.setSpacing(0);
-        for (int i = 0; i < lineOfSymbols.size(); i++) {
-            Rectangle r = lineOfSymbols.get(i);
-            SymbolStackPane sp = new SymbolStackPane(decryption, key);
-            sp.update(key, decryptionSequence, i, r, effects);
-            line.getChildren().add(sp);
-        }
-        return line;
-    }
-
-    private void snapshot(boolean effects, boolean decryption, boolean edited) {
-        int format = 1 + (edited ? 0 : 4) + (effects ? 0 : 2) + (decryption ? 0 : 1);
-        FileUtils.snapshot("simulation",
-                TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", "_format" + format), mainPane);
 
     }
 

@@ -16,32 +16,6 @@
 
 package org.cryptool.ctts;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Optional;
-
-import org.cryptool.ctts.cryptanalysis.CryptanalysisWindow;
-import org.cryptool.ctts.gui.ClusterListView;
-import org.cryptool.ctts.gui.DetailedTranscriptionPane;
-import org.cryptool.ctts.gui.DetailedTranscriptionSnapshot;
-import org.cryptool.ctts.gui.FullKeyWindow;
-import org.cryptool.ctts.gui.Headers;
-import org.cryptool.ctts.gui.KeySnapshot;
-import org.cryptool.ctts.gui.MainImagePane;
-import org.cryptool.ctts.gui.SelectionArea;
-import org.cryptool.ctts.gui.SimulatedImage;
-import org.cryptool.ctts.gui.SimulatedImagePartialDecryption;
-import org.cryptool.ctts.gui.SymbolsSnapshot;
-import org.cryptool.ctts.util.Colors;
-import org.cryptool.ctts.util.EditedRecord;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.ImageUtils;
-import org.cryptool.ctts.util.Key;
-import org.cryptool.ctts.util.Selection;
-import org.cryptool.ctts.util.SelectionBox;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -57,192 +31,39 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.cryptool.ctts.cryptanalysis.CryptanalysisWindow;
+import org.cryptool.ctts.gui.*;
+import org.cryptool.ctts.util.*;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class CTTSApplication extends Application {
-
-    public enum Mode {
-        IMAGE, 
-        CLUSTER
-    }
 
     public static final String COLORS_FILE = "colors";
     public static Colors colors;
     public static SelectionArea selectionArea;
-
+    public static Key key = new Key();
     static ClusterListView listView;
     public static FullKeyWindow fullKeyWindow;
     public static Stage myStage;
-
+    public static String catalog = "";
     public static Mode mode = Mode.IMAGE;
     public static boolean detailed = false;
-
     static String[] args;
 
-    public static Key key = new Key();
-
     public static void main(String[] args) {
-
         CTTSApplication.args = args;
         launch(args);
     }
 
-    public void start(final Stage stage) {
-
-        if (args.length == 0) {
-
-            while (true) {
-                ArrayList<String> imageFilesInCurrentDirectory = FileUtils.imageFilesInCurrentDirectory();
-                if (imageFilesInCurrentDirectory.isEmpty()) {
-                    System.out.println("No image files specified or in current directory");
-
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-
-                    alert.setTitle("No image files in directory " + FileUtils.workingDirectory);
-                    alert.setContentText("Specify another directory?");
-
-                    alert.initOwner(stage.getOwner());
-                    Optional<ButtonType> res = alert.showAndWait();
-
-                    if (res.isPresent()) {
-                        if (res.get().equals(ButtonType.CANCEL)) {
-                            System.exit(0);
-                        } else if (res.get().equals(ButtonType.OK)) {
-                            DirectoryChooser directoryChooser = new DirectoryChooser();
-                            directoryChooser.setInitialDirectory(new File("."));
-                            File selectedDirectory = directoryChooser.showDialog(stage);
-                            System.out.println(selectedDirectory.getAbsolutePath());
-                            FileUtils.workingDirectory = selectedDirectory.getAbsolutePath();
-                        } else {
-                            throw new RuntimeException("Unrecognized response: " + res);
-                        }
-                    }
-
-                } else {
-                    break;
-                }
-            }
-
-            ArrayList<String> imageFilesInCurrentDirectory = FileUtils.imageFilesInCurrentDirectory();
-            String keyFileInCurrentDirectory = FileUtils.keyFileInCurrentDirectory();
-            args = new String[imageFilesInCurrentDirectory.size() + (keyFileInCurrentDirectory == null ? 0 : 2)];
-            for (int i = 0; i < imageFilesInCurrentDirectory.size(); i++) {
-                args[i] = imageFilesInCurrentDirectory.get(i);
-            }
-            if (keyFileInCurrentDirectory != null) {
-                args[imageFilesInCurrentDirectory.size()] = "-k";
-                args[imageFilesInCurrentDirectory.size() + 1] = keyFileInCurrentDirectory;
-            }
-
-        }
-
-        boolean minusK = false;
-        for (String arg : args) {
-
-            if (arg.equalsIgnoreCase("-k")) {
-                minusK = true;
-                continue;
-            }
-
-            if (minusK && arg.endsWith("txt")) {
-                if (key != null && key.isKeyAvailable()) {
-                    System.out.println("Too many key files");
-                    System.exit(1);
-                }
-                key = Key.readFromFile(arg);
-            } else if (!ImageUtils.isSupportedFormat(arg)) {
-                System.out.println("Unsupported image type: " + arg);
-                System.exit(1);
-            }
-            minusK = false;
-
-        }
-
-        Utils.screenWidth = (int) Screen.getPrimary().getBounds().getWidth();
-        Utils.screenHeight = (int) Screen.getPrimary().getBounds().getHeight();
-        System.out.printf("Screen size: %d x %d\n", Utils.screenWidth, Utils.screenHeight);
-
-        colors = Colors.restore(COLORS_FILE);
-        if (colors == null) {
-            colors = new Colors();
-        }
-        TranscribedImage.transcribedImages = TranscribedImage.extractFromArgs(args);
-
-        EditedRecord.restore();
-
-        // Top Header
-        HBox titleHbox = Headers.initTitle();
-
-        // Top area
-        MainImagePane.initMainImagePane();
-        listView = new ClusterListView();
-        listView.reset();
-        listView.setOnKeyPressed(CTTSApplication::keyPressed);
-        fullKeyWindow = new FullKeyWindow();
-        fullKeyWindow.hide();
-
-        HBox hBox = new HBox(fullKeyWindow, listView, MainImagePane.scrollPane);
-        HBox.setHgrow(fullKeyWindow, Priority.ALWAYS);
-
-        // Bottom Area
-        selectionArea = new SelectionArea();
-
-        // Bottom Header
-        HBox legendHBox = Headers.initLegend();
-
-        VBox root = new VBox(titleHbox, hBox, selectionArea, legendHBox);
-        VBox.setVgrow(hBox, Priority.ALWAYS);
-        VBox.setVgrow(selectionArea, Priority.ALWAYS);
-        VBox.setVgrow(legendHBox, Priority.NEVER);
-        root.setOnKeyPressed(CTTSApplication::keyPressed);
-
-        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
-        Scene scene = new Scene(root, 0.95 * screenBounds.getWidth(), 0.92 * screenBounds.getHeight());
-        scene.setOnKeyPressed(CTTSApplication::keyPressed);
-
-        myStage = stage;
-        myStage.setResizable(false);
-        Headers.updateTopTitle();
-        stage.setScene(scene);
-        stage.setResizable(true);
-        stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
-
-            if (colors.changed() || key.changed() || TranscribedImage.changed() || EditedRecord.changed) {
-
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-
-                alert.setTitle("Quit");
-                alert.setContentText("Close without saving?");
-
-                alert.initOwner(myStage.getOwner());
-                Optional<ButtonType> res = alert.showAndWait();
-
-                if (res.isPresent()) {
-                    if (res.get().equals(ButtonType.CANCEL)) {
-                        event.consume();
-                    } else if (res.get().equals(ButtonType.OK)) {
-                        System.exit(0);
-                    } else {
-                        throw new RuntimeException("Unrecognized response: " + res);
-                    }
-                }
-            } else {
-                System.exit(0);
-            }
-        });
-        stage.show();
-
-        showImage(0, TranscribedImage.first(0), true);
-
-    }
-
     public static void unselectRectangle() {
-
         String previousId = Selection.clear();
         if (previousId != null && mode == Mode.IMAGE && detailed) {
             DetailedTranscriptionPane.updateSymbol(TranscribedImage.idToIndex(previousId), previousId);
         }
         SelectionBox.hide();
-
         selectionArea.unselectRectangle();
     }
 
@@ -297,8 +118,7 @@ public class CTTSApplication extends Application {
         }
     }
 
-    public static void colorParametersChanged(Color selectedColor, boolean transcriptionValueChanged, boolean iconChanged,
-            boolean decryptionValueChanged) {
+    public static void colorParametersChanged(Color selectedColor, boolean transcriptionValueChanged, boolean iconChanged, boolean decryptionValueChanged) {
         fullKeyWindow.refresh();
         if (transcriptionValueChanged) {
             listView.reset();
@@ -314,9 +134,7 @@ public class CTTSApplication extends Application {
     }
 
     public static void symbolClickedFromSelectionArea(String clickedId, int idx, Rectangle nr) {
-
         saveZoomAndScrollState();
-
         if (mode == Mode.IMAGE) {
             if (TranscribedImage.currentImageIndex != idx) {
                 showImage(idx, nr, false);
@@ -334,25 +152,31 @@ public class CTTSApplication extends Application {
     }
 
     public static void keyPressed(javafx.scene.input.KeyEvent event) {
-
         saveZoomAndScrollState();
-
         Rectangle selected = Selection.singleSelectedIdToRectangle();
-
         switch (event.getCode()) {
+            case MINUS:
+                if (mode == Mode.IMAGE && !detailed && MainImagePane.subMode == MainImagePane.SubMode.DECRYPTION) {
+                    MainImagePane.decryptionYOffset--;
+                    MainImagePane.showDecryption();
+                }
+                break;
+            case EQUALS:
+                if (mode == Mode.IMAGE && !detailed && MainImagePane.subMode == MainImagePane.SubMode.DECRYPTION) {
+                    MainImagePane.decryptionYOffset++;
+                    MainImagePane.showDecryption();
+                }
+                break;
             case ESCAPE:
-                if (colors.changed() || key.changed() || TranscribedImage.changed() || EditedRecord.changed) {
-
+                if (colors.changed() || key.changed() || TranscribedImage.change() || EditedRecord.changed) {
                     saveAll(false);
-
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
                     alert.setTitle("Save and quit");
                     alert.setContentText("All changes were saved");
-
                     alert.initOwner(myStage.getOwner());
-                    alert.showAndWait();
+                    Optional<ButtonType> res = alert.showAndWait();
                 }
+                //DetailedTranscriptionPane.printAllDecryptedLines();
                 System.exit(0);
                 break;
             case F1:
@@ -363,12 +187,10 @@ public class CTTSApplication extends Application {
                     listView.reset();
                     fullKeyWindow.refresh();
                 }
-
                 break;
             case F2:
                 if (mode != Mode.CLUSTER) {
-                    showImage((TranscribedImage.currentImageIndex - 1 + TranscribedImage.size())
-                            % TranscribedImage.size(), null, false);
+                    showImage((TranscribedImage.currentImageIndex - 1 + TranscribedImage.size()) % TranscribedImage.size(), null, false);
                 } else {
                     colors.sortByDecryption();
                     listView.reset();
@@ -376,10 +198,8 @@ public class CTTSApplication extends Application {
                 }
                 break;
             case F3:
-                if (mode != Mode.CLUSTER && selected != null && !detailed
-                        && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
-                    Rectangle previous = TranscribedImage.previousPosition(TranscribedImage.currentImageIndex,
-                            selected);
+                if (mode != Mode.CLUSTER && selected != null && !detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
+                    Rectangle previous = TranscribedImage.previousPosition(TranscribedImage.currentImageIndex, selected);
                     if (previous != null) {
                         selectRectangle(TranscribedImage.currentImageIndex, previous, true);
                     }
@@ -394,10 +214,8 @@ public class CTTSApplication extends Application {
                     MainImagePane.showDecryption();
                 }
                 break;
-
             case F4:
-                if (mode != Mode.CLUSTER && selected != null && !detailed
-                        && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
+                if (mode != Mode.CLUSTER && selected != null && !detailed && MainImagePane.subMode == MainImagePane.SubMode.SYMBOLS) {
                     Rectangle next = TranscribedImage.nextPosition(TranscribedImage.currentImageIndex, selected);
                     if (next != null) {
                         selectRectangle(TranscribedImage.currentImageIndex, next, true);
@@ -407,9 +225,7 @@ public class CTTSApplication extends Application {
                     MainImagePane.decryptionFontSizeFactor *= 1.05;
                     MainImagePane.showDecryption();
                 }
-
                 break;
-
             case F6:
                 MainImagePane.zoomOut();
                 break;
@@ -417,7 +233,6 @@ public class CTTSApplication extends Application {
                 MainImagePane.zoomIn();
                 break;
             case F7:
-
                 if (mode == Mode.IMAGE) {
                     if (detailed) {
                         DetailedTranscriptionSnapshot.detailedTranscriptionSnapshot(TranscribedImage.currentImageIndex);
@@ -426,13 +241,10 @@ public class CTTSApplication extends Application {
                     }
                     if (event.isControlDown()) {
                         if (key.isKeyAvailable()) {
-                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, true,
-                                    false);
-                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true,
-                                    false);
+                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, true, false);
+                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true, false);
                             SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, true, true);
-                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true,
-                                    true);
+                            SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, false, true, true);
                             SimulatedImagePartialDecryption.simulatedImageSnapshot(TranscribedImage.currentImageIndex);
                         }
                         SimulatedImage.simulatedImageSnapshot(TranscribedImage.currentImageIndex, true, false, false);
@@ -442,9 +254,7 @@ public class CTTSApplication extends Application {
                     SymbolsSnapshot.keySnapshot();
                     KeySnapshot.keySnapshot();
                 }
-
                 break;
-
             case F8:
                 CryptanalysisWindow.show(event.isControlDown());
                 break;
@@ -465,31 +275,22 @@ public class CTTSApplication extends Application {
                 if (event.getCode() == KeyCode.S && !event.isControlDown()) {
                     break;
                 }
-
                 saveAll(false);
-
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
                 alert.setTitle("Save");
                 alert.setContentText("All changes were saved");
-
                 alert.initOwner(myStage.getOwner());
-                alert.showAndWait();
-
+                Optional<ButtonType> res = alert.showAndWait();
                 break;
             case F11:
             case TAB:
                 switchMode(mode == Mode.CLUSTER ? Mode.IMAGE : Mode.CLUSTER, false);
-
                 break;
             case F12:
-
                 if (mode == Mode.IMAGE && !detailed) {
                     DetailedTranscriptionPane.setDetailed(event.isControlDown());
                 }
-
                 switchMode(mode, !detailed);
-
                 break;
             case DELETE:
                 if (selected != null && mode != Mode.CLUSTER) {
@@ -503,38 +304,29 @@ public class CTTSApplication extends Application {
                     TranscribedImage.current().remove(selected);
                 }
                 break;
-
             default:
-
                 if (mode != Mode.CLUSTER && event.getCode() == KeyCode.ADD && event.isControlDown()) {
                     MainImagePane.zoomIn();
                 } else if (mode != Mode.CLUSTER && event.getCode() == KeyCode.SUBTRACT && event.isControlDown()) {
                     MainImagePane.zoomOut();
                 }
-
                 break;
         }
         Headers.updateHeadersAndBottom();
         listView.updateListView(false);
-
         event.consume();
-
     }
 
     private static void switchMode(Mode newMode, boolean newDetailed) {
         if (newMode == mode && detailed == newDetailed) {
             return;
         }
-
         saveZoomAndScrollState();
-
         if (newMode != mode) {
             newDetailed = false;
         }
-
         detailed = newDetailed;
         mode = newMode;
-
         if (mode == Mode.CLUSTER) {
             MainImagePane.scrollPane.setVisible(false);
             MainImagePane.scrollPane.setMaxWidth(0);
@@ -564,7 +356,6 @@ public class CTTSApplication extends Application {
             }
             listView.show(false);
         }
-
         Headers.updateHeadersAndBottom();
     }
 
@@ -579,26 +370,21 @@ public class CTTSApplication extends Application {
     }
 
     private static void showImage(int newIndex, Rectangle newSelection, boolean updateColor) {
-
         TranscribedImage.currentImageIndex = newIndex;
-
         if (CTTSApplication.detailed) {
             DetailedTranscriptionPane.show();
         } else {
             MainImagePane.showImage();
         }
         Headers.updateHeadersAndBottom();
-
         if (newSelection != null) {
             selectRectangle(TranscribedImage.currentImageIndex, newSelection, updateColor);
         } else {
             unselect();
         }
-
     }
 
     private static void selectRectangle(int idx, Rectangle newSelected, boolean selectColor) {
-
         String previousId = Selection.clear();
         if (previousId != null && mode == Mode.IMAGE && detailed) {
             DetailedTranscriptionPane.updateSymbol(TranscribedImage.idToIndex(previousId), previousId);
@@ -608,12 +394,10 @@ public class CTTSApplication extends Application {
         }
         final String newId = TranscribedImage.rectangleToId(idx, newSelected);
         Selection.add(newId);
-
         if (selectColor) {
             selectColor((Color) newSelected.getFill());
         }
         selectionArea.selectRectangle(idx, newSelected);
-
         if (mode == Mode.IMAGE) {
             if (detailed) {
                 DetailedTranscriptionPane.updateSymbol(TranscribedImage.idToIndex(newId), newId);
@@ -622,14 +406,11 @@ public class CTTSApplication extends Application {
             }
             MainImagePane.scrollTo(MainImagePane.scrollPane, newSelected);
         }
-
     }
 
     private static void selectColor(Color color) {
-
         selectionArea.selectColor(color, false);
         MainImagePane.baseRectangle.setFill(color);
-
         MainImagePane.mainPane.requestFocus();
         if (mode == Mode.IMAGE && detailed) {
             DetailedTranscriptionPane.updateBorders(TranscribedImage.currentImageIndex);
@@ -637,26 +418,20 @@ public class CTTSApplication extends Application {
     }
 
     private static void saveAll(boolean detailedSnapshots) {
-
         EditedRecord.save();
-
         TranscribedImage.saveTranscriptionsDecryptionsPositions();
-
         colors.save(COLORS_FILE);
         key.saveKey();
         SymbolsSnapshot.keySnapshot();
         KeySnapshot.keySnapshot();
-
         if (!detailedSnapshots) {
             return;
         }
         boolean keepDetailed = detailed;
         Mode keepMode = mode;
-
         if (mode == Mode.IMAGE && detailed) {
             switchMode(Mode.IMAGE, false);
         }
-
         switchMode(Mode.CLUSTER, false);
         for (int i = 0; i < TranscribedImage.size(); i++) {
             MainImagePane.saveZoomAndScrollState();
@@ -664,11 +439,139 @@ public class CTTSApplication extends Application {
             MainImagePane.symbolsInImageSnapshot();
             DetailedTranscriptionSnapshot.detailedTranscriptionSnapshot(i);
         }
-
         if (mode != keepMode) {
             switchMode(keepMode, keepDetailed);
         }
+    }
 
+    public void start(final Stage stage) {
+        if (args.length == 0) {
+            while (true) {
+                ArrayList<String> imageFilesInCurrentDirectory = FileUtils.imageFilesInCurrentDirectory();
+                if (imageFilesInCurrentDirectory.isEmpty()) {
+                    System.out.println("No image files specified or in current directory");
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("No image files in directory " + FileUtils.workingDirectory);
+                    alert.setContentText("Specify another directory?");
+                    alert.initOwner(stage.getOwner());
+                    Optional<ButtonType> res = alert.showAndWait();
+                    if (res.isPresent()) {
+                        if (res.get().equals(ButtonType.CANCEL)) {
+                            System.exit(0);
+                        } else if (res.get().equals(ButtonType.OK)) {
+                            DirectoryChooser directoryChooser = new DirectoryChooser();
+                            directoryChooser.setInitialDirectory(new File("."));
+                            File selectedDirectory = directoryChooser.showDialog(stage);
+                            System.out.println(selectedDirectory.getAbsolutePath());
+                            FileUtils.workingDirectory = selectedDirectory.getAbsolutePath();
+                        } else {
+                            throw new RuntimeException("Unrecognized response: " + res);
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+            ArrayList<String> imageFilesInCurrentDirectory = FileUtils.imageFilesInCurrentDirectory();
+            String keyFileInCurrentDirectory = FileUtils.keyFileInCurrentDirectory();
+            args = new String[imageFilesInCurrentDirectory.size() + (keyFileInCurrentDirectory == null ? 0 : 2)];
+            for (int i = 0; i < imageFilesInCurrentDirectory.size(); i++) {
+                args[i] = imageFilesInCurrentDirectory.get(i);
+            }
+            if (keyFileInCurrentDirectory != null) {
+                args[imageFilesInCurrentDirectory.size()] = "-k";
+                args[imageFilesInCurrentDirectory.size() + 1] = keyFileInCurrentDirectory;
+            }
+        }
+        boolean minusK = false;
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("-k")) {
+                minusK = true;
+                continue;
+            }
+            if (minusK && arg.endsWith("txt")) {
+                if (key != null && key.isKeyAvailable()) {
+                    System.out.println("Too many key files");
+                    System.exit(1);
+                }
+                key = Key.readFromFile(arg);
+            } else if (!ImageUtils.isSupportedFormat(arg)) {
+                System.out.println("Unsupported image type: " + arg);
+                System.exit(1);
+            }
+            minusK = false;
+        }
+        Utils.screenWidth = (int) Screen.getPrimary().getBounds().getWidth();
+        Utils.screenHeight = (int) Screen.getPrimary().getBounds().getHeight();
+        System.out.printf("Screen size: %d x %d\n", Utils.screenWidth, Utils.screenHeight);
+        colors = Colors.restore(COLORS_FILE);
+        if (colors == null) {
+            colors = new Colors();
+        }
+        TranscribedImage.transcribedImages = TranscribedImage.extractFromArgs(args);
+
+        EditedRecord.restore();
+        // Top Header
+        HBox titleHbox = Headers.initTitle();
+        // Top area
+        MainImagePane.initMainImagePane();
+        listView = new ClusterListView();
+        listView.reset();
+        listView.setOnKeyPressed(CTTSApplication::keyPressed);
+        fullKeyWindow = new FullKeyWindow();
+        fullKeyWindow.hide();
+        HBox hBox = new HBox(fullKeyWindow, listView, MainImagePane.scrollPane);
+        HBox.setHgrow(fullKeyWindow, Priority.ALWAYS);
+        // Bottom Area
+        selectionArea = new SelectionArea();
+        // Bottom Header
+        HBox legendHBox = Headers.initLegend();
+        VBox root = new VBox(titleHbox, hBox, selectionArea, legendHBox);
+        VBox.setVgrow(hBox, Priority.ALWAYS);
+        VBox.setVgrow(selectionArea, Priority.ALWAYS);
+        VBox.setVgrow(legendHBox, Priority.NEVER);
+        root.setOnKeyPressed(CTTSApplication::keyPressed);
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+        Scene scene = new Scene(root, 0.95 * screenBounds.getWidth(), 0.92 * screenBounds.getHeight());
+        scene.setOnKeyPressed(CTTSApplication::keyPressed);
+        myStage = stage;
+        myStage.setResizable(false);
+        Headers.updateTopTitle();
+        stage.setScene(scene);
+        stage.setResizable(true);
+        stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
+
+            if (colors.changed() || key.changed() || TranscribedImage.change() || EditedRecord.changed) {
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+                alert.setTitle("Quit");
+                alert.setContentText("Close without saving?");
+
+                alert.initOwner(myStage.getOwner());
+                Optional<ButtonType> res = alert.showAndWait();
+
+                if (res.isPresent()) {
+                    if (res.get().equals(ButtonType.CANCEL)) {
+                        event.consume();
+                    } else if (res.get().equals(ButtonType.OK)) {
+                        System.exit(0);
+                    } else {
+                        throw new RuntimeException("Unrecognized response: " + res);
+                    }
+                }
+            } else {
+                System.exit(0);
+            }
+        });
+        TranscribedImage.createNegativesIfNeed();
+        stage.show();
+        showImage(0, TranscribedImage.first(0), true);
+    }
+
+    public enum Mode {
+        IMAGE,
+        CLUSTER
     }
 
 }

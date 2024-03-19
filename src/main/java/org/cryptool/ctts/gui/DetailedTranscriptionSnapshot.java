@@ -16,32 +16,25 @@
 
 package org.cryptool.ctts.gui;
 
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.TranscribedImage;
-
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.FileUtils;
+import org.cryptool.ctts.util.TranscribedImage;
 
 public class DetailedTranscriptionSnapshot extends Popup {
 
     Pane mainPane;
-    boolean snapshot;
     int index;
 
     DetailedTranscriptionSnapshot(boolean snapshot, int index) {
         this.index = index;
-        this.snapshot = snapshot;
         setX(50);
         setY(50);
 

@@ -16,19 +16,6 @@
 
 package org.cryptool.ctts.gui;
 
-import static org.cryptool.ctts.gui.DetailedTranscriptionPane.ICON_SIZE;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.Alignment;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.Key;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -36,15 +23,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -52,10 +31,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class SimulatedImagePartialDecryption extends Popup {
-
-    final static int SYMBOLS_PER_LINE = 50;
 
     static int serial = 1;
     Pane mainPane;
@@ -79,8 +62,7 @@ public class SimulatedImagePartialDecryption extends Popup {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setMaxSize(2000, 1000);
 
-        final Background globalBackground = new Background(
-                new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background globalBackground = new Background(new BackgroundFill(Color.rgb(240, 240, 255), CornerRadii.EMPTY, Insets.EMPTY));
         mainPane.setBackground(globalBackground);
 
         canvas.setWidth(1000);
@@ -93,14 +75,9 @@ public class SimulatedImagePartialDecryption extends Popup {
 
     }
 
-    public static void simulatedImageSnapshot(int index) {
-        SimulatedImagePartialDecryption p = new SimulatedImagePartialDecryption(index);
-        p.show(CTTSApplication.myStage);
-        p.snapshot();
-        p.hide();
-    }
 
-    private static VBox drawLines(int index) {
+
+    public static VBox drawLines(int index) {
         VBox lines = new VBox();
 
         ArrayList<Rectangle> allSymbols = new ArrayList<>();
@@ -112,21 +89,14 @@ public class SimulatedImagePartialDecryption extends Popup {
             allDecryption.addAll(decryptionSequence);
         }
 
-        for (int z = 0; z < (allSymbols.size() + SYMBOLS_PER_LINE - 1) / SYMBOLS_PER_LINE; z++) {
-            HBox line = symbolDisplayLine(CTTSApplication.key,
-                    allSymbols.subList(z * SYMBOLS_PER_LINE, Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)),
-                    allDecryption.subList(z * SYMBOLS_PER_LINE,
-                            Math.min(allSymbols.size(), (z + 1) * SYMBOLS_PER_LINE)));
+        int size = 50;
+        for (int z = 0; z < (allSymbols.size() + size - 1) / size; z++) {
+            HBox line = symbolDisplayLine(CTTSApplication.key, allSymbols.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)),
+                    allDecryption.subList(z * size, Math.min(allSymbols.size(), (z + 1) * size)));
             lines.getChildren().add(line);
+
+
         }
-
-        // for (ArrayList<Rectangle> lineOfSymbols : Alignment.linesOfSymbols(index)) {
-        // ArrayList<String> decryptionSequence =
-        // DetailedTranscriptionPane.decryptionSequence(lineOfSymbols);
-        // HBox line = symbolDisplayLine(Main.key, lineOfSymbols, decryptionSequence);
-        // lines.getChildren().add(line);
-        // }
-
         return lines;
     }
 
@@ -135,30 +105,36 @@ public class SimulatedImagePartialDecryption extends Popup {
         line.setSpacing(0);
         for (int i = 0; i < lineOfSymbols.size(); i++) {
             Rectangle r = lineOfSymbols.get(i);
-            SymbolStackPane sp = new SymbolStackPane(key);
+            SymbolStackPane sp = new SymbolStackPane();
             sp.update(key, decryptionSequence, i, r);
             line.getChildren().add(sp);
         }
         return line;
     }
 
-    private void snapshot() {
+    public static void simulatedImageSnapshot(int i) {
+        SimulatedImagePartialDecryption p = new SimulatedImagePartialDecryption(i);
+        p.show(CTTSApplication.myStage);
+        p.snapshot();
+        p.hide();
+    }
+
+    public void snapshot() {
         String suffix = "_" + serial++;
-        FileUtils.snapshot("simulation2",
-                TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", suffix), mainPane);
+        FileUtils.snapshot("simulation2", TranscribedImage.transcribedImages[index].filename.replaceAll("\\..*", suffix), mainPane);
 
     }
 
-    private static class SymbolStackPane extends StackPane {
+
+    static class SymbolStackPane extends StackPane {
         ImageView icon = new ImageView();
         Text pText = new Text();
 
-        SymbolStackPane(Key key) {
+        SymbolStackPane() {
 
-            final Background globalBackground = new Background(
-                    new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
+            final Background globalBackground = new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
 
-            icon.setFitHeight(Utils.adjust(ICON_SIZE));
+            icon.setFitHeight(Utils.adjust(DetailedTranscriptionPane.ICON_SIZE));
             icon.setPreserveRatio(true);
 
             StackPane psp = new StackPane(pText, icon);
@@ -188,9 +164,7 @@ public class SimulatedImagePartialDecryption extends Popup {
             final Font pFontSmall = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(16));
             pText.setFill(Color.RED);
 
-            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i)
-                    ? decryptionSequence.get(i)
-                    : "";
+            final String decryption = (decryptionSequence != null && decryptionSequence.size() > i) ? decryptionSequence.get(i) : "";
 
             Color color = (Color) r.getFill();
 

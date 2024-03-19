@@ -16,79 +16,78 @@
 
 package org.cryptool.ctts.util;
 
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.gui.DetailedTranscriptionPane;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.gui.DetailedTranscriptionPane;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class TranscribedImage {
-
     public static TranscribedImage[] transcribedImages;
     public static int currentImageIndex = 0;
-
+    static Map<String, ArrayList<Rectangle>> symbolTypesCache = null;
     public Image image;
     public Image negative;
-    ArrayList<Rectangle> positions;
     public String filename;
-
     public double scaleValue = 1.0;
     public double vValue = 0.0;
     public double hValue = 0.0;
-
     public double detailedScaleValue = 0.6;
     public double detailedvValue = 0.0;
     public double detailedhValue = 0.0;
-
+    ArrayList<Rectangle> positions;
     boolean changed = false;
-
-    static Map<String, ArrayList<Rectangle>> symbolTypesCache = null;
 
     TranscribedImage(String filename) {
         this.filename = filename;
     }
 
+    public static void createNegativesIfNeed() {
+        for (TranscribedImage t : transcribedImages) {
+            if (t.negative == null) {
+                t.negative = ImageUtils.negative(ImageUtils.blackAndWhite(t.image));
+                String negativeFilename = t.filename.substring(0, t.filename.lastIndexOf(".")) + "_negative" + t.filename.substring(t.filename.lastIndexOf("."));
+                FileUtils.writeImage(null, negativeFilename, t.negative);
+                System.out.printf("Created %s\n", negativeFilename);
+            }
+        }
+    }
+
     public static TranscribedImage[] extractFromArgs(String[] args) {
-        int count = 0;
+        int count_ = 0;
         for (String arg : args) {
             if (ImageUtils.isSupportedFormat(arg)) {
-                count++;
+                count_++;
             }
         }
-        TranscribedImage[] transcribedImages = new TranscribedImage[count];
-        count = 0;
+        TranscribedImage[] transcribedImages = new TranscribedImage[count_];
+        count_ = 0;
+        Runnables r = new Runnables();
         for (String arg : args) {
             if (ImageUtils.isSupportedFormat(arg)) {
-                transcribedImages[count] = new TranscribedImage(arg);
-                transcribedImages[count].image = FileUtils.readImage(null, arg, false);
-                if (transcribedImages[count].image == null) {
-                    System.exit(-1);
-                }
-                String negativeFilename = arg.substring(0, arg.lastIndexOf(".")) + "_negative"
-                        + arg.substring(arg.lastIndexOf("."));
-                transcribedImages[count].negative = FileUtils.readImage(null, negativeFilename, true);
-                if (transcribedImages[count].negative == null) {
-                    WritableImage negative = ImageUtils.negative(transcribedImages[count].image);
-                    transcribedImages[count].negative = negative;
-                    FileUtils.writeImage(null, negativeFilename, negative);
-                }
-
-                transcribedImages[count].positions = Positions.restore(arg);
-                if (transcribedImages[count].positions.isEmpty()) {
-                    System.out.printf("Could not restore symbols for: %s\n", arg);
-                }
-
-                count++;
+                int count = count_;
+                r.addRunnable(() -> {
+                    transcribedImages[count] = new TranscribedImage(arg);
+                    transcribedImages[count].image = FileUtils.readImage(null, arg, false);
+                    if (transcribedImages[count].image == null) {
+                        System.exit(-1);
+                    }
+                    String negativeFilename = arg.substring(0, arg.lastIndexOf(".")) + "_negative" + arg.substring(arg.lastIndexOf("."));
+                    transcribedImages[count].negative = FileUtils.readImage(null, negativeFilename, true);
+                    transcribedImages[count].positions = Positions.restore(arg);
+                    if (transcribedImages[count].positions.isEmpty()) {
+                        System.out.printf("Could not restore symbols for: %s\n", arg);
+                    }
+                });
+                count_++;
             }
         }
+        r.run(count_);
         return transcribedImages;
     }
 
@@ -121,7 +120,6 @@ public class TranscribedImage {
 
     static StringBuilder decryptionTextFormat(int index) {
         StringBuilder lines = new StringBuilder();
-
         lines.append(String.format("# %s\n", transcribedImages[index].filename));
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
         for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
@@ -129,16 +127,18 @@ public class TranscribedImage {
                 lines.append(d.toLowerCase(Locale.ROOT)).append(' ');
             }
             lines.append("\n");
-
         }
         lines.append("\n");
         return lines;
     }
 
     public static void saveTranscriptionsDecryptionsPositions() {
+        Utils.start();
         saveTranscriptions();
+        Utils.stop("Save Transcriptions");
         if (CTTSApplication.key.isKeyAvailable()) {
             saveDecryptions();
+            Utils.stop("Save Decryption");
         }
         for (int i = 0; i < size(); i++) {
             if (TranscribedImage.image(i).changed) {
@@ -146,9 +146,10 @@ public class TranscribedImage {
                 TranscribedImage.image(i).changed = false;
             }
         }
+        Utils.stop("Save Positions");
     }
 
-    public static boolean changed() {
+    public static boolean change() {
         for (int i = 0; i < size(); i++) {
             if (TranscribedImage.image(i).changed) {
                 return true;
@@ -158,71 +159,66 @@ public class TranscribedImage {
     }
 
     private static void saveTranscriptions() {
-
         StringBuilder all = new StringBuilder();
-
         for (int index = 0; index < size(); index++) {
-
             StringBuilder lines = transcriptionTextFormat(index);
             FileUtils.writeTextFile("transcription", transcribedImages[index].filename, lines.toString());
-
             all.append(lines);
         }
-
         FileUtils.writeTextFile("transcription", "all", all.toString());
-
+        if (CTTSApplication.catalog != null && !CTTSApplication.catalog.isEmpty()) {
+            String[] parts = CTTSApplication.catalog.split("_");
+            String prefix = "#CIPHERTEXT\n" + "#CATALOG NAME: ";
+            if (parts.length < 2 || parts.length > 3) {
+                System.out.printf("Invalid catalog (-c): %s\n", CTTSApplication.catalog);
+                return;
+            }
+            if (parts.length == 2) {
+                prefix += CTTSApplication.catalog + "/" + parts[1] + "\n";
+            } else {
+                prefix += parts[0] + "_" + parts[1] + "/" + parts[2] + "\n";
+            }
+            FileUtils.writeTextFile("../../transcription", parts[1], prefix + all);
+        }
     }
 
     private static void saveDecryptions() {
-
         StringBuilder all = new StringBuilder();
-
         for (int index = 0; index < size(); index++) {
-
             StringBuilder lines = decryptionTextFormat(index);
             FileUtils.writeTextFile("decryption", transcribedImages[index].filename, lines.toString());
-
             all.append(lines);
-
         }
-
         FileUtils.writeTextFile("decryption", "all", all.toString());
-
         CTTSApplication.key.covered();
-
     }
 
-    public static Map<String, Double> rawFreq() {
-
+    static Map<String, Double> rawFreq() {
         Map<String, Double> freq = new HashMap<>();
         int total = 0;
-
         for (TranscribedImage transcribedImage : transcribedImages) {
-
             total += transcribedImage.positions.size();
             for (Rectangle r : transcribedImage.positions) {
                 final String key = r.getFill().toString();
                 freq.put(key, freq.getOrDefault(key, 0.0) + 1);
             }
         }
-
         int finalTotal = total;
         freq.replaceAll((n, v) -> freq.get(n) / finalTotal);
         return freq;
     }
 
-    static Map<String, Double> freq(String start) {
-
+    public static Map<String, Double> freq(String start) {
         Map<String, Double> freq = new HashMap<>();
         int total = 0;
-
         for (TranscribedImage transcribedImage : transcribedImages) {
             final String filename = transcribedImage.filename;
             int endStartIndex = filename.indexOf(".");
             if (filename.charAt(endStartIndex - 1) < '0' || filename.charAt(endStartIndex - 1) > '9') {
                 endStartIndex--;
             }
-            if (start.contains(filename.substring(0, endStartIndex))) {
+            String startOfFilename = filename.substring(0, endStartIndex);
+            if (start.toLowerCase().equalsIgnoreCase(startOfFilename)) {
                 total += transcribedImage.positions.size();
                 for (Rectangle r : transcribedImage.positions) {
                     final String key = r.getFill().toString();
@@ -231,59 +227,12 @@ public class TranscribedImage {
                 }
             }
         }
-
         int finalTotal = total;
         freq.replaceAll((n, v) -> freq.get(n) / finalTotal);
         return freq;
     }
 
-    static void consistencyCheck(String start) {
-
-        final String[] criteria = { "01|85", "13|65", "02|72", "20|41", "53|108", "22|131", "18|84" };
-
-        for (int idx = 0; idx < size(); idx++) {
-
-            TranscribedImage transcribedImage = transcribedImages[idx];
-            ;
-            final String filename = transcribedImage.filename;
-            int endStartIndex = filename.indexOf(".");
-            if (filename.charAt(endStartIndex - 1) < '0' || filename.charAt(endStartIndex - 1) > '9') {
-                endStartIndex--;
-            }
-            if (start.contains(filename.substring(0, endStartIndex))) {
-                System.out.println(filename);
-                for (ArrayList<Rectangle> line : Alignment.linesOfSymbols(idx)) {
-                    Map<String, Integer> counts = new TreeMap<>();
-                    for (Rectangle r : line) {
-                        final String key = r.getFill().toString();
-                        String name = CTTSApplication.colors.get(key);
-                        counts.put(name, counts.getOrDefault(name, 0) + 1);
-                    }
-
-                    for (String c : criteria) {
-                        String k1 = c.split("\\|")[0];
-                        int c1 = counts.getOrDefault(k1, 0);
-                        String k2 = c.split("\\|")[1];
-                        int c2 = counts.getOrDefault(k2, 0);
-
-                        if (c1 == 0 && c2 == 0) {
-                            System.out.print("[   ] ");
-                        } else if (c1 > c2) {
-                            System.out.printf("[%3s] ", k1);
-                        } else {
-                            System.out.printf("[%3s] ", k2);
-                        }
-
-                    }
-                    System.out.println();
-                }
-            }
-        }
-
-    }
-
     static double averageSymbolsPerLine(String start) {
-
         int total = 0;
         int totalLines = 0;
         for (int idx = 0; idx < TranscribedImage.size(); idx++) {
@@ -294,8 +243,8 @@ public class TranscribedImage {
             if (filename.charAt(endStartIndex - 1) < '0' || filename.charAt(endStartIndex - 1) > '9') {
                 endStartIndex--;
             }
-            if (start.contains(filename.substring(0, endStartIndex))) {
-
+            String startOfFilename = filename.substring(0, endStartIndex);
+            if (start.equalsIgnoreCase(startOfFilename)) {
                 for (ArrayList<Rectangle> line : Alignment.linesOfSymbols(idx)) {
                     if (line.size() > 60) {
                         totalLines++;
@@ -304,48 +253,42 @@ public class TranscribedImage {
                 }
             }
         }
-
         return 1.0 * total / totalLines;
     }
 
-    static int totalSymbols(String start) {
-
+    public static int totalSymbols(String start) {
         int total = 0;
         for (int idx = 0; idx < TranscribedImage.size(); idx++) {
             TranscribedImage transcribedImage = TranscribedImage.image(idx);
-
             final String filename = transcribedImage.filename;
             int endStartIndex = filename.indexOf(".");
             if (filename.charAt(endStartIndex - 1) < '0' || filename.charAt(endStartIndex - 1) > '9') {
                 endStartIndex--;
             }
-            if (start.contains(filename.substring(0, endStartIndex))) {
-
+            String startOfFilename = filename.substring(0, endStartIndex);
+            if (start.equalsIgnoreCase(startOfFilename)) {
                 for (ArrayList<Rectangle> line : Alignment.linesOfSymbols(idx)) {
                     total += line.size();
                 }
             }
         }
-
         return total;
     }
 
     static int totalLines(String start) {
-
         int total = 0;
         for (int idx = 0; idx < TranscribedImage.size(); idx++) {
             TranscribedImage transcribedImage = TranscribedImage.image(idx);
-
             final String filename = transcribedImage.filename;
             int endStartIndex = filename.indexOf(".");
             if (filename.charAt(endStartIndex - 1) < '0' || filename.charAt(endStartIndex - 1) > '9') {
                 endStartIndex--;
             }
-            if (start.contains(filename.substring(0, endStartIndex))) {
+            String startOfFilename = filename.substring(0, endStartIndex);
+            if (start.equalsIgnoreCase(startOfFilename)) {
                 total += Alignment.linesOfSymbols(idx).size();
             }
         }
-
         return total;
     }
 
@@ -395,7 +338,6 @@ public class TranscribedImage {
         double y = Double.parseDouble(values[2]);
         double w = Double.parseDouble(values[3]);
         double h = Double.parseDouble(values[4]);
-
         for (Rectangle r : transcribedImages[idx].positions) {
             if (r.getLayoutX() == x && r.getLayoutY() == y && r.getWidth() == w && r.getHeight() == h) {
                 return r;
@@ -405,12 +347,10 @@ public class TranscribedImage {
     }
 
     public static int rectangleToIndex(Rectangle nr) {
-
         double x = nr.getLayoutX();
         double y = nr.getLayoutY();
         double w = nr.getWidth();
         double h = nr.getHeight();
-
         for (int idx = 0; idx < transcribedImages.length; idx++) {
             for (Rectangle r : transcribedImages[idx].positions) {
                 if (r.getLayoutX() == x && r.getLayoutY() == y && r.getWidth() == w && r.getHeight() == h) {
@@ -426,7 +366,6 @@ public class TranscribedImage {
         if (values.length != 5) {
             return -1;
         }
-
         return Integer.parseInt(values[0]);
     }
 
@@ -448,19 +387,7 @@ public class TranscribedImage {
         }
     }
 
-    public static Rectangle first(int index, Color color) {
-
-        for (Rectangle nr : TranscribedImage.image(index).positions) {
-            if (nr.getFill().equals(color)) {
-                nr.setId(TranscribedImage.rectangleToId(index, nr));
-                return nr;
-            }
-        }
-        return null;
-    }
-
     public static Rectangle first(int index) {
-
         for (Rectangle nr : TranscribedImage.image(index).positions) {
             nr.setId(TranscribedImage.rectangleToId(index, nr));
             return nr;
@@ -469,7 +396,6 @@ public class TranscribedImage {
     }
 
     public static Rectangle first(Color color) {
-
         buildSymbolTypesCacheIfNeeded();
         String colorString = color.toString();
         ArrayList<Rectangle> list = symbolTypesCache.get(colorString);
@@ -477,7 +403,6 @@ public class TranscribedImage {
             return null;
         }
         return list.get(0);
-
     }
 
     public static ArrayList<Rectangle> symbolsOfType(Color color) {
@@ -490,7 +415,22 @@ public class TranscribedImage {
             return null;
         }
         return idx + ":" + r.getLayoutX() + ":" + r.getLayoutY() + ":" + r.getWidth() + ":" + r.getHeight();
+    }
 
+    public static void changeColor(String id, Rectangle r, Color color) {
+        int index = idToIndex(id);
+        r.setFill(color);
+        symbolTypesCache = null;
+        image(index).changed = true;
+    }
+
+    public static void resizeOrMove(Rectangle r, double x, double y, double w, double h) {
+        r.setLayoutX(x);
+        r.setLayoutY(y);
+        r.setWidth(w);
+        r.setHeight(h);
+        symbolTypesCache = null;
+        image(TranscribedImage.currentImageIndex).changed = true;
     }
 
     public ArrayList<Rectangle> positions() {
@@ -512,21 +452,5 @@ public class TranscribedImage {
     public void replaceAll(ArrayList<Rectangle> filtered) {
         positions.clear();
         positions.addAll(filtered);
-    }
-
-    public static void changeColor(String id, Rectangle r, Color color) {
-        int index = idToIndex(id);
-        r.setFill(color);
-        symbolTypesCache = null;
-        image(index).changed = true;
-    }
-
-    public static void resizeOrMove(Rectangle r, double x, double y, double w, double h) {
-        r.setLayoutX(x);
-        r.setLayoutY(y);
-        r.setWidth(w);
-        r.setHeight(h);
-        symbolTypesCache = null;
-        image(TranscribedImage.currentImageIndex).changed = true;
     }
 }

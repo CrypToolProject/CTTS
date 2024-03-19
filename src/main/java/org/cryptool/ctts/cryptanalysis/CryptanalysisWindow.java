@@ -16,30 +16,6 @@
 
 package org.cryptool.ctts.cryptanalysis;
 
-import static org.cryptool.ctts.gui.DetailedTranscriptionPane.ICON_SIZE;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.grams.Language;
-import org.cryptool.ctts.gui.DetailedTranscriptionPane;
-import org.cryptool.ctts.gui.SimulatedImage;
-import org.cryptool.ctts.util.Alignment;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.Key;
-import org.cryptool.ctts.util.Token;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -47,22 +23,10 @@ import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -74,17 +38,23 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.grams.Language;
+import org.cryptool.ctts.gui.DetailedTranscriptionPane;
+import org.cryptool.ctts.gui.SimulatedImage;
+import org.cryptool.ctts.util.*;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 public class CryptanalysisWindow {
 
-    static boolean showKeyOnTopOfDecryption = false; // show the key on the right (=false) or on top of decryption (yes)
-
-    static Stage myDialog;
-
-    static boolean callback;
-
     final static CryptanalysisParameters params = new CryptanalysisParameters(Language.FRENCH);
-
+    final static String initialResultsText = "Set the parameters above and press Start Cryptanalysis.";
+    static boolean showKeyOnTopOfDecryption = false; // show the key on the right (=false) or on top of decryption (yes)
+    static Stage myDialog;
+    static boolean callback;
     static ChoiceBox<String> languageChoiceBox = new ChoiceBox<>();
     static ChoiceBox<String> ngramChoiceBox = new ChoiceBox<>();
     static CheckBox uToV = new CheckBox("U => V");
@@ -101,24 +71,19 @@ public class CryptanalysisWindow {
     static ChoiceBox<String> minCountChoiceBox = new ChoiceBox<>();
     static ChoiceBox<String> minMatchingLengthForLockingChoiceBox = new ChoiceBox<>();
     static CheckBox ignoreCurrentKey = new CheckBox("Ignore current key");
-
     static VBox decryptionVBox = new VBox();
     static VBox keyVBox = new VBox();
-
     static Text plaintextSymbolTypes = new Text();
     static Text assignableCiphertextSymbolTypes = new Text();
     static Text ciphertextSymbols = new Text();
     static Text ciphertextSymbolsFiltered = new Text();
     static Text ciphertextSymbolTypes = new Text();
     static Text ciphertextSymbolTypesFiltered = new Text();
-
     static Text comments = new Text();
-
     static Circle blink = new Circle(Utils.adjust(20));
     static Button startStop = new Button("Start Cryptanalysis");
     static Button save = new Button("Save Key");
     static Button close = new Button("Close");
-    final static String initialResultsText = "Set the parameters above and press Start Cryptanalysis.";
     static FadeTransition fadeTransition;
 
     static ProgressBar progressBar = new ProgressBar();
@@ -215,7 +180,7 @@ public class CryptanalysisWindow {
         });
 
         maxHomophonesChoiceBox.getItems().clear();
-        for (String v : new String[] { "1", "2", "3", "4", "5", "6", "7" }) {
+        for (String v : new String[]{"1", "2", "3", "4", "5", "6", "7"}) {
             maxHomophonesChoiceBox.getItems().add(v);
         }
         maxHomophonesChoiceBox.setOnAction(e -> {
@@ -224,7 +189,7 @@ public class CryptanalysisWindow {
         });
 
         minMatchingLengthForLockingChoiceBox.getItems().clear();
-        for (String v : new String[] { "8", "9", "10", "12", "15", "20", "25", "Disabled" }) {
+        for (String v : new String[]{"8", "9", "10", "12", "15", "20", "25", "Disabled"}) {
             minMatchingLengthForLockingChoiceBox.getItems().add(v);
         }
         minMatchingLengthForLockingChoiceBox.setOnAction(e -> {
@@ -233,8 +198,8 @@ public class CryptanalysisWindow {
         });
 
         minCountChoiceBox.getItems().clear();
-        for (String v : new String[] { "1", "2", "3", "4", "5", "10", "15", "20", "25", "50", "75", "100", "150", "250",
-                "500", "1000" }) {
+        for (String v : new String[]{"1", "2", "3", "4", "5", "10", "15", "20", "25", "50", "75", "100", "150", "250",
+                "500", "1000"}) {
             minCountChoiceBox.getItems().add(v);
         }
         minCountChoiceBox.setOnAction(e -> {
@@ -243,7 +208,7 @@ public class CryptanalysisWindow {
         });
 
         ngramChoiceBox.getItems().clear();
-        for (String v : new String[] { "4", "5", "6" }) {
+        for (String v : new String[]{"4", "5", "6"}) {
             ngramChoiceBox.getItems().add(v);
         }
         ngramChoiceBox.setOnAction(e -> {
@@ -253,8 +218,8 @@ public class CryptanalysisWindow {
 
         vBox.getChildren().add(new HBox(languageParametersVBox, inputParametersVBox));
 
-        for (CheckBox cb : new CheckBox[] { uToV, wToV, jToI, yToI, zToS, kToC, removeDoubledLetters, removeSpaces,
-                removeX, removeH, ignoreCurrentKey }) {
+        for (CheckBox cb : new CheckBox[]{uToV, wToV, jToI, yToI, zToS, kToC, removeDoubledLetters, removeSpaces,
+                removeX, removeH, ignoreCurrentKey}) {
             cb.setMinWidth(Utils.adjust(125));
             cb.setOnAction(e -> {
                 if (callback)
@@ -265,7 +230,7 @@ public class CryptanalysisWindow {
         comments.setFont(Font.font(java.awt.Font.MONOSPACED, Utils.adjust(12)));
 
         Font bigButtons = new Font(Utils.adjust(18));
-        for (Button b : new Button[] { startStop, close, save }) {
+        for (Button b : new Button[]{startStop, close, save}) {
             b.setFont(bigButtons);
         }
         close.setOnAction(arg0 -> {
@@ -468,6 +433,8 @@ public class CryptanalysisWindow {
                                         fadeTransition.play();
                                     }
 
+                                    long start = System.currentTimeMillis();
+
                                     StringBuilder keySb = null;
                                     StringBuilder results = null;
 
@@ -500,7 +467,7 @@ public class CryptanalysisWindow {
                                             status = status.replaceAll("\\]",
                                                     String.format("/%,d]", Cryptanalysis.updates.get()));
                                             status = status.replaceAll(" \\[",
-                                                    String.format("/%,d [", Cryptanalysis.bestOverall.get()));
+                                                    String.format("/%,d [", Cryptanalysis.bestOverall));
                                             results = new StringBuilder(status);
                                             progressBar.setProgress(progress);
                                         }
@@ -535,9 +502,8 @@ public class CryptanalysisWindow {
                                         });
                                         final ArrayList<String> colors = CTTSApplication.colors.sortedColors();
                                         double factor = 0.65;
-                                        final double cellSizeAdjusted = factor * Utils.adjust(ICON_SIZE);
-                                        final Font pFont = Font.font("Verdana", FontWeight.BOLD,
-                                                factor * Utils.adjust(24));
+                                        final double cellSizeAdjusted = factor * Utils.adjust(DetailedTranscriptionPane.ICON_SIZE);
+                                        final Font pFont = Font.font("Verdana", FontWeight.BOLD, factor * Utils.adjust(24));
 
                                         HBox h = new HBox();
                                         String lastP = "123---2222";
@@ -678,8 +644,8 @@ public class CryptanalysisWindow {
                                                     }
                                                     ArrayList<Image> list = decKey.get(p);
                                                     ImageView icon = new ImageView();
-                                                    icon.setFitHeight(Utils.adjust(ICON_SIZE));
-                                                    icon.setFitWidth(Utils.adjust(ICON_SIZE));
+                                                    icon.setFitHeight(Utils.adjust(DetailedTranscriptionPane.ICON_SIZE));
+                                                    icon.setFitWidth(Utils.adjust(DetailedTranscriptionPane.ICON_SIZE));
                                                     icon.setPreserveRatio(true);
 
                                                     StackPane iconStackPane = new StackPane(icon);
@@ -765,6 +731,9 @@ public class CryptanalysisWindow {
                                         }
 
                                     }
+                                    long end = System.currentTimeMillis();
+                                    //System.out.printf("Duration: %d Symbols: %d Slow: %s\n", end - start, TranscribedImage.totalSymbols(), CryptanalysisWindow.slowUpdate.get());
+
                                 } else {
                                     if (startStop.getText().contains("Stop")) {
                                         startStop.setText("Start Cryptanalysis");
@@ -1052,7 +1021,7 @@ public class CryptanalysisWindow {
     static ArrayList<Token> tokens(CryptanalysisParameters params) {
         ArrayList<Token> tokens = new ArrayList<>();
         for (int index = 0; index < TranscribedImage.transcribedImages.length; index++) {
-            ArrayList<ArrayList<javafx.scene.shape.Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
+            ArrayList<ArrayList<Rectangle>> linesOfSymbols = Alignment.linesOfSymbols(index);
             for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
                 for (Rectangle symbol : lineOfSymbols) {
                     final String colorString = symbol.getFill().toString();

@@ -37,7 +37,7 @@ public class ImageUtils {
         if (isSupportedFormat(f)) {
             return f.substring(0, f.length() - 4);
         }
-        for (String format : new String[] { ".jpg", ".png", ".bmp" }) {
+        for (String format : new String[]{".jpg", ".png", ".bmp"}) {
             if (f.contains(format)) {
                 int pos = f.lastIndexOf(format);
                 return f.substring(0, pos) + f.substring(pos + 4);
@@ -50,7 +50,7 @@ public class ImageUtils {
         if (isSupportedFormat(f)) {
             return f.substring(0, f.length() - 4) + s;
         }
-        for (String format : new String[] { ".jpg", ".png", ".bmp" }) {
+        for (String format : new String[]{".jpg", ".png", ".bmp"}) {
             if (f.contains(format)) {
                 int pos = f.lastIndexOf(format);
                 return f.substring(0, pos) + s + f.substring(pos + 4);
@@ -181,8 +181,7 @@ public class ImageUtils {
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 Color col = reader.getColor(i, j);
-                double grayscale = 0.6 * Math.sqrt(
-                        Math.pow((i - centerX) / image.getWidth(), 2) + Math.pow((j - centerY) / image.getHeight(), 2));
+                double grayscale = 0.6 * Math.sqrt(Math.pow((i - centerX) / image.getWidth(), 2) + Math.pow((j - centerY) / image.getHeight(), 2));
                 boolean transparent = col.equals(Color.TRANSPARENT);
                 if (!transparent && r.nextFloat() < 0.05) {
                     transparent = true;
@@ -200,6 +199,28 @@ public class ImageUtils {
     }
 
     public static WritableImage blackAndWhite(Image imageIn) {
+
+
+        WritableImage image = new WritableImage((int) imageIn.getWidth(), (int) imageIn.getHeight());
+
+        PixelReader reader = imageIn.getPixelReader();
+        PixelWriter writer = image.getPixelWriter();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                Color col = reader.getColor(i, j);
+                double grayscale = col.getRed() * 0.3 + col.getGreen() * 0.59 + col.getBlue() * 0.11;
+
+                writer.setColor(i, j, new Color(grayscale, grayscale, grayscale, 1.0));
+            }
+        }
+
+
+        return image;
+
+
+    }
+
+    public static WritableImage blackAndWhiteBinary(Image imageIn) {
 
         final double MAX_GRAY_SCALE = 0.60;
         final double MIN_GRAY_SCALE = 0.4;

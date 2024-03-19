@@ -23,8 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Selection {
-    
-    private static Set<String> selectedIds = new HashSet<>();
+    private static final Set<String> selectedIds = new HashSet<>();
 
     public static boolean isEmpty() {
         return selectedIds.isEmpty();

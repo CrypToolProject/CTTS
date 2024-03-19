@@ -16,40 +16,23 @@
 
 package org.cryptool.ctts.util;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 
 /*
     Algorithm to obtain lines of symbols.
  */
 public class Alignment {
-    
-    public static ArrayList<ArrayList<Rectangle>> linesOfSymbols(int index) {
-        final ArrayList<Rectangle> rectangles = TranscribedImage.image(index).positions();
-        return linesOfSymbols(rectangles);
-    }
 
-    public static ArrayList<Rectangle> sortedPositions(int index) {
-
-        ArrayList<ArrayList<Rectangle>> linesOfSymbols = linesOfSymbols(index);
-        ArrayList<Rectangle> sorted = new ArrayList<>();
-        for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
-            sorted.addAll(lineOfSymbols);
-        }
-
-        return sorted;
-    }
-
-    private static ArrayList<ArrayList<Rectangle>> linesOfSymbols(ArrayList<Rectangle> rectangles) {
+    public static ArrayList<ArrayList<Rectangle>> linesOfSymbols(ArrayList<Rectangle> rectangles) {
 
         // Sort everything from left to right.
         rectangles.sort(Comparator.comparingDouble(Node::getLayoutX));
 
-        // Each line will be populated and sorted from left to right, but the lines are
-        // vertically sorted only after
+        // Each line will be populated and sorted from left to right, but the lines are vertically sorted only after
         // they are populated.
         ArrayList<ArrayList<Rectangle>> linesOfSymbols = new ArrayList<>();
 
@@ -64,8 +47,7 @@ public class Alignment {
                 Rectangle lastInLine = lineOfSymbols.get(lineOfSymbols.size() - 1);
                 double verticalOverlap = verticalOverlapRatio(p, lastInLine);
 
-                // For robustness, also look at the rectangle before the last one, in case the
-                // last one is an outlier.
+                // For robustness, also look at the rectangle before the last one, in case the last one is an outlier.
                 if (lineOfSymbols.size() >= 2) {
                     Rectangle penultimateInLine = lineOfSymbols.get(lineOfSymbols.size() - 2);
                     verticalOverlap = Math.max(verticalOverlapRatio(p, penultimateInLine), verticalOverlap);
@@ -118,6 +100,22 @@ public class Alignment {
         double overlap = Math.min(Math.max(0, r1.getHeight() + r1.getLayoutY() - r2.getLayoutY()), r2.getHeight());
 
         return overlap / Math.min(r1.getHeight(), r2.getHeight());
+    }
+
+    public static ArrayList<ArrayList<Rectangle>> linesOfSymbols(int index) {
+        final ArrayList<Rectangle> rectangles = TranscribedImage.image(index).positions();
+        return linesOfSymbols(rectangles);
+    }
+
+    public static ArrayList<Rectangle> sortedPositions(int index) {
+
+        ArrayList<ArrayList<Rectangle>> linesOfSymbols = linesOfSymbols(index);
+        ArrayList<Rectangle> sorted = new ArrayList<>();
+        for (ArrayList<Rectangle> lineOfSymbols : linesOfSymbols) {
+            sorted.addAll(lineOfSymbols);
+        }
+
+        return sorted;
     }
 
 }

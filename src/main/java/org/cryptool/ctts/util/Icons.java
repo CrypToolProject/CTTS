@@ -16,20 +16,18 @@
 
 package org.cryptool.ctts.util;
 
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import org.cryptool.ctts.CTTSApplication;
+
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.cryptool.ctts.CTTSApplication;
-
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-
 public class Icons {
-    
     public final static String ICONS_DIR_NAME = "icons";
     private static final Map<String, Image> colorStringToImage = new TreeMap<>();
 
-    public static void saveIcon(Color rgb, Image imageIn){
+    public static void saveIcon(Color rgb, Image imageIn) {
 
         final String filename = rgb + ".png";
         FileUtils.writeImage(ICONS_DIR_NAME, filename, imageIn);
@@ -51,7 +49,7 @@ public class Icons {
             if (ImageUtils.hasTransparency(image)) {
                 Icons.colorStringToImage.put(rgb.toString(), image);
             } else {
-                Icons.colorStringToImage.put(rgb.toString(), ImageUtils.blackAndWhite(image));
+                Icons.colorStringToImage.put(rgb.toString(), ImageUtils.blackAndWhiteBinary(image));
             }
             if (!silent) {
                 System.out.printf("Read %s\n", filepath);
@@ -65,7 +63,7 @@ public class Icons {
         }
     }
 
-    public static boolean deleteIcon(Color rgb){
+    public static boolean deleteIcon(Color rgb) {
 
         if (FileUtils.deleteFile(ICONS_DIR_NAME, rgb + ".png")) {
             colorStringToImage.remove(rgb.toString());

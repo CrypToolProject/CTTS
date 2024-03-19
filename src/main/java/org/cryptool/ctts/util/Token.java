@@ -20,23 +20,19 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class Token {
-
-    public enum Type {
-        HOMOPHONE, 
-        OTHER, 
-        NEW_LINE
-    }
-
     public String c;
     public String p;
     public Type type;
     public int cIndex;
+    int pIndex;
+    int count;
 
     public Token(Type type, String c, String p) {
         this.type = type;
         this.c = c;
         this.p = p;
         this.cIndex = -1;
+        this.count = 0;
     }
 
     public Token(Type type, String c) {
@@ -70,21 +66,48 @@ public class Token {
         }
     }
 
-    @Override
-    public String toString() {
-        return "" + type + " " + c + " " + ((p == null || p.isEmpty()) ? "" : p) + " "
-                + ((cIndex != -1) ? ("" + cIndex) : "");
+    static TreeMap<String, Integer> tokenPlaintextCounts(ArrayList<Token> tokens) {
+        return tokenPlaintextCounts(tokens, Type.HOMOPHONE);
     }
 
-    static TreeMap<String, Integer> tokenPlaintextCounts(ArrayList<Token> tokens) {
+    static TreeMap<String, Integer> tokenPlaintextCounts(ArrayList<Token> tokens, Type type) {
         TreeMap<String, Integer> counts = new TreeMap<>();
         for (Token token : tokens) {
-            if (token.type == Type.HOMOPHONE) {
+            if (token.type == type) {
                 counts.put(token.p, counts.getOrDefault(token.p, 0) + 1);
             }
         }
-
         return counts;
     }
+
+    static TreeMap<String, Double> tokenPlaintextFreq(ArrayList<Token> tokens, Type... types) {
+        TreeMap<String, Double> counts = new TreeMap<>();
+        int total = 0;
+        for (Token token : tokens) {
+            boolean found = false;
+            for (Type type : types) {
+                if (token.type.equals(type)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                counts.put(token.p, counts.getOrDefault(token.p, 0.0) + 1);
+                total++;
+            }
+        }
+
+        for (String p : counts.keySet()) {
+            counts.put(p, counts.get(p) / total);
+        }
+        return counts;
+    }
+
+    @Override
+    public String toString() {
+        return "" + type + " " + c + " " + ((p == null || p.isEmpty()) ? "" : p) + " " + ((cIndex != -1) ? ("" + cIndex) : "");
+    }
+
+    public enum Type {HOMOPHONE, OTHER, NEW_LINE}
 
 }

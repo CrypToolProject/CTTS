@@ -16,15 +16,9 @@
 
 package org.cryptool.ctts.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.cryptool.ctts.CTTSApplication;
+
+import java.util.*;
 
 public class Key {
     private final Map<String, String> key = new TreeMap<>();
@@ -32,6 +26,24 @@ public class Key {
     private String keyFilename = null;
     private boolean changed = false;
     private boolean available = false;
+
+    public static Key readFromFile(String filename) {
+        String keyS = FileUtils.readTextFile(null, filename);
+        Key key = new Key();
+        key.keyFilename = filename;
+        if (keyS == null) {
+            System.out.printf("Key file not found: %s\n", filename);
+            System.exit(1);
+        }
+
+        key.parse(filename, new StringBuilder(keyS));
+        System.out.printf("Read %s - %d homophones\n", key.keyFilename, key.keySet().size());
+        return key;
+    }
+
+    public static boolean lockedC(String c) {
+        return c.toLowerCase().startsWith("_");
+    }
 
     public String getKeyFilename() {
         return keyFilename;
@@ -99,20 +111,6 @@ public class Key {
 
     }
 
-    public static Key readFromFile(String filename) {
-        String keyS = FileUtils.readTextFile(null, filename);
-        Key key = new Key();
-        key.keyFilename = filename;
-        if (keyS == null) {
-            System.out.printf("Key file not found: %s\n", filename);
-            System.exit(1);
-        }
-
-        key.parse(filename, new StringBuilder(keyS));
-        System.out.printf("Read %s - %d homophones\n", key.keyFilename, key.keySet().size());
-        return key;
-    }
-
     public void parse(String legend, StringBuilder keyS) {
 
         String startsString = "#KEY\n" +
@@ -133,7 +131,7 @@ public class Key {
         String[] starts = startsString.split("\n");
 
         for (String line : keyS.toString().split("[\r\n]+")) {
-            // System.out.println(line);
+            //System.out.println(line);
             if (line.isEmpty()) {
                 continue;
             }
@@ -162,9 +160,9 @@ public class Key {
                 System.out.printf("Invalid key entry -  %s:\n%s\n", legend, line);
                 System.exit(1);
             }
-            // System.out.println(homophones.length);
+            //System.out.println(homophones.length);
             for (String h : homophones) {
-                // System.out.printf("%-10s => %s\n", h, plain);
+                //System.out.printf("%-10s => %s\n", h, plain);
                 key.put(h, plain);
             }
         }
@@ -181,6 +179,10 @@ public class Key {
         }
         available = true;
         markAsChanged();
+    }
+
+    public int keySize() {
+        return key.keySet().size();
     }
 
     public void markAsChanged() {
@@ -256,13 +258,8 @@ public class Key {
         for (String c : sorted) {
             f.append(c).append(" - ").append(nomenclature.get(c)).append("\n");
         }
-        System.out.printf("Saved %s - %d homophones %d plaintext elements\n", keyFilename, key.size(),
-                homophones.size());
+        System.out.printf("Saved %s - %d homophones %d plaintext elements\n", keyFilename, key.size(), homophones.size());
         return f;
-    }
-
-    public static boolean lockedC(String c) {
-        return c.toLowerCase().startsWith("_");
     }
 
     public boolean lockedHomophoneP(String c) {
@@ -279,10 +276,7 @@ public class Key {
 
         boolean reservedP = p.startsWith("_") || p.startsWith("[");
 
-        if (!reservedP && p.length() == 1 && first >= 'A' && first <= 'Z') {
-            return true;
-        }
-        return false;
+        return !reservedP && p.length() == 1 && first >= 'A' && first <= 'Z';
     }
 
     public boolean lockedOtherP(String c) {
@@ -299,10 +293,7 @@ public class Key {
 
         boolean reservedP = p.startsWith("_") || p.startsWith("[");
 
-        if (reservedP || (p.length() > 1 && first >= 'A' && first <= 'Z')) {
-            return true;
-        }
-        return false;
+        return reservedP || (p.length() > 1 && first >= 'A' && first <= 'Z');
     }
 
     public boolean isDelete(String c) {

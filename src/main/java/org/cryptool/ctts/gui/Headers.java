@@ -16,28 +16,21 @@
 
 package org.cryptool.ctts.gui;
 
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.CTTSApplication.Mode;
-import org.cryptool.ctts.util.EditedRecord;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.EditedRecord;
+import org.cryptool.ctts.util.FileUtils;
+import org.cryptool.ctts.util.TranscribedImage;
+import org.cryptool.ctts.util.Utils;
 
 public class Headers {
 
@@ -48,7 +41,7 @@ public class Headers {
 
     public static void updateTopTitle() {
         String fs = FileUtils.currentDirectoryFullpathString();
-        CTTSApplication.myStage.setTitle("CrypTool Transcriber & Solver (CTTS - V3.5 - 2023-05-02) - " + fs);
+        CTTSApplication.myStage.setTitle("CrypTool Transcriber & Solver (CTTS - V3.6 - 2024-03-19) - " + fs);
     }
 
     public static void updateHeadersAndBottom() {
@@ -56,7 +49,7 @@ public class Headers {
         String f9String = MainImagePane.nextSubMode().toString();
         f9String = f9String.charAt(0) + f9String.toLowerCase().substring(1);
         String f3f4String = "Previous/Next Symbol";
-        if (CTTSApplication.mode == Mode.IMAGE && !CTTSApplication.detailed && MainImagePane.subMode == MainImagePane.SubMode.DECRYPTION) {
+        if (CTTSApplication.mode == CTTSApplication.Mode.IMAGE && !CTTSApplication.detailed && MainImagePane.subMode == MainImagePane.SubMode.DECRYPTION) {
             f3f4String = "Smaller/Bigger Font";
         }
 
@@ -142,7 +135,7 @@ public class Headers {
 
         }
 
-        if (CTTSApplication.colors.changed() || CTTSApplication.key.changed() || TranscribedImage.changed()) {
+        if (CTTSApplication.colors.changed() || CTTSApplication.key.changed() || TranscribedImage.change()) {
             status.setText(status.getText() + " *");
         }
 
@@ -165,7 +158,7 @@ public class Headers {
         Timeline tl = new Timeline(
                 new KeyFrame(Duration.millis(1000),
                         event -> {
-                            boolean changed = CTTSApplication.colors.changed() || CTTSApplication.key.changed() || TranscribedImage.changed()
+                            boolean changed = CTTSApplication.colors.changed() || CTTSApplication.key.changed() || TranscribedImage.change()
                                     || EditedRecord.changed;
                             boolean changedShown = status.getText().endsWith("*");
                             if (changedShown != changed) {

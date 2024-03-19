@@ -16,26 +16,28 @@
 
 package org.cryptool.ctts.grams;
 
+import org.cryptool.ctts.util.Token;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.cryptool.ctts.cryptanalysis.CryptanalysisParameters;
-import org.cryptool.ctts.util.Token;
-
 public class Ngrams5 {
-
     private static int index(int p1, int p2, int p3, int p4, int p5, int dim) {
         return ((((p1 * dim + p2) * dim + p3) * dim + p4)) * dim + p5;
     }
 
-    public static int[] stats(ArrayList<Token> tokens, int dim, CryptanalysisParameters p) {
-        int[] stats = new int[(int) Math.pow(dim, 5)];
+    public static double[] stats(ArrayList<Token> tokens, int dim, boolean removeSpaces) {
+        long space = (long) Math.pow(dim, 5);
+        if (space > Integer.MAX_VALUE) {
+            throw new RuntimeException("Too many types " + dim + " - max allowed " + (int) (Math.exp(Math.log(Integer.MAX_VALUE) / 5.)));
+        }
+        double[] stats = new double[(int) space];
         int p1 = -1;
         int p2 = -1;
         int p3 = -1;
         int p4 = -1;
         for (Token token : tokens) {
-            if (p.removeSpaces && token.type == Token.Type.OTHER) {
+            if (removeSpaces && token.type == Token.Type.OTHER) {
                 continue;
             }
             if (token.type == Token.Type.NEW_LINE) {
@@ -56,11 +58,11 @@ public class Ngrams5 {
                     for (p4 = 0; p4 < dim; p4++) {
                         for (int p5 = 0; p5 < dim; p5++) {
                             final int index = index(p1, p2, p3, p4, p5, dim);
-                            int val = stats[index];
+                            double val = stats[index];
                             if (val == 0) {
                                 continue;
                             }
-                            stats[index] = (int) (10000 * Math.log(1 + val));
+                            stats[index] = 10000 * Math.log(1 + val);
                         }
                     }
                 }
@@ -69,12 +71,12 @@ public class Ngrams5 {
         return stats;
     }
 
-    public static long score(int[] cToP, int[] cArray, int[] stats, int dimRef, double[] pCounts) {
+    public static double score(int[] cToP, int[] cArray, double[] stats, int dimRef, double[] pCounts) {
 
         Arrays.fill(pCounts, 0.0);
         int totalMonograms = 0;
         int total = 0;
-        long score = 0;
+        double score = 0;
         int p1 = -1;
         int p2 = -1;
         int p3 = -1;
@@ -85,7 +87,7 @@ public class Ngrams5 {
                 pCounts[p5]++;
                 totalMonograms++;
                 if (p1 != -1 && p2 != -1 && p3 != -1 && p4 != -1) {
-                    int val = stats[index(p1, p2, p3, p4, p5, dimRef)];
+                    double val = stats[index(p1, p2, p3, p4, p5, dimRef)];
                     score += val;
                     total++;
                 }
@@ -107,6 +109,6 @@ public class Ngrams5 {
         ic *= dimRef;
         score /= total;
 
-        return (long) (1000 * score / ic);
+        return 1000.0 * score / ic;
     }
 }

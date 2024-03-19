@@ -23,13 +23,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EditedRecord {
-    
+    public static boolean changed = false;
+    static Map<String, Map<Integer, EditedRecord>> filenameToRecords = new TreeMap<>();
     final String text;
     final String filename;
     final int lineNumber;
 
-    static Map<String, Map<Integer, EditedRecord>> filenameToRecords = new TreeMap<>();
-    public static boolean changed = false;
+    EditedRecord(String filename, int lineNumber, String text) {
+        this.text = text;
+        this.filename = filename;
+        this.lineNumber = lineNumber;
+    }
 
     public static void add(String filename, int lineNumber, String text) {
         filename = ImageUtils.removeImageFormat(filename);
@@ -61,12 +65,6 @@ public class EditedRecord {
         return e.text;
     }
 
-    EditedRecord(String filename, int lineNumber, String text) {
-        this.text = text;
-        this.filename = filename;
-        this.lineNumber = lineNumber;
-    }
-
     static EditedRecord parse(String filename, String s) {
 
         // specify that we want to search for two groups in the string
@@ -87,27 +85,6 @@ public class EditedRecord {
             }
         }
         return null;
-    }
-
-    @Override
-    public String toString() {
-        String s = filename + "|" + lineNumber;
-
-        if (!text.isEmpty()) {
-            s = s + "|" + text;
-        }
-
-        return s;
-    }
-
-    public String toStringNoFilename() {
-        String s = "" + lineNumber;
-
-        if (!text.isEmpty()) {
-            s = s + "|" + text;
-        }
-
-        return s;
     }
 
     public static void save() {
@@ -194,7 +171,7 @@ public class EditedRecord {
 
     public static void main(String[] args) {
 
-        for (String s : new String[] {
+        for (String s : new String[]{
                 "t1.png|1|test1",
                 "t1.png|1",
 
@@ -206,5 +183,26 @@ public class EditedRecord {
             }
         }
 
+    }
+
+    @Override
+    public String toString() {
+        String s = filename + "|" + lineNumber;
+
+        if (!text.isEmpty()) {
+            s = s + "|" + text;
+        }
+
+        return s;
+    }
+
+    public String toStringNoFilename() {
+        String s = "" + lineNumber;
+
+        if (!text.isEmpty()) {
+            s = s + "|" + text;
+        }
+
+        return s;
     }
 }

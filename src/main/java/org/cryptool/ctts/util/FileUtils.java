@@ -16,23 +16,6 @@
 
 package org.cryptool.ctts.util;
 
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.imageio.ImageIO;
-
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
@@ -40,12 +23,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 
-public class FileUtils {
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
+public class FileUtils {
     public static String workingDirectory = ".";
 
     public static void writeImage(String dirName, String filename, Image image) {
-
         File file = fileToWrite(dirName, filename, false);
         if (file == null) {
             return;
@@ -58,12 +45,10 @@ public class FileUtils {
     }
 
     public static Image readImage(String dirName, String filename, boolean silent) {
-
         File file = fileToRead(dirName, filename, silent);
         if (file == null) {
             return null;
         }
-
         try {
             InputStream stream = new FileInputStream(file);
             final Image image = new Image(stream);
@@ -80,7 +65,6 @@ public class FileUtils {
     }
 
     public static String readTextFile(String dirName, String filename) {
-
         File file = fileToRead(dirName, textFilename(filename), false);
         return readTextFile(file);
     }
@@ -89,17 +73,13 @@ public class FileUtils {
         if (file == null) {
             return null;
         }
-        FileInputStream fis = null;
         try {
-            fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(file);
             byte[] data = new byte[(int) file.length()];
             if (fis.read(data) != -1) {
                 fis.close();
-
-                // System.out.println(file.getName());
                 String s8 = new String(data, StandardCharsets.UTF_8);
                 String s1 = new String(data, StandardCharsets.ISO_8859_1);
-
                 int[] c1 = new int[256];
                 int[] c8 = new int[256];
                 for (byte c : s1.getBytes()) {
@@ -108,7 +88,6 @@ public class FileUtils {
                 for (byte c : s8.getBytes()) {
                     c8[c + 128]++;
                 }
-
                 if (c1[128 - 125] + c1[128 - 62] > 0) {
                     return s8;
                 }
@@ -119,14 +98,6 @@ public class FileUtils {
             return null;
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return null;
     }
@@ -136,7 +107,6 @@ public class FileUtils {
     }
 
     public static void writeTextFile(String dirName, String filename, String text) {
-
         File file = fileToWrite(dirName, textFilename(filename), false);
         if (file == null) {
             return;
@@ -153,12 +123,10 @@ public class FileUtils {
     }
 
     public static boolean deleteFile(String dirName, String filename) {
-
         File file = fileToRead(dirName, filename, false);
         if (file == null) {
             return false;
         }
-
         if (file.delete()) {
             System.out.printf("Deleted %s\n", file);
             return true;
@@ -166,14 +134,11 @@ public class FileUtils {
             System.out.printf("Could not delete %s\n", file);
             return false;
         }
-
     }
 
     public static void snapshot(String dirName, String imageFileName, Pane node) {
-
         final int width = (int) node.getWidth() + 20;
         final int height = (int) node.getHeight() + 20;
-
         final int maxHeight = 5000;
         final int margin = 500;
         if (height < maxHeight) {
@@ -236,17 +201,15 @@ public class FileUtils {
             return null;
         }
         return new File(directory, filename);
-
     }
 
-    private static File fileToWrite(String dirName, String filename, boolean silent) {
+    public static File fileToWrite(String dirName, String filename, boolean silent) {
         if (filename == null) {
             return null;
         }
         if (isAbsolutePath(filename)) {
             throw new RuntimeException("Cannot save to absolute path");
         }
-
         if (dirName == null) {
             return new File(workingDirectory, filename);
         }
@@ -285,16 +248,12 @@ public class FileUtils {
     }
 
     public static String currentDirectoryString() {
-
-        Set<String> collections = new TreeSet<String>(
-                List.of(new String[] { "BNF", "BNE", "TNA", "KHA", "YALE", "ASV", "ARA", "OSH", "NAH", "NLS" }));
-
+        Set<String> collections = new TreeSet<String>(List.of(new String[]{"BNF", "BNE", "TNA", "KHA", "YALE", "ASV", "ARA", "OSH", "NAH", "NLS"}));
         File f = new File(workingDirectory);
         String fs = f.getAbsolutePath();
         if (fs.endsWith("\\.") || fs.endsWith("/.")) {
             fs = fs.substring(0, fs.length() - 2);
         }
-
         String[] parts = fs.split("[\\\\/]+");
         if (parts.length == 0) {
             return "";
@@ -362,5 +321,70 @@ public class FileUtils {
         });
 
         return filenameArray;
-    }    
+    }
+
+    public static StringBuilder readFileAZSpaceOnly(String filename) {
+
+        final String RAW_PLAINTEXT_LETTERS = "abcdefghijklmnopqrstuvwxyzàáãåάąäâªªçčðďλěêèéęëįîìíïłňńñöøòóôőõθº°ǫφþřŕš§ťüúűùûů×ýżžź";
+        final String PLAINTEXT_LETTERS_MAP = "abcdefghijklmnopqrstuvwxyzaaaaaaaaaaccdddeeeeeeiiiiilnnnooooooooooopprrsstuuuuuuxyzzz";
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            FileReader fileReader = new FileReader(filename);
+
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            boolean wasSpace = true;
+            while ((line = bufferedReader.readLine()) != null) {
+                line = line.toLowerCase(Locale.ROOT);
+                for (int i = 0; i < line.length(); i++) {
+                    char c = line.charAt(i);
+                    int index = RAW_PLAINTEXT_LETTERS.indexOf(c);
+                    if (index != -1) {
+                        sb.append(PLAINTEXT_LETTERS_MAP.charAt(index));
+                        wasSpace = false;
+                    } else if (c == 'ß') {
+                        sb.append("ss");
+                        wasSpace = false;
+                    } else if (!wasSpace) {
+                        wasSpace = true;
+                        sb.append(" ");
+                    }
+                }
+            }
+
+            bufferedReader.close();
+            return sb;
+        } catch (FileNotFoundException ex) {
+            System.out.println("Unable to open file '" + filename + "'");
+            return null;
+        } catch (IOException ex) {
+            System.out.println("Error reading file '" + filename + "'");
+            return null;
+        }
+    }
+
+    public static String readResourceFile(String filename) {
+
+        // for static access, uses the class name directly
+        InputStream is = Utils.class.getClassLoader().getResourceAsStream(filename);
+        if (is == null) {
+            System.out.println("Could not open resource file: " + filename);
+            System.exit(0);
+        }
+        try {
+            byte[] b = new byte[1_000_000];
+            int read = is.read(b);
+            String s = new String(b);
+            is.close();
+            return s;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+
+            return null;
+        }
+
+    }
 }

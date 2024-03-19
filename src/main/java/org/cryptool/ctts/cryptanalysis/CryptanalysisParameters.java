@@ -16,17 +16,13 @@
 
 package org.cryptool.ctts.cryptanalysis;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.cryptool.ctts.grams.Language;
 import org.cryptool.ctts.util.Token;
 
+import java.util.*;
+
 public class CryptanalysisParameters {
-    
+
     public Language language;
     public boolean uToV;
     public boolean wToV;

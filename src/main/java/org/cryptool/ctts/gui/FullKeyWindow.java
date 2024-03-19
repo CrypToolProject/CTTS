@@ -16,27 +16,26 @@
 
 package org.cryptool.ctts.gui;
 
-import java.util.ArrayList;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.Utils;
-
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.Utils;
+
+import java.util.ArrayList;
+
 
 public class FullKeyWindow extends ScrollPane {
-
+    final static Background whiteBg = new Background(new BackgroundFill(Color.WHITE, null, null));
     public static FullKeyWindow scrollPane;
-
+    static double Vvalue = 0;
+    static double Hvalue = 0;
     TilePane tilePane = new TilePane();
 
     public FullKeyWindow() {
@@ -45,8 +44,8 @@ public class FullKeyWindow extends ScrollPane {
         final Group group = new Group(pane);
         setContent(group);
 
-        setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        setHbarPolicy(ScrollBarPolicy.ALWAYS);
+        setVbarPolicy(ScrollBarPolicy.ALWAYS);
         setMaxSize(Utils.adjust(2100), Utils.adjust(750));
         setMinSize(Utils.adjust(2100), Utils.adjust(750));
 
@@ -64,6 +63,8 @@ public class FullKeyWindow extends ScrollPane {
     }
 
     public void refresh() {
+        Vvalue = scrollPane.getVvalue();
+        Hvalue = scrollPane.getHvalue();
         ArrayList<String> usedColors = CTTSApplication.colors.sortedColors();
         tilePane.getChildren().clear();
         for (String color : usedColors) {
@@ -72,6 +73,17 @@ public class FullKeyWindow extends ScrollPane {
                 tilePane.getChildren().add(line);
             }
         }
+
+        Timeline tl = new Timeline(
+                new KeyFrame(Duration.millis(100),
+                        event -> {
+                            scrollPane.setVvalue(Vvalue);
+                            scrollPane.setHvalue(Hvalue);
+                        }
+                ));
+        tl.setCycleCount(1);
+        tl.play();
+
     }
 
     public void show() {
@@ -91,13 +103,9 @@ public class FullKeyWindow extends ScrollPane {
     }
 
     public void hide() {
-        // setMaxHeight(0);
-        // setMinHeight(0);
         setVisible(false);
         setMaxWidth(0);
         setMinWidth(0);
     }
-
-    final static Background whiteBg = new Background(new BackgroundFill(Color.WHITE, null, null));
 
 }

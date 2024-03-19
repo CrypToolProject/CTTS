@@ -16,17 +16,6 @@
 
 package org.cryptool.ctts.gui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.CTTSApplication.Mode;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.Selection;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -38,23 +27,13 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -62,11 +41,25 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.CTTSApplication.Mode;
+import org.cryptool.ctts.util.Icons;
+import org.cryptool.ctts.util.Selection;
+import org.cryptool.ctts.util.TranscribedImage;
+import org.cryptool.ctts.util.Utils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
     List view of the key
  */
 public class ClusterListView extends ListView<String> {
+
+    private static final Map<String, StackPane> cache = new HashMap<>();
+    private boolean updateListView = false;
+    private final ObservableList<String> items = FXCollections.observableArrayList();
 
     public ClusterListView() {
 
@@ -88,37 +81,6 @@ public class ClusterListView extends ListView<String> {
                         }));
         tl.setCycleCount(Timeline.INDEFINITE);
         tl.play();
-    }
-
-    public void updateListView(boolean now) {
-        if (now) {
-            refresh();
-            updateListView = false;
-        } else {
-            updateListView = true;
-        }
-    }
-
-    public void show(boolean clusterView) {
-        refresh();
-        setVisible(true);
-        resize(clusterView);
-    }
-
-    public void hide() {
-        setMaxHeight(0);
-        setMinHeight(0);
-        setMaxWidth(0);
-        setMinWidth(0);
-        setVisible(false);
-    }
-
-    public void reset() {
-        ArrayList<String> usedColors = CTTSApplication.colors.sortedColors();
-
-        items.clear();
-        items.addAll(usedColors);
-
     }
 
     // This is also used for the grid view of the key
@@ -343,6 +305,7 @@ public class ClusterListView extends ListView<String> {
             }
 
             try {
+                Color col = Color.valueOf(id);
                 CTTSApplication.colorSelected(id);
                 return;
             } catch (IllegalArgumentException e) {
@@ -390,10 +353,6 @@ public class ClusterListView extends ListView<String> {
 
         return hBox;
     }
-
-    private boolean updateListView = false;
-    private ObservableList<String> items = FXCollections.observableArrayList();
-    private static Map<String, StackPane> cache = new HashMap<>();
 
     private static StackPane d(String text, int maxTextLength, int iconSize, Color color) {
         if (text.length() > maxTextLength) {
@@ -489,7 +448,29 @@ public class ClusterListView extends ListView<String> {
 
     }
 
-    private void resize(boolean full) {
+    private static boolean shouldScrollTo(ListView<?> t, int index) {
+        try {
+            ListViewSkin<?> ts = (ListViewSkin<?>) t.getSkin();
+            VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+            int first = vf.getFirstVisibleCell().getIndex();
+            int last = vf.getLastVisibleCell().getIndex();
+
+            return index < first || index > last;
+        } catch (Exception ex) {
+            return false;
+        }
+
+    }
+
+    public void reset() {
+        ArrayList<String> usedColors = CTTSApplication.colors.sortedColors();
+
+        items.clear();
+        items.addAll(usedColors);
+
+    }
+
+    public void resize(boolean full) {
         if (full) {
             setMinWidth(getParent().getBoundsInParent().getWidth());
             setMinHeight(getParent().getBoundsInParent().getHeight() - Utils.adjust(4.));
@@ -500,17 +481,27 @@ public class ClusterListView extends ListView<String> {
         reset();
     }
 
-    private static class ColorRectCell extends ListCell<String> {
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-            if (item != null) {
-                HBox hBox2 = line(item, false, false);
-                setGraphic(hBox2);
-
-            }
-
+    public void updateListView(boolean now) {
+        if (now) {
+            refresh();
+            updateListView = false;
+        } else {
+            updateListView = true;
         }
+    }
+
+    public void show(boolean clusterView) {
+        refresh();
+        setVisible(true);
+        resize(clusterView);
+    }
+
+    public void hide() {
+        setMaxHeight(0);
+        setMinHeight(0);
+        setMaxWidth(0);
+        setMinWidth(0);
+        setVisible(false);
     }
 
     private void select(String colorString) {
@@ -519,6 +510,18 @@ public class ClusterListView extends ListView<String> {
             return;
         }
         CTTSApplication.colorSelected(colorString);
-    }    
+    }
+
+    private static class ColorRectCell extends ListCell<String> {
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null) {
+                HBox hBox2 = line(item, false, false);
+                setGraphic(hBox2);
+            }
+
+        }
+    }
 
 }

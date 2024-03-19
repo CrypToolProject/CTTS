@@ -16,13 +16,6 @@
 
 package org.cryptool.ctts.gui;
 
-import java.util.ArrayList;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.FileUtils;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.TranscribedImage;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -31,13 +24,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -45,6 +32,12 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.FileUtils;
+import org.cryptool.ctts.util.Icons;
+import org.cryptool.ctts.util.TranscribedImage;
+
+import java.util.ArrayList;
 
 public class SymbolsSnapshot extends Popup {
 
@@ -55,8 +48,6 @@ public class SymbolsSnapshot extends Popup {
         this.snapshot = snapshot;
         setX(50);
         setY(50);
-        // setHeight(200);
-        // setWidth(600);
         Canvas canvas = new Canvas();
 
         mainPane = new Pane(canvas);
@@ -74,9 +65,6 @@ public class SymbolsSnapshot extends Popup {
         mainPane.setBackground(globalBackground);
         canvas.setWidth(1000);
         canvas.setHeight(600);
-        // ((Scale) mainPane.getTransforms().get(0)).setX(0.5);
-        // ((Scale) mainPane.getTransforms().get(0)).setY(0.5);
-
         ArrayList<String> usedColors = CTTSApplication.colors.sortedColors();
 
         HBox columns = new HBox();
@@ -85,7 +73,7 @@ public class SymbolsSnapshot extends Popup {
 
         for (String color : usedColors) {
 
-            final HBox line = line(color, 10, details);
+            final HBox line = line(color, Math.min(10, 1300 / (CTTSApplication.key.keySize() + 1)), details);
             if (line != null) {
                 lines.getChildren().add(line);
                 if (lines.getChildren().size() == (details ? 45 : 20)) {
@@ -116,7 +104,7 @@ public class SymbolsSnapshot extends Popup {
         formatted = formatted.substring(0, 10);
         Text ciphertextText = new Text(formatted);
         ciphertextText.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
-        // ciphertextText.setFont(new Font(16));
+        //ciphertextText.setFont(new Font(16));
         StackPane ciphertextSymbolPane = new StackPane(ciphertextText);
         final Background bg = new Background(new BackgroundFill(newColor, CornerRadii.EMPTY, Insets.EMPTY));
         ciphertextSymbolPane.setBackground(bg);
@@ -130,8 +118,7 @@ public class SymbolsSnapshot extends Popup {
         StackPane iconSymbolPane = new StackPane(iconImageView);
         iconSymbolPane.setMinWidth(30);
         iconSymbolPane.setMaxWidth(30);
-        iconSymbolPane
-                .setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+        iconSymbolPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
         iconSymbolPane.setMinSize(40, 25);
         StackPane.setAlignment(iconImageView, Pos.CENTER);
 
@@ -169,8 +156,7 @@ public class SymbolsSnapshot extends Popup {
             StackPane plaintextSymbolPane = new StackPane(plaintextText);
 
             plaintextSymbolPane.setMinSize(100, 25);
-            // plaintextSymbolPane.setBackground(new Background(new BackgroundFill(newColor,
-            // CornerRadii.EMPTY, Insets.EMPTY)));
+            //plaintextSymbolPane.setBackground(new Background(new BackgroundFill(newColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
             if (details) {
                 hBox.getChildren().add(plaintextSymbolPane);
@@ -187,7 +173,7 @@ public class SymbolsSnapshot extends Popup {
             ImageView imageView = new ImageView(TranscribedImage.image(index).image);
             Rectangle2D viewport = new Rectangle2D(r.getLayoutX(), r.getLayoutY(), r.getWidth(), r.getHeight());
             imageView.setViewport(viewport);
-            // imageView.setFitWidth(25);
+            //imageView.setFitWidth(25);
             imageView.setPreserveRatio(true);
             imageView.setFitHeight(25);
 

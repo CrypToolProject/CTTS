@@ -16,18 +16,6 @@
 
 package org.cryptool.ctts.gui;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.cryptool.ctts.CTTSApplication;
-import org.cryptool.ctts.util.Alignment;
-import org.cryptool.ctts.util.Icons;
-import org.cryptool.ctts.util.ImageUtils;
-import org.cryptool.ctts.util.Key;
-import org.cryptool.ctts.util.Selection;
-import org.cryptool.ctts.util.TranscribedImage;
-import org.cryptool.ctts.util.Utils;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -45,20 +33,18 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import org.cryptool.ctts.CTTSApplication;
+import org.cryptool.ctts.util.*;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class SelectionArea extends HBox {
 
@@ -96,33 +82,24 @@ public class SelectionArea extends HBox {
             if (System.currentTimeMillis() - lastForcedTextUpdate < 100) {
                 return;
             }
-
             if (!newText.equals(oldText) && CTTSApplication.colors.available() && selectedColor != null) {
-
                 CTTSApplication.colors.put(selectedColor.toString(), newText);
-
                 updateDecryptionFields(selectedColor, true);
-
                 CTTSApplication.colorParametersChanged(selectedColor, true, false, true /* to be on the safe side */);
             }
-
         });
 
         leftPane.setMinHeight(Utils.adjust(330));
         leftPane.setMaxHeight(Utils.adjust(330));
         leftPane.setMinWidth(Utils.adjust(580));
         leftPane.setMaxWidth(Utils.adjust(580));
-
         decryptionTextField.setFont(new Font(Utils.adjust(18)));
         decryptionTextField.setStyle("-fx-border-color: black; -fx-border-width: 1");
-
         decryptionTextField.textProperty().addListener((obs, oldText, newText) -> {
             if (System.currentTimeMillis() - lastForcedTextUpdate < 100) {
                 return;
             }
-
             if (!newText.equals(oldText) && CTTSApplication.colors.available() && selectedColor != null) {
-
                 final String c = CTTSApplication.colors.get(selectedColor.toString());
                 if (newText.isEmpty()) {
                     CTTSApplication.key.remove(c);
@@ -130,18 +107,16 @@ public class SelectionArea extends HBox {
                     CTTSApplication.key.put(c, newText);
                 }
                 CTTSApplication.key.markAsChanged();
-
                 lockUnlock.setSelected(Key.lockedC(c) || CTTSApplication.key.lockedP(c));
-
                 CTTSApplication.colorParametersChanged(selectedColor, false, false, true);
             }
-
         });
 
         iconImageView.setFitWidth(Utils.adjust(ZOOM_WIDTH * 2));
         iconImageView.setFitHeight(Utils.adjust(ZOOM_HEIGHT * 2));
         iconImageView.setPreserveRatio(true);
         iconImageView.setSmooth(true);
+
 
         leftPane.getChildren().add(transcriptionTextField);
         transcriptionTextField.setLayoutX(Utils.adjust(10));
@@ -178,8 +153,9 @@ public class SelectionArea extends HBox {
             if (selectedColor != null) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("Png Files", "*.png"),
-                        new FileChooser.ExtensionFilter("Jpeg Files", "*.jpg"));
+                        new FileChooser.ExtensionFilter("Png Files", "*.png")
+                        , new FileChooser.ExtensionFilter("Jpeg Files", "*.jpg")
+                );
                 fileChooser.setInitialDirectory(new File(Icons.ICONS_DIR_NAME));
                 File selectedFile = fileChooser.showOpenDialog(CTTSApplication.myStage);
                 if (selectedFile == null) {
@@ -225,6 +201,7 @@ public class SelectionArea extends HBox {
         saveIconButton.setLayoutX(Utils.adjust(415));
         saveIconButton.setLayoutY(Utils.adjust(270));
 
+
         rightTilePane.setPadding(new Insets(5, 5, 5, 5));
         rightTilePane.setVgap(4);
         rightTilePane.setHgap(4);
@@ -236,8 +213,6 @@ public class SelectionArea extends HBox {
         rightScrollPane.setContent(new HBox(rightTilePane));
         rightScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         rightScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        // rightScrollPane.setMaxHeight(Utils.adjust(400));
-        // rightScrollPane.setMinHeight(Utils.adjust(400));
         rightScrollPane.setMaxWidth(Utils.adjust(1467));
         rightScrollPane.setMinWidth(Utils.adjust(1467));
 
@@ -366,11 +341,7 @@ public class SelectionArea extends HBox {
     public void toggleLocked() {
         String c = CTTSApplication.colors.get(selectedColor.toString());
 
-        if (Key.lockedC(c) || CTTSApplication.key.lockedP(c)) {
-            updateLocked(false);
-        } else {
-            updateLocked(true);
-        }
+        updateLocked(!Key.lockedC(c) && !CTTSApplication.key.lockedP(c));
     }
 
     public void colorIconChanged() {
@@ -407,6 +378,7 @@ public class SelectionArea extends HBox {
         }
     }
 
+
     public void selectRectangle(int idx, Rectangle newSelected) {
         showZoomedImage(TranscribedImage.transcribedImages[idx].image, newSelected, true);
         updateIconButtonsVisibility();
@@ -420,7 +392,7 @@ public class SelectionArea extends HBox {
     public void showZoomedImage(Image image, Rectangle r, boolean setId) {
         selectedImageView.setVisible(true);
 
-        // selectedImageView.setImage(image);
+        //selectedImageView.setImage(image);
         double maxDim = Math.max(r.getWidth(), r.getHeight()) + 50;
         double addX = maxDim - r.getWidth();
         double addY = maxDim - r.getHeight();
@@ -441,8 +413,7 @@ public class SelectionArea extends HBox {
         Rectangle2D viewportRect = new Rectangle2D(x, y, w, h);
         selectedImageView.setViewport(viewportRect);
 
-        selectedImageView.setImage(ImageUtils.negativeAround((int) x, (int) y, (int) (w), (int) (h), (int) addX / 2,
-                (int) addY / 2, image));
+        selectedImageView.setImage(ImageUtils.negativeAround((int) x, (int) y, (int) (w), (int) (h), (int) addX / 2, (int) addY / 2, image));
 
         if (setId) {
             selectedImageView.setId(TranscribedImage.rectangleToId(TranscribedImage.rectangleToIndex(r), r));
@@ -518,7 +489,7 @@ public class SelectionArea extends HBox {
 
     void displayIcons(boolean updateScrollBar) {
 
-        // System.out.println(updateScrollBar);
+        //System.out.println(updateScrollBar);
 
         rightTilePane.getChildren().clear();
 
@@ -570,15 +541,15 @@ public class SelectionArea extends HBox {
                             event.consume();
                         });
                         imageView.setOnMouseClicked(mouseEvent -> {
-                            // Utils.start();
+                            //Utils.start();
 
                             final Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
                             String clickedId = intersectedNode.getId();
                             int idx = TranscribedImage.idToIndex(clickedId);
-                            // Utils.stop("idToIndex");
+                            //Utils.stop("idToIndex");
 
                             Rectangle nr = TranscribedImage.idToRectangle(clickedId);
-                            // Utils.stop("idToRectangle");
+                            //Utils.stop("idToRectangle");
                             if (idx == -1 && nr == null) {
                                 System.out.printf("Undefined id: %s\n", clickedId);
                             }
@@ -590,13 +561,13 @@ public class SelectionArea extends HBox {
                             } else {
                                 iv2.setImage(TranscribedImage.image(idx).image);
                             }
-                            // Utils.stop("clickedId");
+                            //Utils.stop("clickedId");
 
                             selectRectangle(idx, nr);
-                            // Utils.stop("Select rectangle");
+                            //Utils.stop("Select rectangle");
 
                             CTTSApplication.symbolClickedFromSelectionArea(clickedId, idx, nr);
-                            // Utils.stop("symbolClickedFromSelectionArea");
+                            //Utils.stop("symbolClickedFromSelectionArea");
 
                         });
                     }
@@ -612,10 +583,10 @@ public class SelectionArea extends HBox {
                     new KeyFrame(Duration.millis(300),
                             event -> {
                                 if (_selectedImageView != null) {
-                                    Utils.adjustVerticalScrollBar(rightScrollPane, _selectedImageView, 1.0,
-                                            10.0 / _count);
+                                    Utils.adjustVerticalScrollBar(rightScrollPane, _selectedImageView, 1.0, 10.0 / _count);
                                 }
-                            }));
+                            }
+                    ));
             tl.setCycleCount(3);
             tl.play();
 
