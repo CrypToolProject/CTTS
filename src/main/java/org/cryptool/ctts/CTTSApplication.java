@@ -39,6 +39,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/*
+    The main program.
+ */
 public class CTTSApplication extends Application {
 
     public static final String COLORS_FILE = "colors";
