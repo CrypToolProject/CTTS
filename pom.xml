@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cryptool.ctts</groupId>
     <artifactId>ctts</artifactId>
-    <version>3.5.0</version>
+    <version>3.7.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
