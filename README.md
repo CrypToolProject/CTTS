@@ -3,9 +3,11 @@
 CrypTool Transcriber &amp; Solver is a ciphertext transcription and cryptanalysis tool initially developed by George Lasry and now maintained by the CrypTool team.
 The tool is written in Java; the user interface is built using JavaFx. It was formerly known as OTA (Offline Transcription Application).
 
-The following documentation is based on the "May 10, 2022 Version 3.2" OTA documentation written initially by George Lasry. It was converted from Word format to this document here, to have a single online version of the documentation.
+The following documentation is based on the "May 10, 2022 Version 3.2" written initially by George Lasry. It was converted from Word format to this document here to have a single online version of the documentation.
 
-The authors hopes that this document and the associated tutorials will be helpful to the reader, and especially, that CTTS is effective for their own research.
+The authors hope that this document and the associated tutorials will be helpful to the reader, and especially, that CTTS is effective for their own research. This tool was used e.g. to decipher the Mary Stuart letters in 2022/2023:
+* https://www.tandfonline.com/doi/full/10.1080/01611194.2022.2160677
++ https://www.npr.org/2023/02/10/1155701113/mary-queen-of-scots-ciphers-prison-letters
 
 ## ℹ️ About
 
@@ -24,8 +26,8 @@ The process is performed offline, with the files stored and managed on a local c
 The output of the CTTS is intended for:
 * Transcribing a ciphertext for computer cryptanalysis.
 * Deciphering a ciphertext, with built-in cryptanalysis, or using an original key found in archives, or via external cryptanalysis. The transcription and the key can be iteratively improved, with an end-to-end holistic transcription, decryption, and review process.
-* Generating ground-truth data – training and test data - for automated machine learning transcription algorithms.
-* Semi-automated transcription, CTTS producing segmented symbols to be classified by machine learning algorithms, then manually editing and finalizing the results with OTA.
+* Generating ground-truth data – training and test data – for automated machine learning transcription algorithms.
+* Semi-automated transcription, CTTS producing segmented symbols to be classified by machine learning algorithms, then manually editing and finalizing the results with CTTS.
 
 This tool started as a proof of concept to understand the requirements for a graphical transcription user interface and initially served to transcribe a small number of ciphertexts with hundreds of symbols each at most. 
 
@@ -35,7 +37,7 @@ It later evolved into a full-fledged application that was required to enable the
 
 CTTS was developed in Java, using the JavaFX graphical library, JavaFX is an open-source, next-generation client application platform for desktop, mobile, and embedded systems built on Java. It is not intended for web-service development.
 
-To run CTTS, Java Runtime Environment (JRE) must be installed on the computer. It is required to install Java 10 (JRE 18.3) - for convenience, it will be easier to download it from here for Windows, Linux (rpm), Linux (tar), or MacOS. It is not the latest due to JavaFX compatibility issues. To test proper Java installation, open a Command Line window, type java -version. 
+To run CTTS, Java Runtime Environment (JRE) must be installed on the computer. It is required to install Java 10 (JRE 18.3) - for convenience, it will be easier to download it from here for Windows, Linux (rpm), Linux (tar), or macOS. It is not the latest due to JavaFX compatibility issues. To test proper Java installation, open a Command Line window, type java -version. 
 The following output should be expected:
 
 ![java_version_output.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/java_version_output.png)
@@ -46,7 +48,7 @@ To run CTTS, you need first to create a working directory, containing one or mor
 
 ![java_gui.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/java_gui.png)
 
-**Note to MacOS users:** You may need to copy the file gui.jar into the current directory, then instead, run java -jar gui.jar 
+**Note to macOS users:** You may need to copy the file gui.jar into the current directory, then instead, run java -jar gui.jar 
 
 If you have more than one version of Java, you can also specify the full path for the java.exe with the required version, as follows:
 
@@ -56,7 +58,7 @@ You may ignore the “File not found…” and “Could not restore …” messa
 
 ![first_start.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/first_start.png)
 
-**General note to MacOS users**: The function keys (e.g., F10) in MacOS are usually assigned to predefined functions like changing volume, luminosity, etc… To apply a function key in CTTS, you must press fn and the function key at the same time, e.g. fn F10. Same applies to the delete key used to delete a symbol, which requires fn delete on MacOS. It is also possible to change the Keyboard settings so that pressing fn is not necessary, but the default is that pressing fn is necessary. In MacOS, F11 is always used - with or without pressing fn - to view the desktop (F11 again returns from the desktop to the last application), so it cannot be used for CTTS. Therefore, CTTS allows tab to be used instead of F11 for MacOS users.
+**General note to macOS users**: The function keys (e.g., F10) in macOS are usually assigned to predefined functions like changing volume, luminosity, etc… To apply a function key in CTTS, you must press fn and the function key at the same time, e.g. fn F10. Same applies to the delete key used to delete a symbol, which requires fn delete on macOS. It is also possible to change the Keyboard settings so that pressing fn is not necessary, but the default is that pressing fn is necessary. In macOS, F11 is always used – with or without pressing fn – to view the desktop (F11 again returns from the desktop to the last application), so it cannot be used for CTTS. Therefore, CTTS allows tab to be used instead of F11 for macOS users.
 
 # 👍📃 Preparing Images for Transcription 
 
@@ -91,7 +93,7 @@ At any time, you may zoom out or in either with the F5 and F6 keys, with CTRL+<t
 
 ![transcription_gui_explanation.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/transcription_gui_explanation.png)
 
-To delete a symbol, click on it to select it, then press the Delete key (in MacOS, fn and delete). To move a symbol, click on its middle, and drag it to the desired position. To resize or change its boundary, hover over the border you wish to move, then drag the border, select a corner, and drag it to extend or reduce the surrounding box.
+To delete a symbol, click on it to select it, then press the Delete key (in macOS, fn and delete). To move a symbol, click on its middle, and drag it to the desired position. To resize or change its boundary, hover over the border you wish to move, then drag the border, select a corner, and drag it to extend or reduce the surrounding box.
 
 After (or before) selecting a few instances of the symbol, we may want to give the symbol type some name, and assign some generic icon to represent it. Click on the white rectangle near the zoomed view of the selected symbol, and type in some name or serial number. In this tutorial, we will assign it to 00. Note that as you type the name, the item changes instantly in the list.
 
@@ -121,13 +123,13 @@ After fixing the problem:
 
 # 🔍 Using the Symbol Types Views
 
-Start the tutorial in the Tutorial 4 directory. It contains 4 image documents, fully transcribed.:
+Start the tutorial in the Tutorial 4 directory. It contains 4 image documents, fully transcribed:
 
 ![using_symbol_types_console.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_console.png)
 
 ![using_symbol_types_gui.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_gui.png)
 
-There are multiple errors in the transcription that we will need to find and fix in an efficient manner. For that purpose, we shall be using the Symbol Types views. The Symbol Types views can be reached by pressing F11 or tab (pressing again F11 or tab will move back to Transcription). Note: On MacOS, only tab works, as F11 is reserved. The default view is the Symbol Types - List View, which conveniently shows some of the symbols from the documents currently associated with each type.
+There are multiple errors in the transcription that we will need to find and fix in an efficient manner. For that purpose, we shall be using the Symbol Types views. The Symbol Types views can be reached by pressing F11 or tab (pressing again F11 or tab will move back to Transcription). Note: On macOS, only tab works, as F11 is reserved. The default view is the "Symbol Types - List View", which conveniently shows some of the symbols from the documents currently associated with each type.
 
 We now select the symbol 01 in the list. It is evident that several symbols do not belong here.
 
@@ -139,11 +141,11 @@ You can select them, one-by-one, then drag the whole selection together into the
 
 ![using_symbol_types_multiple_drag.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_multiple_drag.png)
 
-The  Symbol Types - List View is most convenient when there is only a small number of distinct symbols types (a few tens). For larger numbers of types, the  Symbol Types - Grid View might be more convenient, especially for the case in the tutorial, where we have 150 distinct symbol types. You can move to the Symbol Types - Grid View by pressing F12.
+The "Symbol Types - List View" is most convenient when there is only a small number of distinct symbols types (a few tens). For larger numbers of types, the "Symbol Types - Grid View" might be more convenient, especially for the case in the tutorial, where we have 150 distinct symbol types. You can move to the "Symbol Types - Grid View" by pressing F12.
 
 ![using_symbol_types_grid_view.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_grid_view.png)
 
-In the Symbol Types - Grid View you can select, drag & drop, one or more symbols from the bottom part, as in the Symbol Types - List View. You can get back to Symbol Types - List View by pressing F12 again. To get back to Transcription (from any of those views), press F11 or tab (in MacOS, only tab). It is possible to change the order of the symbols in Symbol Types - Grid View (this also affect their order in the left list, shown in various modes). With F1, you can sort by name (as show above). With F2, you can sort by decryption value - single letters are always shown first (see left image). With F3, you can sort by frequency (the more frequent are shown at the beginning - see image at the right, after pressing F12 to get back to Symbol Types - List View. As expected, it can be seen that E, S, and R (encoded with 01, 02, 04, respectively) are the most frequent.
+In the "Symbol Types - Grid View" you can select, drag & drop, one or more symbols from the bottom part, as in the "Symbol Types - List View". You can get back to "Symbol Types - List View" by pressing F12 again. To get back to Transcription (from any of those views), press F11 or tab (in macOS, only tab). It is possible to change the order of the symbols in "Symbol Types - Grid View" (this also affect their order in the left list, shown in various modes). With F1, you can sort by name (as show above). With F2, you can sort by decryption value - single letters are always shown first (see left image). With F3, you can sort by frequency (the more frequent are shown at the beginning - see image at the right, after pressing F12 to get back to "Symbol Types - List View". As expected, it can be seen that E, S, and R (encoded with 01, 02, 04, respectively) are the most frequent.
 
 ![using_symbol_types_grid_and_list_view.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/using_symbol_types_grid_and_list_view.png)
 
@@ -174,7 +176,7 @@ To fix the problem:
 
 # 💾 Saving Transcription Results
 
-All files are automatically saved upon exiting with ESC. You can also manually save by pressing F10 or CTRL+S from any mode or view. To exit without saving, press the X on the top-right corner. In MacOS, the close button is usually on the right top corner.
+All files are automatically saved upon exiting with ESC. You can also manually save by pressing F10 or CTRL+S from any mode or view. To exit without saving, press the X on the top-right corner. In macOS, the close button is usually on the right top corner.
 
 The results are saved in the working directory, and in subdirectories:
 
@@ -182,11 +184,11 @@ The icons\ directory contains the icon files, before image processing.
 
 ![saving_transcription_results_icons.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_icons.png)
 
-The positions\ directory contains a text file per document (e.g., f42a_positions.txt), with the position and dimensions (x,y, w, h) of the rectangles surrounding the marked symbols, as well as a number indicating the symbol type they belong to (those are not the same as the numbers used for naming the symbol types - rather, those numbers are fixed, and won’t change if the name of a symbol type is changed). Those files are intended to serve as machine learning ground truths for training and validation.
+The positions\ directory contains a text file per document (e.g., f42a_positions.txt), with the position and dimensions (x, y, w, h) of the rectangles surrounding the marked symbols, as well as a number indicating the symbol type they belong to (those are not the same as the numbers used for naming the symbol types – rather, those numbers are fixed, and won’t change if the name of a symbol type is changed). Those files are intended to serve as machine learning ground truths for training and validation.
 
 ![saving_transcription_results_positions.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_positions.png)
 
-The snapshots\ directory contains the various snapshots manually or automatically generated. More on snapshots in another section. By default, a snapshot of the symbol types- similar to the Symbol Types - Grid View is automatically generated (key.png) when saving.
+The snapshots\ directory contains the various snapshots manually or automatically generated. More on snapshots in another section. By default, a snapshot of the symbol types- similar to the "Symbol Types - Grid View" is automatically generated (key.png) when saving.
 
 ![saving_transcription_results_snapshot_grid.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/saving_transcription_results_snapshot_grid.png)
 
@@ -235,7 +237,7 @@ We press again Start Cryptanalysis.
 
 ![built_in_cryptanalysis_running_analysis.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/built_in_cryptanalysis_running_analysis.png)
 
-To retain the recovered key, press Save Key. This will provide with a initial key, which does not cover the nomenclature, and some homophones are likely to be wrong, mostly because we don’t know yet which symbols types are nomenclature/nulls. If we know them, we can give them some transcription value starting with _, e.g., _100, so that they are ignored in cryptanalysis. Typically, the next step after cryptanalysis and saving the key is to go the Transcription Review mode, and improve/edit the key iteratively. Initially, decryption values from cryptanalysis are in lower case. 
+To retain the recovered key, press Save Key. This will provide an initial key, which does not cover the nomenclature, and some homophones are likely to be wrong, mostly because we don’t know yet which symbols types are nomenclature/nulls. If we know them, we can give them some transcription value starting with _, e.g., _100, so that they are ignored in cryptanalysis. Typically, the next step after cryptanalysis and saving the key is to go the Transcription Review mode, and improve/edit the key iteratively. Initially, decryption values from cryptanalysis are in lower case. 
 
 When some words can be read clearly, the relevant decrypted values of the homophone symbols (symbols representing a single letter) can be changed to capital letters, and in the example below, the letters that form the word COVRIR = COURIR - to run, or by selecting Locked. It is possible to run cryptanalysis again, and the algorithm will not try to change the decrypted value of locked homophones. After confirming/fixing the decryption value of more homophones, it becomes possible to identify nomenclature symbols that represent short word/suffixes/prefixes. In addition, any symbol with a name starting with _ (e.g., _, or _122, _clear_), or a decrypted value starting with _, will be ignored and treated as a null/word separator.
 After a few iterations, it is possible to read additional parts of the deciphered text, and try to deduce how the nomenclature looks like, and assign some nomenclature entries (e.g. short words, places, names) to some of the code values.
@@ -246,7 +248,7 @@ After a few iterations, it is possible to read additional parts of the deciphere
 
 A snapshot of the current mode or view can be generated, by pressing F7. Those snapshots can be used to share results with collaborators that do not have access to CTTS. These include:
   1)	A snapshot of the Symbol Types  including the decryption values
-  2)	A snapshot of the  symbols marked on the image - Transcription mode
+  2)	A snapshot of the  symbols marked on the image – Transcription mode
   3)	A snapshot of the Transcription Review window.
 
 ![snapshots_examples.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/snapshots_examples.png)
@@ -267,9 +269,7 @@ Using CTTS, there are multiple possible strategies to transcribe a set of docume
 
 1)	Symbol-by-symbol segmentation and classification: For each symbol on the image, select the relevant symbol type (classification), then mark the symbol on the document (segmentation). 
 2)	Segmentation and classification by symbol type: Select a symbol type, then mark all the matching symbols on the document.
-3)	Segmentation, then classification: Using the Transcription mode, select a default (e.g., new 1000) symbol type, then mark all the symbols (of any type) on the document. When a few hundred of such unclassified symbols have been marked, using one of the
-
-Symbol Types views, for each symbol type, select all the relevant symbols (currently assigned to 1000, then perform a bulk drag-and-drop operation, to correctly (re)classify them.
+3)	Segmentation, then classification: Using the Transcription mode, select a default (e.g., new 1000) symbol type, then mark all the symbols (of any type) on the document. When a few hundred of such unclassified symbols have been marked, using one of the Symbol Types views, for each symbol type, select all the relevant symbols (currently assigned to 1000, then perform a bulk drag-and-drop operation, to correctly (re)classify them.
 
 Option (1) is only applicable to documents with a small number of symbols, as for each symbol, you need to (a) click on the relevant symbol type from the list (b) mark the symbol on the document. With options (2) and (3), you will still need to mark the symbols individually, but the classification is done only once per symbol type. 
 

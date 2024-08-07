@@ -1,0 +1,14 @@
+1. Signature Creation:
+ jarsigner -storetype pkcs12 -keystore cert.p12 -tsa http://timestamp.comodoca.com ctts-3.5.0.jar "1"
+
+ - cert.p12 is the code signing certificate
+ - tsa has to be changed if not a comodo certificate is used (--> find other timestamp server)
+ - "1" is the "alias". Can be found with: keytool.exe -list -storepass YourFilePassword -keystore KeystoreFileName -v
+ 
+---> jar is automatically altered by the jarsigner
+---> You need to add the bin folder of the JDK to your Windows path to be able to execute it
+
+2. Signature Validation:
+  jarsigner.exe -verify -verbose -certs ctts-3.5.0.jar
+
+For a detailed HowTo also see: https://signmycode.com/resources/complete-process-to-codesign-and-timestamp-a-java-jar-file
