@@ -49,7 +49,7 @@ public class TranscribedImage {
 
     public static void createNegativesIfNeed() {
         for (TranscribedImage t : transcribedImages) {
-            if (t.negative == null) {
+            if (t.negative == null || t.negative.getWidth() != t.image.getWidth() || t.negative.getHeight() != t.image.getHeight()) {
                 t.negative = ImageUtils.negative(ImageUtils.blackAndWhite(t.image));
                 String negativeFilename = t.filename.substring(0, t.filename.lastIndexOf(".")) + "_negative" + t.filename.substring(t.filename.lastIndexOf("."));
                 FileUtils.writeImage(null, negativeFilename, t.negative);

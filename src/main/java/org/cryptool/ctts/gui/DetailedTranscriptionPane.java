@@ -54,7 +54,7 @@ public class DetailedTranscriptionPane {
     static long lastDecryptionTextUpdate;
     static Map<String, SymbolStackPane> idToSp = new HashMap<>();
     static Map<Integer, HBox> lineToHbox = new TreeMap<>();
-    static Map<Integer, TextField> lineToDecryptionText = new TreeMap<>();
+    static Map<Integer, TextField> lineToDecryptionTextField = new TreeMap<>();
     static VBox lines = null;
 
     public static void updateBorders(int idx) {
@@ -138,7 +138,7 @@ public class DetailedTranscriptionPane {
         final Font normalFont = Font.font("Verdana", FontWeight.BOLD, Utils.adjust(32));
         idToSp.clear();
         lineToHbox.clear();
-        lineToDecryptionText.clear();
+        lineToDecryptionTextField.clear();
 
         VBox lines = new VBox();
 
@@ -184,7 +184,7 @@ public class DetailedTranscriptionPane {
                 decryptionContinuousText.setMinWidth(Utils.adjust(1600));
                 decryptionContinuousText.setStyle("-fx-text-inner-color: blue;");
                 lines.getChildren().add(new BorderPane(decryptionContinuousText));
-                lineToDecryptionText.put(lineNumber, decryptionContinuousText);
+                lineToDecryptionTextField.put(lineNumber, decryptionContinuousText);
             }
         }
         return lines;
@@ -229,9 +229,14 @@ public class DetailedTranscriptionPane {
                 continue;
             }
             sp.update(decryptionSequence, positionInLine, selected, id);
-            if (!lineToDecryptionText.containsKey(line)) {
-                String decryptionLineString = decryptionLineString(decryptionSequence);
-                lineToDecryptionText.get(line).setText(decryptionLineString);
+            if (lineToDecryptionTextField.containsKey(line)) {
+                if (EditedRecord.get(TranscribedImage.image(index).filename, line) == null) {
+                    String lineP = decryptionLineString(decryptionSequence);
+                    if (!lineP.equals(lineToDecryptionTextField.get(line).getText())) {
+                        lastDecryptionTextUpdate = System.currentTimeMillis();
+                        lineToDecryptionTextField.get(line).setText(lineP);
+                    }
+                }
             }
         }
 
@@ -256,11 +261,13 @@ public class DetailedTranscriptionPane {
             }
             if (decryptionValueChanged) {
                 if (CTTSApplication.key.isKeyAvailable()) {
-                    if (EditedRecord.get(TranscribedImage.image(index).filename, lineNumber) == null) {
-                        String lineP = decryptionLineString(decryptionSequence);
-                        if (!lineP.equals(lineToDecryptionText.get(lineNumber).getText())) {
-                            lastDecryptionTextUpdate = System.currentTimeMillis();
-                            lineToDecryptionText.get(lineNumber).setText(lineP);
+                    if (lineToDecryptionTextField.containsKey(lineNumber)) {
+                        if (EditedRecord.get(TranscribedImage.image(index).filename, lineNumber) == null) {
+                            String lineP = decryptionLineString(decryptionSequence);
+                            if (!lineP.equals(lineToDecryptionTextField.get(lineNumber).getText())) {
+                                lastDecryptionTextUpdate = System.currentTimeMillis();
+                                lineToDecryptionTextField.get(lineNumber).setText(lineP);
+                            }
                         }
                     }
                 }
