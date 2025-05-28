@@ -27,7 +27,6 @@ The output of the CTTS is intended for:
 * Transcribing a ciphertext for computer cryptanalysis.
 * Deciphering a ciphertext, with built-in cryptanalysis, or using an original key found in archives, or via external cryptanalysis. The transcription and the key can be iteratively improved, with an end-to-end holistic transcription, decryption, and review process.
 * Generating ground-truth data – training and test data – for automated machine learning transcription algorithms.
-* Semi-automated transcription, CTTS producing segmented symbols to be classified by machine learning algorithms, then manually editing and finalizing the results with CTTS.
 
 This tool started as a proof of concept to understand the requirements for a graphical transcription user interface and initially served to transcribe a small number of ciphertexts with hundreds of symbols each at most. 
 
@@ -37,10 +36,7 @@ It later evolved into a full-fledged application that was required to enable the
 
 CTTS was developed in Java, using the JavaFX graphical library, JavaFX is an open-source, next-generation client application platform for desktop, mobile, and embedded systems built on Java. It is not intended for web-service development.
 
-To run CTTS, Java Runtime Environment (JRE) must be installed on the computer. It is required to install Java 10 (JRE 18.3) - for convenience, it will be easier to download it from here for Windows, Linux (rpm), Linux (tar), or macOS. It is not the latest due to JavaFX compatibility issues. To test proper Java installation, open a Command Line window, type java -version. 
-The following output should be expected:
-
-![java_version_output.png](https://github.com/CrypToolProject/CTTS/blob/main/documentation/images/java_version_output.png)
+To run CTTS, Java Runtime Environment (JRE) must be installed on the computer. To test proper Java installation, open a Command Line window, type java -version. 
 
 The computer should have at least 16GB (32G preferred) of RAM, with a screen supporting at least a resolution of a 2560 x 1600 pixels. First, download the required files (tutorials, and the jar file) from this link. The CTTS is available in Java jar format, named gui.jar (under the Jar Files directory). You may copy this jar file to any directory.
 
